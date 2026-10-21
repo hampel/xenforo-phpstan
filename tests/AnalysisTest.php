@@ -9,8 +9,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * The whole package, end to end: generate against the fixture forum, write the phpstan.neon an
  * add-on would, run the real PHPStan from this package's vendor/bin, and read the result. The
- * fixture controller makes every kind of call this package exists to type, and two that are
- * genuinely wrong; the run passes when exactly those two are reported.
+ * fixture controller makes every kind of call this package exists to type, and five that are
+ * genuinely wrong; the run passes when exactly those five are reported.
  */
 final class AnalysisTest extends TestCase
 {
@@ -30,7 +30,7 @@ final class AnalysisTest extends TestCase
         Fixture::remove($this->work);
     }
 
-    public function testOnlyTheTwoGenuineErrorsAreReported(): void
+    public function testOnlyTheGenuineErrorsAreReported(): void
     {
         $result = $this->analyse($this->addonConfig());
 
@@ -46,6 +46,11 @@ final class AnalysisTest extends TestCase
         $this->assertSame([
             'Demo.php:34 Call to an undefined method Acme\Demo\Repository\Widget::noSuchMethod().',
             'Demo.php:35 Call to an undefined method XF\Entity\User::noSuchMethodEither().',
+            // An identifier that cannot be typed leaves PHPStan's own answer, the base type, standing.
+            'Demo.php:38 Call to an undefined method XF\Mvc\Entity\Repository::countWidgets().',
+            'Demo.php:39 Call to an undefined method XF\Mvc\Entity\Repository::countWidgets().',
+            // Two identifiers give a union, with the legacy name kept for the renamed class.
+            'Demo.php:43 Call to an undefined method Acme\Demo\Repository\Widget|XF\Repository\User::onNeither().',
         ], $messages);
     }
 

@@ -5,8 +5,8 @@ namespace Acme\Demo\Pub\Controller;
 use XF\Pub\Controller\AbstractController;
 
 /**
- * Every call here is one PHPStan cannot type from the forum's source alone. The last two are
- * genuinely wrong and must still be reported.
+ * Every call here is one PHPStan cannot type from the forum's source alone. The ones marked
+ * ERROR are genuinely wrong and must still be reported, each with the type the comment names.
  */
 class Demo extends AbstractController
 {
@@ -33,5 +33,18 @@ class Demo extends AbstractController
 
         $this->repository('Acme\Demo:Widget')->noSuchMethod();          // ERROR: not on the repository
         $user?->noSuchMethodEither();                                   // ERROR: on no extension
+
+        // Where the identifier cannot be typed, PHPStan's own answer - the base type - stands.
+        $this->repository('Acme\Demo:Nope')->countWidgets();            // ERROR: no such repository
+        $this->repository($this->identifier())->countWidgets();         // ERROR: not a constant string
+
+        // Two identifiers give a union; a method neither has is reported against both names.
+        $either = random_int(0, 1) === 1 ? 'XF:User' : 'Acme\Demo:Widget';
+        $this->repository($either)->onNeither();                        // ERROR: names the union
+    }
+
+    private function identifier(): string
+    {
+        return (string) getenv('DEMO_REPOSITORY');
     }
 }

@@ -30,7 +30,8 @@ is tested against the stand-in under `tests/Fixtures/forum`: a `src/XF.php` with
 members the generator uses — `start()`, `$versionId`, `getAliasForClass()`, `getClassForAlias()`
 — a dozen XenForo-shaped classes, and two add-ons. `AnalysisTest` generates against it, writes
 the `phpstan.neon` an add-on would, runs the real PHPStan from `vendor/bin`, and asserts that
-exactly the two deliberately wrong calls in the fixture controller are reported. **That test is
+exactly the deliberately wrong calls in the fixture controller are reported, each against the
+type the package gave it. **That test is
 the specification**: every kind of call the package exists to type is in that controller, and a
 new capability gets a line there before it gets code.
 
