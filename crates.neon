@@ -1,0 +1,16 @@
+# Opt-in: treat XenForo's magic-property classes as object crates, so that $entity->column,
+# $options->name and $params->key are not reported as undefined properties.
+#
+#     includes:
+#         - vendor/hampel/xenforo-phpstan/extension.neon
+#         - vendor/hampel/xenforo-phpstan/crates.neon
+#
+# The cost is real and is why this is a separate file: a crate accepts ANY property name, so a
+# mistyped column is silenced as readily as a correct one. The narrower alternative for
+# entities is `php cmd.php xf-dev:entity-class-properties`, which writes @property docblocks
+# into the add-on's own entity classes - precise, but an edit to committed source.
+parameters:
+    universalObjectCratesClasses:
+        - XF\Options
+        - XF\Mvc\Entity\Entity
+        - XF\Mvc\ParameterBag

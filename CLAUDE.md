@@ -1,0 +1,128 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What this package is
+
+`hampel/xenforo-phpstan` — a PHPStan extension for add-ons developed inside a XenForo 2 install.
+It carries what is a property of XenForo and identical for every add-on: the configuration that
+lets PHPStan scan the forum without analysing it, the legacy class names XenForo 2.3 aliases at
+runtime, the `XFCP_` parent of every class extension, the methods those extensions add to core
+classes, and the container shortcuts given the short `Vendor\AddOn:Name` identifier. `README.md`
+is the consumer's view; this file is the maintainer's.
+
+## Commands
+
+```bash
+composer install
+composer check                                  # lint, analyse, test - what CI runs
+composer test                                   # phpunit, including the end-to-end run
+composer analyse                                # phpstan on this package, level 10
+composer format                                 # pint, PSR-12
+vendor/bin/phpunit --filter AnalysisTest        # the end-to-end run alone
+bin/xenforo-phpstan generate --root=tests/Fixtures/forum --out=/tmp/x   # the generator by hand
+```
+
+## Nothing here needs XenForo, and that is the design constraint
+
+**XenForo's source is licensed and not on Packagist, so CI can never have a forum.** Everything
+is tested against the stand-in under `tests/Fixtures/forum`: a `src/XF.php` with the four
+members the generator uses — `start()`, `$versionId`, `getAliasForClass()`, `getClassForAlias()`
+— a dozen XenForo-shaped classes, and two add-ons. `AnalysisTest` generates against it, writes
+the `phpstan.neon` an add-on would, runs the real PHPStan from `vendor/bin`, and asserts that
+exactly the two deliberately wrong calls in the fixture controller are reported. **That test is
+the specification**: every kind of call the package exists to type is in that controller, and a
+new capability gets a line there before it gets code.
+
+The fixture's `XF.php` is also what lets this package's own PHPStan run see the `\XF` symbol
+the generator calls — `phpstan.neon.dist` and `.github/phpstan-nodev.neon` both scan it, and
+`.github/composer-require-checker.json` whitelists `XF` for the same reason.
+
+**A real forum is still the only check that the numbers are right.** The alias mapping, the
+suffix table, the shortcut formatters and the hint naming rule were all read from XenForo 2.3.13
+and verified against real add-ons on the day they were written; when XenForo changes any of
+them, the fixture will keep passing. Re-verify against a forum when touching the generator or
+`Shortcut::classFor()`.
+
+## Structure
+
+```text
+extension.neon          the fragment an add-on includes: parameters, schema, services
+crates.neon             opt-in universalObjectCratesClasses, with its cost stated
+bin/xenforo-phpstan     the generator's entry point
+src/
+  Classes.php           loads the generated map, lazily; refuses a stale one by versionId
+  Generator/            Generator (boots XF, walks the forum, writes three files), Command (argv),
+                        ClassExtension (one XML line), Stub (grouped declarations), Summary
+  Reflection/           ClassExtensionMethodsExtension - methods added by class extensions
+  Type/                 Shortcut (the identifier expansion), ShortcutTypes (the method table and
+                        the type it yields), the instance and static return type extensions
+tests/Fixtures/forum/   the stand-in XenForo install
+```
+
+## Decisions that look like style and are not
+
+- **The generated files are per forum, under `internal_data/phpstan/` by default.** What they
+  describe — which classes the forum aliases, which extensions every installed add-on registers
+  — is a property of the install, and forty add-ons each regenerating their own copy after an
+  upgrade is forty chances to forget. `xenforo.generated` overrides it.
+- **The generator boots XenForo and asks it, rather than deriving the alias mapping from
+  filenames.** A filename rule misses the six suffixes `getAliasableNamespaces()` abbreviates
+  (`ControllerPlugin` → `Plugin`, `FindNew` → `Handler`) and invents names core never aliases.
+  `\XF::start()` registers autoloaders and connects to nothing.
+- **It walks `src/addons` as well as `src/XF`**, because XenForo aliases a renamed add-on class
+  exactly as it aliases core; an add-on that has adopted the suffixed names depends on it.
+- **The class shape is read from the file, not from reflection.** Loading every aliased class to
+  ask `isAbstract()` would execute third-party add-on code in the generator process; a regex on
+  the declaration line answers the same question. A trait or enum cannot be subclassed and is
+  skipped; an interface is declared as an interface.
+- **A legacy name is declared as a subclass of the renamed class.** PHPStan has no alias, and a
+  subclass satisfies every call through the legacy name. The cost, recorded in the README: a
+  value typed to the renamed class is not a legacy-named one. So `ShortcutTypes` returns the
+  legacy name when PHPStan knows it, because that is a subtype of both and the add-on's own
+  return types use it.
+- **The extension map is keyed by the class XenForo resolves the registered name to**, because
+  `Extension::extendClass()` normalises through `getClassForAlias()`; an extension registered on
+  `XF\Repository\User` applies to `UserRepository`. The methods extension walks the receiver's
+  parents, so a call through either name finds it.
+- **The methods extension offers only what the extension class itself declares.** A method the
+  core class already has never reaches a `MethodsClassReflectionExtension`; one inherited back
+  through `XFCP_` must not be offered, and checking the declaring class against the receiver's
+  lineage is also what stops the lookup recursing.
+- **The `class-string` argument report is ignored by pattern, not fixed by a stub.** A stub
+  saying `class-string<T>|string` does not work: PHPStan simplifies the union to `string` and
+  loses `T`, and it validates stubs against classes it cannot see. The pattern names the exact
+  shortcut methods and a string argument, with `reportUnmatched: false` so an add-on that
+  passes `::class` everywhere is not penalised for it.
+- **A stale generated set is refused, not tolerated.** It fails as a flood of undefined-method
+  errors naming renamed classes, which reads as the add-on being broken. `Classes` compares the
+  recorded `versionId` with the forum's `src/XF.php` on first use and throws with the command to
+  run; PHPStan surfaces that as one internal error with the message intact.
+- **No console component, no dependencies beyond PHPStan.** The generator is one command with
+  two options; a dependency here lands in every add-on's dev install.
+
+## Traps met while building it
+
+- **`"\XF"` in a double-quoted PHP string is a hex escape**, 0x0F. Test strings naming XenForo
+  classes are single-quoted.
+- **PHPStan writes advice to stderr** in some environments; the end-to-end test keeps stderr
+  apart from the JSON it parses.
+- **A service used by another service must be registered**, even with autowiring. `ShortcutTypes`
+  is in `extension.neon` for that reason; omitting it fails only at container build, in the
+  consumer's run.
+- **A path written through a parameter the fragment defines itself is not absolutised** by
+  PHPStan's loader — only `%rootDir%`, `%currentWorkingDirectory%` and `%env.*%` are known at
+  load time. The default root therefore goes through `%currentWorkingDirectory%`, and
+  `FileExcluder` normalises the `..` segments before matching.
+- **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
+  `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
+
+## Version support
+
+PHP 8.3, 8.4 and 8.5, PHPStan `^2.1.22`. PHPStan runs at level 10 with `phpVersion` spanning the
+range; CI tests the floor with `--prefer-lowest`, which is also what proves the extension loads
+and the end-to-end test passes on the oldest PHPStan the constraint allows.
+
+## Git
+
+Commit freely; never push.

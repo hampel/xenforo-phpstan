@@ -1,0 +1,107 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  # A dormant package still needs to hear about a new PHP release. Note that
+  # GitHub disables scheduled workflows after 60 days without repository
+  # activity, and emails before it does.
+  schedule:
+    - cron: '0 6 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }} ${{ matrix.deps }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      # The corners of the supported range, not the whole matrix: the floor with the
+      # oldest dependencies it claims, the floor with current ones, and the ceiling.
+      # Everything between fails only when a corner does. phpstan/phpstan is the one
+      # runtime dependency, so --prefer-lowest is what proves the extension still loads
+      # and the end-to-end test still passes on the oldest PHPStan the constraint allows.
+      matrix:
+        include:
+          - { php: '8.3', deps: '--prefer-lowest' }
+          - { php: '8.3', deps: '' }
+          - { php: '8.5', deps: '' }
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - run: composer update --prefer-dist --no-progress ${{ matrix.deps }}
+
+      # The suite needs no XenForo: the generator and the end-to-end analysis run against the
+      # stand-in forum under tests/Fixtures, using the PHPStan this job resolved.
+      - run: vendor/bin/phpunit
+
+      # Also here, not only in a job of its own: phpstan.neon.dist covers the whole 8.3 - 8.5
+      # PHP range in one pass wherever it runs, but its result still depends on the
+      # dependency tree it resolved against - including phpstan's own version, which is
+      # what the --prefer-lowest corner is for.
+      - run: vendor/bin/phpstan analyse --no-progress
+
+  dependencies:
+    name: Declared dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.3'
+          coverage: none
+          # Both tools have to run from outside the package: PHPStan is deleted by the
+          # --no-dev install below, and run through a vendor/bin proxy it would lend the
+          # analysed code every package that vendor tree has installed.
+          tools: phpstan, composer-require-checker
+
+      - run: composer install --no-dev --prefer-dist --no-progress
+
+      # Analyse src/ with the dev dependencies gone, so anything it calls that is not in
+      # "require" comes back as not-found. -c is not optional: without it PHPStan discovers
+      # phpstan.neon.dist, which points at tests/ and can no longer resolve PHPUnit.
+      - run: >
+          phpstan analyse
+          -c .github/phpstan-nodev.neon
+          --autoload-file=vendor/autoload.php --no-progress
+
+      # The other half, and the one that sees a missing ext-*: a function from an absent
+      # extension looks exactly like one from core to static analysis. The whitelist in
+      # composer-require-checker.json names what the checker cannot see for itself: every
+      # PHPStan and PhpParser interface this package implements lives inside phpstan.phar,
+      # which the checker does not open, and \XF is supplied by the forum the generator is
+      # pointed at. A NEW symbol in that namespace appearing later is a prompt to check it
+      # is in the phar's public API, not to extend the list on sight.
+      - run: >
+          composer-require-checker check
+          --config-file=.github/composer-require-checker.json composer.json
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - run: composer validate --strict
+
+      - run: composer install --prefer-dist --no-progress
+
+      - run: vendor/bin/pint --test

@@ -1,0 +1,17 @@
+{
+    "symbol-whitelist": [
+        "XF",
+        "PhpParser\\Node\\Expr\\MethodCall",
+        "PhpParser\\Node\\Expr\\StaticCall",
+        "PHPStan\\Analyser\\Scope",
+        "PHPStan\\Reflection\\ClassReflection",
+        "PHPStan\\Reflection\\MethodReflection",
+        "PHPStan\\Reflection\\MethodsClassReflectionExtension",
+        "PHPStan\\Reflection\\ReflectionProvider",
+        "PHPStan\\Type\\DynamicMethodReturnTypeExtension",
+        "PHPStan\\Type\\DynamicStaticMethodReturnTypeExtension",
+        "PHPStan\\Type\\ObjectType",
+        "PHPStan\\Type\\Type",
+        "PHPStan\\Type\\TypeCombinator"
+    ]
+}

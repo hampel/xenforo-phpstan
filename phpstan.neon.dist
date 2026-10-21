@@ -1,0 +1,23 @@
+parameters:
+    level: 10
+
+    paths:
+        - src
+        - tests
+
+    excludePaths:
+        # The stand-in forum: XenForo-shaped code that only exists for the generator and the
+        # end-to-end test to run against. It is analysed by that test, through this package.
+        - tests/Fixtures
+
+    scanFiles:
+        # The generator calls \XF::start(), getAliasForClass() and friends on the forum it is
+        # pointed at. XenForo's source is licensed and not on Packagist, so the symbol comes
+        # from the fixture's stand-in, which declares exactly the members the generator uses.
+        - tests/Fixtures/forum/src/XF.php
+
+    # Analyse against every PHP version the package claims to support, in one run. Keep in
+    # step with the "php" constraint in composer.json.
+    phpVersion:
+        min: 80300
+        max: 80500

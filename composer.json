@@ -1,0 +1,67 @@
+{
+    "name": "hampel/xenforo-phpstan",
+    "type": "phpstan-extension",
+    "description": "PHPStan for XenForo add-ons - the configuration an add-on needs to be analysed against a forum, the methods class extensions add to core classes, the container shortcuts, and the legacy class names XenForo 2.3 aliases at runtime",
+    "authors": [
+        {
+            "name": "Simon Hampel",
+            "email": "simon@hampelgroup.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/hampel/xenforo-phpstan/issues",
+        "source": "https://github.com/hampel/xenforo-phpstan"
+    },
+    "keywords": [
+        "xenforo",
+        "phpstan",
+        "static analysis",
+        "phpstan-extension"
+    ],
+    "homepage": "https://github.com/hampel/xenforo-phpstan",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.3",
+        "ext-simplexml": "*",
+        "phpstan/phpstan": "^2.1.22"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.30",
+        "phpunit/phpunit": "^12.0"
+    },
+    "bin": [
+        "bin/xenforo-phpstan"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hampel\\XenForo\\PHPStan\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Hampel\\XenForo\\PHPStan\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "phpstan": {
+            "includes": [
+                "extension.neon"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse",
+        "format": "pint",
+        "lint": "pint --test",
+        "check": [
+            "@lint",
+            "@analyse",
+            "@test"
+        ]
+    }
+}

@@ -1,0 +1,16 @@
+/vendor/
+composer.lock
+composer.phar
+.idea/
+.DS_Store
+.phpunit.cache/
+
+# a hard-coded local copy of phpstan.neon.dist
+phpstan.neon
+
+# session notes and audit state - local to this clone, never published
+CLAUDE.local.md
+
+# NTFS alternate data stream left behind when a file is copied from Windows into
+# WSL - it records the zone the download came from and is of no use here.
+*:Zone.Identifier

@@ -1,0 +1,16 @@
+# Used only by the "Declared dependencies" job in tests.yml, which analyses src/ with the
+# dev dependencies uninstalled. Deliberately separate from phpstan.neon.dist: that one analyses
+# tests/ too, which cannot resolve PHPUnit once --no-dev has run.
+#
+# Level 0 is enough. Not-found is a basic check, so a higher level buys nothing here and
+# only adds noise from types that legitimately live in dev.
+parameters:
+    level: 0
+
+    paths:
+        - %currentWorkingDirectory%/src
+
+    scanFiles:
+        # \XF is supplied by the forum the generator is pointed at; the fixture's stand-in
+        # declares the members it uses. The same line is in phpstan.neon.dist, for the same reason.
+        - %currentWorkingDirectory%/tests/Fixtures/forum/src/XF.php

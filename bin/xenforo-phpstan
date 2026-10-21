@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+// Installed by Composer the autoloader is three directories up; in this package's own
+// checkout it is beside bin/.
+foreach ([__DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php'] as $autoload) {
+    if (is_file($autoload)) {
+        require $autoload;
+
+        break;
+    }
+}
+
+exit((new Hampel\XenForo\PHPStan\Generator\Command())->run($argv, STDOUT, STDERR));
