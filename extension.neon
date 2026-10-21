@@ -72,7 +72,7 @@ parameters:
         # The same calls at level 6, where PHPStan also reports that the identifier does not
         # bind T. The return type is supplied by the extensions below regardless.
         -
-            message: '#^Unable to resolve the template type T in call to (?:static )?method XF(?:\\[\w\\]+)?::(?:find|findOne|findCached|finder|getFinder|repository|getRepository|service|data|plugin|create|instantiateEntity|getBehavior|assertRecordExists|assertRecordExistsByUnique|assertViewableRecord|assertViewableApiRecord|job|searcher|filterer|auth|helper|validator|criteria|notifier)\(\)$#'
+            message: '#^Unable to resolve the template type T in call to (?:(?:static )?method )+XF(?:\\[\w\\]+)?::(?:find|findOne|findCached|finder|getFinder|repository|getRepository|service|data|plugin|create|instantiateEntity|getBehavior|assertRecordExists|assertRecordExistsByUnique|assertViewableRecord|assertViewableApiRecord|job|searcher|filterer|auth|helper|validator|criteria|notifier)\(\)$#'
             identifier: argument.templateType
             reportUnmatched: false
 

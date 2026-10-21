@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- the level-6 template-type ignore also matches the message PHPStan 2.1.22 writes for a static
+  call, `in call to method static method XF::...`, which the pattern released in 0.2.0 missed
+
 ## 0.2.0 (2026-10-22)
 
 - within the add-on that extends a class, a container shortcut returns that extension rather than

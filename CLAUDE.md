@@ -122,6 +122,13 @@ tests/Fixtures/forum/   the stand-in XenForo install
   PHPStan's loader — only `%rootDir%`, `%currentWorkingDirectory%` and `%env.*%` are known at
   load time. The default root therefore goes through `%currentWorkingDirectory%`, and
   `FileExcluder` normalises the `..` segments before matching.
+- **An error message's wording differs across the PHPStan range, and the lowest corner is the
+  only check.** PHPStan 2.1.22 reports an unresolved template type on a static call as
+  `in call to method static method XF::repository()`; the current release says
+  `in call to static method`. The ignore pattern in `extension.neon` accepts both, and the
+  level-6 end-to-end test is what catches a regression, but only when run against 2.1.22: it
+  passed locally on the current PHPStan and failed on the `--prefer-lowest` job on 2026-10-22.
+  Before tagging, run the suite once on the lowest set, as the `lowest` CI job does.
 - **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
   `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
 
