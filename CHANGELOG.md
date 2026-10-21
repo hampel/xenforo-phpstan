@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 (2026-10-22)
 
 - within the add-on that extends a class, a container shortcut returns that extension rather than
   the core class, so a method the extension overrides with a different signature is called
