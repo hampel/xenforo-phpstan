@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- a PHPDoc stub for `XF\Db\Schema\AbstractDdl`: `addKey()`, `addUniqueKey()` and `addFullTextKey()`
+  accept a string index name
+
 ## 0.1.0 (2026-10-21)
 
 - `extension.neon`: the configuration an add-on includes to be analysed against the forum it

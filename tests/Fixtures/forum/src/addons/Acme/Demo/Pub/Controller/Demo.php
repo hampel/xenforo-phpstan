@@ -43,6 +43,15 @@ class Demo extends AbstractController
         $this->repository($either)->onNeither();                        // ERROR: names the union
     }
 
+    public function actionSchema(): void
+    {
+        // XenForo's own PHPDoc says the index name is null; every Setup.php passes a string.
+        $table = new \XF\Db\Schema\Create();
+        $table->addUniqueKey(['user_id', 'content_id'], 'user_content');
+        $table->addKey('content_id', 'content');
+        $table->addFullTextKey('title', 'title');
+    }
+
     private function identifier(): string
     {
         return (string) getenv('DEMO_REPOSITORY');

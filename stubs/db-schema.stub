@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * XenForo's schema builder documents the index name of addKey(), addUniqueKey() and
+ * addFullTextKey() as `@param null $indexName`, and every Setup.php passes a string. PHPStan
+ * takes the docblock literally and reports each call at level 5. These restate the three
+ * methods with the type they accept; a stub replaces only the PHPDoc of the methods it names.
+ *
+ * Index is declared here as well, empty, because PHPStan checks a stub against the classes it
+ * can autoload or the stub declares - not against the scanned forum - and would otherwise report
+ * the return type as unknown. An empty declaration adds nothing to the real class.
+ */
+
+namespace XF\Db\Schema;
+
+class Index
+{
+}
+
+abstract class AbstractDdl
+{
+    /**
+     * @param string|string[] $column
+     * @param string|null $indexName
+     * @return Index
+     */
+    public function addUniqueKey($column, $indexName = null) {}
+
+    /**
+     * @param string|string[] $column
+     * @param string|null $indexName
+     * @return Index
+     */
+    public function addKey($column, $indexName = null) {}
+
+    /**
+     * @param string|string[] $column
+     * @param string|null $indexName
+     * @return Index
+     */
+    public function addFullTextKey($column, $indexName = null) {}
+}

@@ -50,6 +50,11 @@ parameters:
         - %xenforo.generated%/legacy-aliases.stub.php
         - %xenforo.generated%/class-extensions.stub.php
 
+    stubFiles:
+        # XenForo documents the index name of the schema builder's key methods as `null`;
+        # every Setup.php passes a string.
+        - stubs/db-schema.stub
+
     ignoreErrors:
         # XenForo 2.3 annotates every container shortcut with @param class-string<T>, and the
         # implementation accepts the short Vendor\AddOn:Name identifier as well - the form most
