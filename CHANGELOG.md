@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 (2026-10-21)
 
 - `extension.neon`: the configuration an add-on includes to be analysed against the forum it
   sits in - the forum scanned rather than analysed, other add-ons scanned without their vendored
