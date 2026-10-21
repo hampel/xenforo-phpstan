@@ -45,6 +45,6 @@ final class ContainerShortcutExtension implements DynamicMethodReturnTypeExtensi
 
         [$kind, $nullable] = ShortcutTypes::METHODS[$this->className][$methodReflection->getName()];
 
-        return $this->types->typeFor($kind, $nullable, $scope->getType($args[0]->value));
+        return $this->types->typeFor($kind, $nullable, $scope->getType($args[0]->value), $scope->getFile());
     }
 }

@@ -45,13 +45,35 @@ final class AnalysisTest extends TestCase
 
         $this->assertSame([
             'Demo.php:34 Call to an undefined method Acme\Demo\Repository\Widget::noSuchMethod().',
-            'Demo.php:35 Call to an undefined method XF\Entity\User::noSuchMethodEither().',
+            'Demo.php:35 Call to an undefined method Acme\Demo\XF\Entity\User::noSuchMethodEither().',
             // An identifier that cannot be typed leaves PHPStan's own answer, the base type, standing.
             'Demo.php:38 Call to an undefined method XF\Mvc\Entity\Repository::countWidgets().',
             'Demo.php:39 Call to an undefined method XF\Mvc\Entity\Repository::countWidgets().',
-            // Two identifiers give a union, with the legacy name kept for the renamed class.
-            'Demo.php:43 Call to an undefined method Acme\Demo\Repository\Widget|XF\Repository\User::onNeither().',
+            // Two identifiers give a union; this add-on extends the user repository, so its
+            // extension is the type, not the core class.
+            'Demo.php:43 Call to an undefined method Acme\Demo\Repository\Widget|Acme\Demo\XF\Repository\User::onNeither().',
+            // From an add-on that does not extend it, the core class under the legacy name.
+            'Other.php:23 Call to an undefined method XF\Repository\User::nope().',
         ], $messages);
+    }
+
+    public function testTheShortcutArgumentsAreNotReportedAtLevelSix(): void
+    {
+        // Level 6 asks PHPStan to resolve every template type; the short identifier cannot bind
+        // T, and without the second ignore pattern every shortcut call is reported again.
+        $result = $this->analyse(str_replace('level: 5', 'level: 6', $this->addonConfig()));
+
+        $this->assertArrayHasKey('files', $result);
+
+        $identifiers = [];
+        foreach ($result['files'] ?? [] as $errors) {
+            foreach ($errors['messages'] as $error) {
+                $identifiers[] = $error['identifier'];
+            }
+        }
+
+        $this->assertNotContains('argument.templateType', $identifiers, implode("\n", $identifiers));
+        $this->assertNotContains('argument.type', $identifiers);
     }
 
     public function testWithoutThisPackageTheSameCodeIsAFlood(): void
@@ -93,6 +115,7 @@ final class AnalysisTest extends TestCase
                 tmpDir: {$this->work}/cache
                 paths:
                     - {$this->addon()}
+                    - {$this->forum()}/src/addons/Acme/Other
                 excludePaths:
                     analyseAndScan:
                         - {$this->addon()}/vendor (?)
@@ -107,7 +130,7 @@ final class AnalysisTest extends TestCase
     }
 
     /**
-     * @return array{totals: array{file_errors: int}, files?: array<string, array{messages: list<array{line: int, message: string}>}>}
+     * @return array{totals: array{file_errors: int}, files?: array<string, array{messages: list<array{line: int, message: string, identifier: string}>}>}
      */
     private function analyse(string $neon): array
     {
@@ -130,7 +153,7 @@ final class AnalysisTest extends TestCase
 
         $this->assertIsArray($result, 'PHPStan did not return JSON: ' . $output . (string) file_get_contents($stderr));
 
-        /** @var array{totals: array{file_errors: int}, files?: array<string, array{messages: list<array{line: int, message: string}>}>} $result */
+        /** @var array{totals: array{file_errors: int}, files?: array<string, array{messages: list<array{line: int, message: string, identifier: string}>}>} $result */
         return $result;
     }
 

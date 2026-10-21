@@ -86,6 +86,13 @@ tests/Fixtures/forum/   the stand-in XenForo install
   `Extension::extendClass()` normalises through `getClassForAlias()`; an extension registered on
   `XF\Repository\User` applies to `UserRepository`. The methods extension walks the receiver's
   parents, so a call through either name finds it.
+- **A shortcut returns the analysing add-on's own extension of the class, and the core class
+  everywhere else.** An extension that overrides a core method with a wider signature is callable
+  that way only through the extension type, and a `MethodsClassReflectionExtension` is never
+  asked about a method the core class already has, so no reflection trick reaches it. Returning
+  the extension to every add-on would be wrong - another add-on's code never sees a type from
+  this one - so ownership is by file: the generator records each extension's add-on directory,
+  and `Classes::extensionOwnedBy()` matches the analysed file against it, tests included.
 - **The methods extension offers only what the extension class itself declares.** A method the
   core class already has never reaches a `MethodsClassReflectionExtension`; one inherited back
   through `XFCP_` must not be offered, and checking the declaring class against the receiver's

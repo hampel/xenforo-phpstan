@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- within the add-on that extends a class, a container shortcut returns that extension rather than
+  the core class, so a method the extension overrides with a different signature is called
+  correctly; `xenforo-phpstan generate` records the add-on each extension belongs to, and a file
+  it wrote before this release is refused with the command to run
+- the shortcut argument is no longer reported as an unresolved template type at level 6
 - a PHPDoc stub for `XF\Db\Schema\AbstractDdl`: `addKey()`, `addUniqueKey()` and `addFullTextKey()`
   accept a string index name
 

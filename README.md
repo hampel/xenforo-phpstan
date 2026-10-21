@@ -158,7 +158,14 @@ return type extensions expand the identifier as `\XF::stringToClass()` does, for
 `XF\Service\AbstractService` and `XF\Widget\AbstractWidget` — the finders, repositories,
 services, entities, data classes, controller plugins, behaviours, jobs, searchers, filterers,
 helpers, validators, criteria and notifiers, and a controller's `assertRecordExists()` family —
-and the argument itself is no longer reported against the `class-string` annotation at level 5.
+and the argument itself is no longer reported against the `class-string` annotation at level 5,
+or as an unresolved template type at level 6.
+
+Within the add-on that extends the class, the shortcut returns that extension rather than the
+core class: at runtime it is what comes back, and it is the only type under which a method the
+extension overrides with a different signature is called correctly. Elsewhere the core class is
+returned, with every extension's added methods reachable through it. Which add-on a file belongs
+to is its directory under `src/addons`, so the add-on's tests count as its own.
 
 Passing `::class` resolves without any of this, and is the better form for the add-on's own
 classes. It is not safe for a renamed core class while the add-on supports 2.2:
@@ -178,6 +185,9 @@ missing-typehint wall, and a separate project.
   so a value typed to the renamed class does not satisfy a parameter typed to the legacy name. The
   shortcuts return the legacy name when the add-on used it, which keeps the add-on's own types
   consistent; a value from XenForo's own typed API may still need a docblock.
+- **An overridden signature is seen only through the add-on's own shortcut.** A value that arrives
+  typed as the core class from anywhere else, XenForo's own typed API included, carries the core
+  signature.
 - **A method reached through a base type stays undefined.** `$entity->canUseThing()` on a value
   typed `XF\Mvc\Entity\Entity` cannot be resolved by anything here, because the extension is on
   `XF\Entity\User`; that is the variable's type being too wide, and the fix is at the variable.

@@ -16,7 +16,7 @@ class Demo extends AbstractController
         if ($user !== null) {
             $user->canUseDemo();        // added by this add-on's extension of XF\Entity\User
             $user->fromOther();         // added by another add-on's extension
-            $user->isMemberOf(2);       // on the core class
+            $user->isMemberOf(2, true); // overridden by this add-on's extension with a second parameter
         }
 
         $this->repository('XF:User')->findDemoUsers()->fetchOne();      // extension registered on a legacy name

@@ -33,6 +33,31 @@ final class ClassesTest extends TestCase
         $this->assertSame([], $classes->extensionsOf('XF\Entity\Thread'));
     }
 
+    public function testAnExtensionIsOwnedByTheAddOnWhoseDirectoryHoldsTheFile(): void
+    {
+        $classes = new Classes($this->out . '/' . Generator::CLASSES, Fixture::forum());
+        $addons = Fixture::forum() . '/src/addons/';
+
+        $this->assertSame('Acme\Demo\XF\Entity\User', $classes->extensionOwnedBy('XF\Entity\User', $addons . 'Acme/Demo/Pub/Controller/Demo.php'));
+        $this->assertSame('Acme\Demo\XF\Entity\User', $classes->extensionOwnedBy('XF\Entity\User', $addons . 'Acme/Demo/tests/Unit/DemoTest.php'));
+        $this->assertSame('Acme\Other\XF\Entity\User', $classes->extensionOwnedBy('XF\Entity\User', $addons . 'Acme/Other/Listener.php'));
+        $this->assertNull($classes->extensionOwnedBy('XF\Repository\UserRepository', $addons . 'Acme/Other/Listener.php'));
+        $this->assertNull($classes->extensionOwnedBy('XF\Entity\User', $addons . 'Acme/Demonstration/Listener.php'));
+        $this->assertNull($classes->extensionOwnedBy('XF\Entity\User', Fixture::forum() . '/src/XF/Entity/User.php'));
+    }
+
+    public function testAFileFromAnOlderReleaseIsRefused(): void
+    {
+        $file = $this->out . '/' . Generator::CLASSES;
+        file_put_contents($file, str_replace("'format' => 2", "'format' => 1", (string) file_get_contents($file)));
+        $classes = new Classes($file, Fixture::forum());
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('was written by an older release of this package');
+
+        $classes->aliases();
+    }
+
     public function testAMissingFileSaysWhatToRun(): void
     {
         $classes = new Classes($this->out . '/missing.php', Fixture::forum());

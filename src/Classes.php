@@ -15,7 +15,14 @@ use RuntimeException;
  */
 final class Classes
 {
-    /** @var array{xenforo: array{versionId: int, root: string}, aliases: array<string, string>, extensions: array<string, list<string>>}|null */
+    /**
+     * The layout of classes.php. Raised when a reader needs a field an older generator did not
+     * write, so that the file is regenerated rather than misread: 2 records the add-on each
+     * class extension belongs to.
+     */
+    public const FORMAT = 2;
+
+    /** @var array{xenforo: array{versionId: int, root: string}, aliases: array<string, string>, extensions: array<string, list<array{class: string, addon: string}>>}|null */
     private ?array $data = null;
 
     private readonly string $root;
@@ -45,7 +52,22 @@ final class Classes
      */
     public function extensionsOf(string $class): array
     {
-        return $this->extensions()[ltrim($class, '\\')] ?? [];
+        return array_column($this->extensions()[ltrim($class, '\\')] ?? [], 'class');
+    }
+
+    /**
+     * The extension of a core class registered by the add-on a file belongs to, or null. A file
+     * belongs to the add-on whose directory under src/addons contains it - its tests included.
+     */
+    public function extensionOwnedBy(string $class, string $file): ?string
+    {
+        foreach ($this->extensions()[ltrim($class, '\\')] ?? [] as $extension) {
+            if (str_starts_with($file, $this->root . '/src/addons/' . $extension['addon'] . '/')) {
+                return $extension['class'];
+            }
+        }
+
+        return null;
     }
 
     /** @return array<string, string> alias => class */
@@ -54,7 +76,7 @@ final class Classes
         return $this->load()['aliases'];
     }
 
-    /** @return array<string, list<string>> core class => extending classes */
+    /** @return array<string, list<array{class: string, addon: string}>> core class => its extensions */
     public function extensions(): array
     {
         return $this->load()['extensions'];
@@ -80,7 +102,7 @@ final class Classes
     }
 
     /**
-     * @return array{xenforo: array{versionId: int, root: string}, aliases: array<string, string>, extensions: array<string, list<string>>}
+     * @return array{xenforo: array{versionId: int, root: string}, aliases: array<string, string>, extensions: array<string, list<array{class: string, addon: string}>>}
      */
     private function load(): array
     {
@@ -116,10 +138,18 @@ final class Classes
     }
 
     /**
-     * @phpstan-assert array{xenforo: array{versionId: int, root: string}, aliases: array<string, string>, extensions: array<string, list<string>>} $data
+     * @phpstan-assert array{xenforo: array{versionId: int, root: string}, aliases: array<string, string>, extensions: array<string, list<array{class: string, addon: string}>>} $data
      */
     private function assertGenerated(mixed $data): void
     {
+        if (is_array($data) && ($data['format'] ?? 1) !== self::FORMAT) {
+            throw new RuntimeException(sprintf(
+                'hampel/xenforo-phpstan: %s was written by an older release of this package. Run `vendor/bin/xenforo-phpstan generate` again against the forum at %s.',
+                $this->file,
+                $this->root,
+            ));
+        }
+
         if (is_array($data)
             && is_array($data['xenforo'] ?? null)
             && is_int($data['xenforo']['versionId'] ?? null)

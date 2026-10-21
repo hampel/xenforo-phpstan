@@ -41,6 +41,6 @@ final class StaticContainerShortcutExtension implements DynamicStaticMethodRetur
 
         [$kind, $nullable] = ShortcutTypes::METHODS['XF'][$methodReflection->getName()];
 
-        return $this->types->typeFor($kind, $nullable, $scope->getType($args[0]->value));
+        return $this->types->typeFor($kind, $nullable, $scope->getType($args[0]->value), $scope->getFile());
     }
 }

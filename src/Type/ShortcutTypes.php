@@ -105,9 +105,9 @@ final class ShortcutTypes
     /**
      * The type for a shortcut given this argument, or null to leave PHPStan's own answer standing:
      * the argument is not a constant string in the identifier form, or names a class the forum
-     * does not have.
+     * does not have. $file is the file being analysed, which decides whose extension applies.
      */
-    public function typeFor(string $kind, bool $nullable, Type $argument): ?Type
+    public function typeFor(string $kind, bool $nullable, Type $argument, string $file): ?Type
     {
         $strings = $argument->getConstantStrings();
         if ($strings === []) {
@@ -124,6 +124,15 @@ final class ShortcutTypes
             $named = $this->classNamed($class, $kind);
             if ($named === null) {
                 return null;
+            }
+
+            // Within the add-on that extends the class, the shortcut returns the extension: at
+            // runtime it is what comes back, and it is the only type under which a method the
+            // extension overrides with a different signature is called correctly. Elsewhere the
+            // core class, with the extension's added methods reachable through it.
+            $own = $this->classes->extensionOwnedBy($this->classes->resolveAlias($named), $file);
+            if ($own !== null && $this->reflectionProvider->hasClass($own)) {
+                $named = $own;
             }
 
             $types[] = new ObjectType($named);

@@ -87,9 +87,15 @@ final class GeneratorTest extends TestCase
             'XF\Service\User\AbstractConfirmation' => 'XF\Service\User\AbstractConfirmationService',
         ], $data['aliases']);
 
+        $this->assertSame(2, $data['format']);
         $this->assertSame([
-            'XF\Entity\User' => ['Acme\Demo\XF\Entity\User', 'Acme\Other\XF\Entity\User'],
-            'XF\Repository\UserRepository' => ['Acme\Demo\XF\Repository\User'],
+            'XF\Entity\User' => [
+                ['class' => 'Acme\Demo\XF\Entity\User', 'addon' => 'Acme/Demo'],
+                ['class' => 'Acme\Other\XF\Entity\User', 'addon' => 'Acme/Other'],
+            ],
+            'XF\Repository\UserRepository' => [
+                ['class' => 'Acme\Demo\XF\Repository\User', 'addon' => 'Acme/Demo'],
+            ],
         ], $data['extensions']);
         $this->assertSame(1, $summary->legacyExtensions);
         $this->assertSame(2, $summary->extendedClasses);
