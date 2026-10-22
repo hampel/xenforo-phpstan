@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1 (2026-10-23)
+
+- `NodeRepository::mergeNodeListExtras()` returns the string-keyed extras array its body
+  builds
+
 ## 0.4.0 (2026-10-22)
 
 - `XF\Tree` and `XF\SubTree` are generic over their record, and

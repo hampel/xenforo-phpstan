@@ -585,8 +585,7 @@ namespace XF\Repository {
     class NodeRepository
     {
         /**
-         * A node finder's fetch(). The tree built from it is not typed here: Tree and SubTree are
-         * not generic, and typing their children is a design question, not a transcription.
+         * A node finder's fetch(); createNodeTree() below builds the typed tree from it.
          *
          * @param mixed $with
          *
@@ -614,6 +613,17 @@ namespace XF\Repository {
          * @return \XF\Tree<\XF\Entity\Node>
          */
         public function createNodeTree($nodes, $rootId = 0) {}
+
+        /**
+         * The extras merged over their defaults, with the children's counts folded in: the
+         * defaults are string-keyed and getNodeListExtras() is too, so the merge is.
+         *
+         * @param mixed[] $extras
+         * @param mixed[] $childExtras
+         *
+         * @return array<string, mixed>
+         */
+        public function mergeNodeListExtras(array $extras, array $childExtras) {}
     }
 }
 

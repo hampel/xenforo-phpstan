@@ -19,4 +19,9 @@ class NodeRepository extends \XF\Mvc\Entity\Repository
     {
         return new \XF\Tree($nodes, 'parent_node_id', $rootId);
     }
+
+    public function mergeNodeListExtras(array $extras, array $childExtras)
+    {
+        return array_merge(['childCount' => count($childExtras)], $extras);
+    }
 }

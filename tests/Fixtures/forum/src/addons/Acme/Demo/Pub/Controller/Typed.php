@@ -86,6 +86,7 @@ class Typed extends AbstractController
         $node = $this->assertRecordExists('XF:Node', 1);
         $this->takesCrumbs($node->getBreadcrumbs(false));
         $this->takesArray($node->getNodeListExtras());
+        $this->takesArray($this->repository('XF:Node')->mergeNodeListExtras($node->getNodeListExtras(), []));
     }
 
     public function actionTree(): void
