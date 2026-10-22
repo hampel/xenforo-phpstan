@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 (2026-10-22)
 
 - `stubs/core.stub`: return types for the methods XenForo 2.3 leaves undeclared and every add-on
   calls - the controller's `view()`, `redirect()`, `error()`, `message()` and `exception()`,
