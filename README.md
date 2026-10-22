@@ -190,6 +190,12 @@ entity type the finder was created with, which XenForo's own `@return Finder` on
 Iterating a collection, or a finder, yields its entity: `getIterator()` is restated on both,
 because a class declared in a stub loses XenForo's own docblock on that one method.
 
+`XF\Tree` and `XF\SubTree` are generic over the record they hold. `NodeRepository::createNodeTree()`
+returns a `Tree<Node>`, a tree built by hand is typed by what it was given, and a subtree's
+`record`, `children()` and `parent()` follow. That makes a bare `Tree` or `SubTree` in an add-on's
+own docblock a missing-generics report at level 6 and above, as a bare `Finder` already is;
+write `SubTree<Node>`.
+
 The parameters are left as XenForo declares them, `mixed` where it declares nothing. A
 parameter type is a claim about every caller, and this package types what comes back.
 
@@ -199,8 +205,8 @@ parameter type is a claim about every caller, and this package types what comes 
 add-on had 8 errors at level 2, 28 of the 44 had ten or fewer, and most of what remained was the
 add-on's own to fix. Level 5 is a reasonable target once the call sites are tidy; level 6 is the
 missing-typehint wall. With the stubs above, level max is reachable: on one small add-on it
-reports a third fewer than without them, and what remains is the add-on's own typing, the node
-tree's untyped children, and route parameters, which no static type can know.
+reports a third fewer than without them, and what remains is the add-on's own typing and
+route parameters, which no static type can know.
 
 ## Limitations
 

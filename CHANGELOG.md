@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0 (2026-10-22)
+
+- `XF\Tree` and `XF\SubTree` are generic over their record, and
+  `NodeRepository::createNodeTree()` returns `Tree<Node>`: a subtree's `record`, `children()`,
+  `parent()`, iteration, offsets, `getData()`, `getFlattened()`, `getDescendants()` and
+  `filter()` carry the record type. A bare `Tree` or `SubTree` in an add-on's own docblock is
+  now a missing-generics report at level 6 and above, which is why this is a minor version
+
 ## 0.3.2 (2026-10-22)
 
 - `NodeRepository::filterViewable()` returns the collection it was given, keeping its entity

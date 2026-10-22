@@ -14,4 +14,9 @@ class NodeRepository extends \XF\Mvc\Entity\Repository
     {
         return $nodes;
     }
+
+    public function createNodeTree($nodes, $rootId = 0)
+    {
+        return new \XF\Tree($nodes, 'parent_node_id', $rootId);
+    }
 }

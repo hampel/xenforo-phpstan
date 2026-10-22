@@ -12,6 +12,8 @@ use XF\Mvc\Reply\Redirect;
 use XF\Mvc\Reply\View;
 use XF\Phrase;
 use XF\Pub\Controller\AbstractController;
+use XF\SubTree;
+use XF\Tree;
 
 /**
  * Every member stubs/core.stub types, each used where only the stubbed type passes at level
@@ -84,6 +86,35 @@ class Typed extends AbstractController
         $node = $this->assertRecordExists('XF:Node', 1);
         $this->takesCrumbs($node->getBreadcrumbs(false));
         $this->takesArray($node->getNodeListExtras());
+    }
+
+    public function actionTree(): void
+    {
+        // The tree is generic over its record: a node here, bound by createNodeTree().
+        $tree = $this->repository('XF:Node')->createNodeTree($this->repository('XF:Node')->getFullNodeList());
+        $this->takesTree($tree->filter());
+        $this->takesNodeOrNull($tree->getData(1));
+        $this->takesSubTreeOrNull($tree[1]);
+        $this->takesSubTreeOrNull($tree->parent(1));
+        $this->takesNodeMap($tree->getDescendants());
+
+        foreach ($tree as $subTree) {
+            $this->takesNode($subTree->record);
+            $this->takesInt(count($subTree->children()));
+        }
+        foreach ($tree->children(1) as $subTree) {
+            $this->takesNode($subTree->record);
+        }
+        foreach ($tree->getFlattened() as $row) {
+            $this->takesNode($row['record']);
+            $this->takesInt($row['depth']);
+        }
+
+        // A tree built by hand is bound by what it was given.
+        $built = new Tree(['a' => ['parent_id' => 0, 'name' => 'x']]);
+        foreach ($built as $subTree) {
+            $this->takesString($subTree->record['name']);
+        }
     }
 
     public function actionApp(): void
@@ -165,6 +196,29 @@ class Typed extends AbstractController
 
     /** @param list<array{value: string, href: string, node_id: int}> $value */
     private function takesCrumbs(array $value): void
+    {
+    }
+
+    private function takesNode(Node $value): void
+    {
+    }
+
+    private function takesNodeOrNull(?Node $value): void
+    {
+    }
+
+    /** @param array<int|string, Node> $value */
+    private function takesNodeMap(array $value): void
+    {
+    }
+
+    /** @param Tree<Node> $value */
+    private function takesTree(Tree $value): void
+    {
+    }
+
+    /** @param SubTree<Node>|null $value */
+    private function takesSubTreeOrNull(?SubTree $value): void
     {
     }
 }

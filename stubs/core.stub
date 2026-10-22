@@ -38,6 +38,185 @@ namespace XF {
     {
     }
 
+    /**
+     * Records keyed by id, each holding its parent's id under one offset. The record type is
+     * whatever was given, usually a node entity through NodeRepository::createNodeTree(), and
+     * XenForo's own trees of navigation, template and style arrays. Reading an offset gives the
+     * subtree at that id; iterating gives the root's children. The constructor parameter is typed,
+     * the one place a stub here claims a parameter: the template binds nowhere else, and the body
+     * iterates the argument on its first line, so nothing that runs is refused.
+     *
+     * @template TRecord
+     * @implements \ArrayAccess<int|string, SubTree<TRecord>|null>
+     * @implements \IteratorAggregate<int|string, SubTree<TRecord>>
+     */
+    class Tree implements \ArrayAccess, \IteratorAggregate, \Countable
+    {
+        /**
+         * @param iterable<int|string, TRecord> $data
+         * @param mixed $parentIdKey
+         * @param mixed $root
+         */
+        public function __construct($data, $parentIdKey = 'parent_id', $root = 0) {}
+
+        /**
+         * @param mixed $id
+         *
+         * @return array<int|string, SubTree<TRecord>>
+         */
+        public function children($id = null) {}
+
+        /**
+         * @param mixed $id
+         *
+         * @return array<int|string, int|string>
+         */
+        public function childIds($id = null) {}
+
+        /**
+         * @param mixed $id
+         *
+         * @return int
+         */
+        public function countChildren($id = null) {}
+
+        /**
+         * @param mixed $id
+         *
+         * @return TRecord|null
+         */
+        public function getData($id) {}
+
+        /**
+         * @return iterable<int|string, TRecord>
+         */
+        public function getAllData() {}
+
+        /**
+         * @return int|string
+         */
+        public function getRoot() {}
+
+        /**
+         * @return array<int|string, array<int|string, int|string>>
+         */
+        public function getParentMap() {}
+
+        /**
+         * @return array<int|string, list<int|string>>
+         */
+        public function getParentMapSimplified() {}
+
+        /**
+         * @param mixed $id
+         *
+         * @return SubTree<TRecord>|null
+         */
+        public function parent($id) {}
+
+        /**
+         * Top-down, keyed by id; null for an id the tree does not hold.
+         *
+         * @param mixed $id
+         * @param mixed $withSelf
+         *
+         * @return array<int|string, TRecord>|null
+         */
+        public function getPathTo($id, $withSelf = false) {}
+
+        /**
+         * @param mixed $id
+         * @param mixed $newParentId
+         *
+         * @return bool
+         */
+        public function isNewParentValid($id, $newParentId) {}
+
+        /**
+         * @param mixed $depth
+         * @param mixed $rootId
+         *
+         * @return array<int|string, array{record: TRecord, depth: int}>
+         */
+        public function getFlattened($depth = 0, $rootId = null) {}
+
+        /**
+         * @param mixed $rootId
+         *
+         * @return array<int|string, TRecord>
+         */
+        public function getDescendants($rootId = null) {}
+
+        /**
+         * The callbacks stay as XenForo declares them, a Closure: typing their parameters would
+         * report every callback declared narrower than int|string for the id.
+         *
+         * @param mixed $depth
+         * @param mixed $rootId
+         *
+         * @return void
+         */
+        public function traverse(\Closure $callback, $depth = 0, $rootId = null) {}
+
+        /**
+         * @return Tree<TRecord>
+         */
+        public function filter(?\Closure $preOrder = null, ?\Closure $postOrder = null) {}
+
+        /**
+         * What was given, less every record the traversal reached.
+         *
+         * @return iterable<int|string, TRecord>
+         */
+        public function getOrphans() {}
+
+        /**
+         * Restated, as for AbstractCollection: a stubbed class loses the real docblock here.
+         *
+         * @return \ArrayIterator<int|string, SubTree<TRecord>>
+         */
+        public function getIterator(): \ArrayIterator {}
+    }
+
+    /**
+     * One record of a Tree with its position: the id, the record, and the children and parent
+     * looked up in the containing tree. Iterating gives the children.
+     *
+     * @template TRecord
+     * @implements \ArrayAccess<string, mixed>
+     * @implements \IteratorAggregate<int|string, SubTree<TRecord>>
+     */
+    class SubTree implements \ArrayAccess, \IteratorAggregate, \Countable
+    {
+        /** @var int|string */
+        public $id;
+
+        /** @var TRecord */
+        public $record;
+
+        /**
+         * @param int|string $id
+         * @param TRecord $record
+         * @param Tree<TRecord> $containingTree
+         */
+        public function __construct($id, $record, Tree $containingTree) {}
+
+        /**
+         * @return array<int|string, SubTree<TRecord>>
+         */
+        public function children() {}
+
+        /**
+         * @return SubTree<TRecord>|null
+         */
+        public function parent() {}
+
+        /**
+         * @return \ArrayIterator<int|string, SubTree<TRecord>>
+         */
+        public function getIterator(): \ArrayIterator {}
+    }
+
     class App
     {
         /**
@@ -425,6 +604,16 @@ namespace XF\Repository {
          * @return \XF\Mvc\Entity\AbstractCollection<T>
          */
         public function filterViewable(\XF\Mvc\Entity\AbstractCollection $nodes) {}
+
+        /**
+         * A Tree over the nodes given, keyed by node id and parented by parent_node_id.
+         *
+         * @param mixed $nodes
+         * @param mixed $rootId
+         *
+         * @return \XF\Tree<\XF\Entity\Node>
+         */
+        public function createNodeTree($nodes, $rootId = 0) {}
     }
 }
 

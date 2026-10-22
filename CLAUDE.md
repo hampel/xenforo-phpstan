@@ -112,6 +112,10 @@ tests/Fixtures/forum/   the stand-in XenForo install
   Parameters are `mixed` unless XenForo's own docblock says otherwise, and are declared at all
   because PHPStan checks a stub at the consumer's level, where an untyped parameter is itself a
   report. A method whose result depends on data, such as a database fetch, is not stubbed.
+  The one parameter typed beyond XenForo's declaration is `Tree::__construct()`'s `$data`,
+  because a template binds nowhere else and the body iterates it on its first line, so nothing
+  that runs is refused; its callbacks stay plain `Closure`, since typing their parameters would
+  report every callback declared narrower than `int|string` for the id.
 - **A stale generated set is refused, not tolerated.** It fails as a flood of undefined-method
   errors naming renamed classes, which reads as the add-on being broken. `Classes` compares the
   recorded `versionId` with the forum's `src/XF.php` on first use and throws with the command to
