@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- within the add-on that extends a class, a shortcut given `::class` returns that extension, as
+  it already did for the short identifier; 0.2.0 left a class-name argument to XenForo's own
+  annotation, which names the core class and loses an overridden signature
+
 ## 0.2.1 (2026-10-22)
 
 - the level-6 template-type ignore also matches the message PHPStan 2.1.22 writes for a static

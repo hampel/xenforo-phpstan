@@ -52,8 +52,12 @@ final class AnalysisTest extends TestCase
             // Two identifiers give a union; this add-on extends the user repository, so its
             // extension is the type, not the core class.
             'Demo.php:43 Call to an undefined method Acme\Demo\Repository\Widget|Acme\Demo\XF\Repository\User::onNeither().',
+            // A class name is XenForo's own annotation at work, except within the add-on whose
+            // extension comes back - there the type is the extension, as for the identifier.
+            'Demo.php:48 Call to an undefined method Acme\Demo\XF\Repository\User::noSuchOnClass().',
             // From an add-on that does not extend it, the core class under the legacy name.
             'Other.php:23 Call to an undefined method XF\Repository\User::nope().',
+            'Other.php:24 Call to an undefined method XF\Repository\UserRepository::nopeClass().',
         ], $messages);
     }
 

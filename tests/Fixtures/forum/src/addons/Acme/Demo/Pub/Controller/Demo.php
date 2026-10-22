@@ -41,6 +41,11 @@ class Demo extends AbstractController
         // Two identifiers give a union; a method neither has is reported against both names.
         $either = random_int(0, 1) === 1 ? 'XF:User' : 'Acme\Demo:Widget';
         $this->repository($either)->onNeither();                        // ERROR: names the union
+
+        // A class name rather than the identifier: XenForo's own annotation types it, and within
+        // the add-on that extends the class the extension still comes back.
+        \XF::em()->find(\XF\Entity\User::class, 1)?->isMemberOf(2, true);
+        $this->repository(\XF\Repository\UserRepository::class)->noSuchOnClass(); // ERROR: named as the extension
     }
 
     public function actionSchema(): void

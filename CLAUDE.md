@@ -92,7 +92,9 @@ tests/Fixtures/forum/   the stand-in XenForo install
   asked about a method the core class already has, so no reflection trick reaches it. Returning
   the extension to every add-on would be wrong - another add-on's code never sees a type from
   this one - so ownership is by file: the generator records each extension's add-on directory,
-  and `Classes::extensionOwnedBy()` matches the analysed file against it, tests included.
+  and `Classes::extensionOwnedBy()` matches the analysed file against it, tests included. A
+  `::class` argument takes the same check, because XenForo's own annotation would otherwise name
+  the core class and lose the override; everywhere else it is left to that annotation.
 - **The methods extension offers only what the extension class itself declares.** A method the
   core class already has never reaches a `MethodsClassReflectionExtension`; one inherited back
   through `XFCP_` must not be offered, and checking the declaring class against the receiver's

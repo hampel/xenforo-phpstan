@@ -20,7 +20,8 @@ final class ShortcutTypes
      * Every method this package types, by the class that declares it. XenForo 2.3 annotates
      * each with @template T and class-string<T>, which the short identifier defeats - so only
      * the identifier form is answered here, and a class-string argument is left to XenForo's
-     * own annotation. [kind, nullable]: find() and findOne() answer null for no row.
+     * own annotation, except that the add-on's own extension is returned for either form.
+     * [kind, nullable]: find() and findOne() answer null for no row.
      *
      * @var array<string, array<string, array{string, bool}>>
      */
@@ -118,7 +119,17 @@ final class ShortcutTypes
         foreach ($strings as $string) {
             $class = Shortcut::classFor($string->getValue(), $kind);
             if ($class === null) {
-                return null;
+                // A class name rather than the identifier, as `::class` gives. XenForo's own
+                // class-string annotation types it, and that answer stands except where it is
+                // wrong: within the add-on whose extension of the class comes back at runtime.
+                $own = $this->ownExtensionOf(ltrim($string->getValue(), '\\'), $file);
+                if ($own === null) {
+                    return null;
+                }
+
+                $types[] = new ObjectType($own);
+
+                continue;
             }
 
             $named = $this->classNamed($class, $kind);
@@ -126,21 +137,25 @@ final class ShortcutTypes
                 return null;
             }
 
-            // Within the add-on that extends the class, the shortcut returns the extension: at
-            // runtime it is what comes back, and it is the only type under which a method the
-            // extension overrides with a different signature is called correctly. Elsewhere the
-            // core class, with the extension's added methods reachable through it.
-            $own = $this->classes->extensionOwnedBy($this->classes->resolveAlias($named), $file);
-            if ($own !== null && $this->reflectionProvider->hasClass($own)) {
-                $named = $own;
-            }
-
-            $types[] = new ObjectType($named);
+            $types[] = new ObjectType($this->ownExtensionOf($named, $file) ?? $named);
         }
 
         $type = TypeCombinator::union(...$types);
 
         return $nullable ? TypeCombinator::addNull($type) : $type;
+    }
+
+    /**
+     * Within the add-on that extends the class, the shortcut returns the extension: at runtime
+     * it is what comes back, and it is the only type under which a method the extension
+     * overrides with a different signature is called correctly. Elsewhere null: the core class,
+     * with the extension's added methods reachable through it.
+     */
+    private function ownExtensionOf(string $class, string $file): ?string
+    {
+        $own = $this->classes->extensionOwnedBy($this->classes->resolveAlias($class), $file);
+
+        return $own !== null && $this->reflectionProvider->hasClass($own) ? $own : null;
     }
 
     /**

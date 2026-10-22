@@ -167,7 +167,8 @@ extension overrides with a different signature is called correctly. Elsewhere th
 returned, with every extension's added methods reachable through it. Which add-on a file belongs
 to is its directory under `src/addons`, so the add-on's tests count as its own.
 
-Passing `::class` resolves without any of this, and is the better form for the add-on's own
+Passing `::class` is typed by XenForo's own annotation without any of this, and within the add-on
+that extends the class it still returns the extension. It is the better form for the add-on's own
 classes. It is not safe for a renamed core class while the add-on supports 2.2:
 `\XF\Repository\UserRepository::class` is a string whatever is installed, and on 2.2 the class it
 names does not exist.
