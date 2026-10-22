@@ -53,6 +53,11 @@ class XF
         return $alias;
     }
 
+    public static function phrase($name, array $params = [], $allowHtml = true)
+    {
+        return new XF\Phrase();
+    }
+
     public static function app(): XF\App
     {
         return new XF\App();

@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- `stubs/core.stub`: return types for the methods XenForo 2.3 leaves undeclared and every add-on
+  calls - the controller's `view()`, `redirect()`, `error()`, `message()` and `exception()`,
+  the reply classes' parameter getters, the finder's fluent methods as `static` so a chain keeps
+  its entity type, `Router::buildLink()`, `\XF::phrase()`, the database adapter's `quote()`,
+  `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`, `AbstractCollection::keys()`,
+  `Request::filter()` and `App::findByContentType()`; and `AbstractDdl::addColumn()` in the
+  schema stub. An add-on
+  analysed at level 7 or above no longer meets `mixed` at each of them
+
 ## 0.2.2 (2026-10-22)
 
 - within the add-on that extends a class, a shortcut given `::class` returns that extension, as

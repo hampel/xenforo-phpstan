@@ -4,7 +4,7 @@ namespace XF\Mvc\Entity;
 
 abstract class Entity
 {
-    public function save(): bool
+    final public function save($throw = true, $newTransaction = true)
     {
         return true;
     }

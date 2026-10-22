@@ -55,6 +55,12 @@ parameters:
         # every Setup.php passes a string.
         - stubs/db-schema.stub
 
+        # Return types XenForo leaves undeclared on the methods every add-on calls - the
+        # controller's reply helpers, the finder's fluent methods, the router, phrases, the
+        # database adapter - read from the method bodies of 2.3.13. What level 7 and above
+        # report without them is every result being mixed.
+        - stubs/core.stub
+
     ignoreErrors:
         # XenForo 2.3 annotates every container shortcut with @param class-string<T>, and the
         # implementation accepts the short Vendor\AddOn:Name identifier as well - the form most

@@ -80,6 +80,30 @@ final class AnalysisTest extends TestCase
         $this->assertNotContains('argument.type', $identifiers);
     }
 
+    public function testTheCoreStubsHoldAtLevelMax(): void
+    {
+        // The controller that uses every member stubs/core.stub types, alone, at level max:
+        // each call passes the result where only the stubbed type is accepted, so a stub that
+        // is missing or wrong is a report here. One line is wrong on purpose.
+        $neon = str_replace('level: 5', 'level: max', $this->addonConfig());
+        $neon = preg_replace('#^(\s+)paths:\n(?:\1\s+- .*\n)+#m', "\\1paths:\n\\1    - {$this->addon()}/Pub/Controller/Typed.php\n", $neon);
+
+        $result = $this->analyse((string) $neon);
+
+        $this->assertArrayHasKey('files', $result, 'PHPStan analysed nothing: ' . json_encode($result));
+
+        $messages = [];
+        foreach ($result['files'] ?? [] as $file => $errors) {
+            foreach ($errors['messages'] as $error) {
+                $messages[] = basename($file) . ':' . $error['line'] . ' ' . $error['message'];
+            }
+        }
+
+        $this->assertSame([
+            'Typed.php:97 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
+        ], $messages);
+    }
+
     public function testWithoutThisPackageTheSameCodeIsAFlood(): void
     {
         // The control: scanning the forum but with no stubs and no extensions registered.

@@ -6,9 +6,13 @@
  * takes the docblock literally and reports each call at level 5. These restate the three
  * methods with the type they accept; a stub replaces only the PHPDoc of the methods it names.
  *
- * Index is declared here as well, empty, because PHPStan checks a stub against the classes it
- * can autoload or the stub declares - not against the scanned forum - and would otherwise report
- * the return type as unknown. An empty declaration adds nothing to the real class.
+ * addColumn() is restated too, with the return type XenForo leaves undeclared: a class can be
+ * declared in one stub file only, so every correction to AbstractDdl lives here.
+ *
+ * Index and Column are declared here as well, empty, because PHPStan checks a stub against the
+ * classes it can autoload or the stub declares - not against the scanned forum - and would
+ * otherwise report the return types as unknown. An empty declaration adds nothing to the real
+ * class.
  */
 
 namespace XF\Db\Schema;
@@ -17,8 +21,21 @@ class Index
 {
 }
 
+class Column
+{
+}
+
 abstract class AbstractDdl
 {
+    /**
+     * @param mixed $columnName
+     * @param mixed $type
+     * @param mixed $length
+     *
+     * @return Column
+     */
+    public function addColumn($columnName, $type = null, $length = null) {}
+
     /**
      * @param string|string[] $column
      * @param string|null $indexName

@@ -173,12 +173,31 @@ classes. It is not safe for a renamed core class while the add-on supports 2.2:
 `\XF\Repository\UserRepository::class` is a string whatever is installed, and on 2.2 the class it
 names does not exist.
 
+### Undeclared return types
+
+XenForo declares no return type on many of the methods every add-on calls: the controller's
+`view()`, `redirect()`, `error()`, `message()` and `exception()`, the reply classes' parameter
+getters, the finder's fluent methods, `Router::buildLink()`, `\XF::phrase()`, the database
+adapter's `quote()`, `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`,
+`AbstractCollection::keys()`, `AbstractDdl::addColumn()`, `Request::filter()` and
+`App::findByContentType()`. Below level 7 that costs nothing; at level 7 and above each result is
+`mixed`, and everything it is passed to is reported. `stubs/core.stub` restates them with the
+type the method body returns, read from 2.3.13, and `stubs/db-schema.stub` corrects the schema
+builder's documented `null` index name. The finder's fluent methods are declared as returning
+`static`, so a chain keeps the entity type the finder was created with, which XenForo's own
+`@return Finder` on `order()` lost.
+
+The parameters are left as XenForo declares them, `mixed` where it declares nothing. A
+parameter type is a claim about every caller, and this package types what comes back.
+
 ## Levels
 
 **Level 2 is the place to start.** On a fleet of 44 add-ons with this configuration, the median
 add-on had 8 errors at level 2, 28 of the 44 had ten or fewer, and most of what remained was the
 add-on's own to fix. Level 5 is a reasonable target once the call sites are tidy; level 6 is the
-missing-typehint wall, and a separate project.
+missing-typehint wall. With the stubs above, level max is reachable: on one small add-on it
+reports a third fewer than without them, and what remains is the add-on's own typing, the node
+tree's untyped children, and route parameters, which no static type can know.
 
 ## Limitations
 

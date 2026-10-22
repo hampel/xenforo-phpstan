@@ -10,6 +10,34 @@ class App
     }
 
     /**
+     * @return Mvc\Router
+     */
+    public function router($type = null)
+    {
+        return new Mvc\Router();
+    }
+
+    /**
+     * @return Db\AbstractAdapter
+     */
+    public function db()
+    {
+        return new Db\Mysqli\Adapter();
+    }
+
+    /**
+     * @param string $contentType
+     * @param int|array $contentId
+     * @param string|array $with
+     *
+     * @return AbstractCollection|Mvc\Entity\Entity|null
+     */
+    public function findByContentType($contentType, $contentId, $with = [])
+    {
+        return null;
+    }
+
+    /**
      * @template T of Mvc\Entity\Entity
      *
      * @param class-string<T> $entity

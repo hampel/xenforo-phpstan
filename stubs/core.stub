@@ -1,0 +1,401 @@
+<?php
+
+/**
+ * Return types XenForo 2.3 leaves undeclared on methods every add-on calls, read from the
+ * method bodies of 2.3.13. Each is the type the method returns on every path; a method whose
+ * result depends on the forum's data, such as a database fetch, is left as it is. The
+ * parameters are `mixed` except where XenForo's own docblock types them, because a parameter
+ * type is a new claim about every caller - an add-on passing a route parameter to redirect()
+ * would be reported by a stub that set out to type what comes back - and they are declared at
+ * all because PHPStan checks a stub with the consumer's own level, where an untyped parameter
+ * is itself a report.
+ *
+ * A stub replaces only the PHPDoc of the members it names, so a signature here must match the
+ * real one. A class declared here empty adds nothing to the real class: it is declared because
+ * PHPStan checks a stub against the classes it can autoload or the stub declares, not against
+ * the scanned forum. A class may be declared in one stub file only, which is why addColumn()
+ * is in db-schema.stub with the rest of AbstractDdl.
+ */
+
+namespace {
+
+    class XF
+    {
+        /**
+         * @param mixed $name
+         * @param array<mixed> $params
+         * @param mixed $allowHtml
+         *
+         * @return \XF\Phrase
+         */
+        public static function phrase($name, array $params = [], $allowHtml = true) {}
+    }
+}
+
+namespace XF {
+
+    class Phrase
+    {
+    }
+
+    class App
+    {
+        /**
+         * @param mixed $contentType
+         * @param mixed $contentId
+         * @param mixed $with
+         *
+         * @return ($contentId is array ? Mvc\Entity\AbstractCollection<Mvc\Entity\Entity> : Mvc\Entity\Entity|null)
+         */
+        public function findByContentType($contentType, $contentId, $with = []) {}
+    }
+}
+
+namespace XF\Mvc {
+
+    use XF\Mvc\Reply\AbstractReply;
+    use XF\Mvc\Reply\Error;
+    use XF\Mvc\Reply\Exception;
+    use XF\Mvc\Reply\Message;
+    use XF\Mvc\Reply\Redirect;
+    use XF\Mvc\Reply\View;
+
+    abstract class Controller
+    {
+        /**
+         * @param mixed $viewClass
+         * @param mixed $templateName
+         * @param array<mixed> $params
+         *
+         * @return View
+         */
+        public function view($viewClass = '', $templateName = '', array $params = []) {}
+
+        /**
+         * @param mixed $url
+         * @param mixed $message
+         * @param mixed $type
+         *
+         * @return Redirect
+         */
+        public function redirect($url, $message = null, $type = 'temporary') {}
+
+        /**
+         * @param mixed $url
+         * @param mixed $message
+         *
+         * @return Redirect
+         */
+        public function redirectPermanently($url, $message = null) {}
+
+        /**
+         * @param string|\Stringable|array<string|\Stringable> $error
+         * @param mixed $code
+         *
+         * @return Error
+         */
+        public function error($error, $code = 200) {}
+
+        /**
+         * @param mixed $message
+         * @param mixed $code
+         *
+         * @return Message
+         */
+        public function message($message, $code = 200) {}
+
+        /**
+         * @return Exception
+         */
+        public function exception(AbstractReply $reply) {}
+    }
+
+    class Router
+    {
+        /**
+         * @param mixed $link
+         * @param mixed $data
+         * @param array<mixed> $parameters
+         * @param mixed $hash
+         *
+         * @return string
+         */
+        public function buildLink($link, $data = null, array $parameters = [], $hash = null) {}
+    }
+}
+
+namespace XF\Mvc\Reply {
+
+    abstract class AbstractReply
+    {
+        /**
+         * @return array<string, mixed>
+         */
+        public function getJsonParams() {}
+    }
+
+    class Error extends AbstractReply
+    {
+    }
+
+    class Exception extends \Exception
+    {
+    }
+
+    class Message extends AbstractReply
+    {
+    }
+
+    class Redirect extends AbstractReply
+    {
+        /**
+         * @return string
+         */
+        public function getUrl() {}
+    }
+
+    class View extends AbstractReply
+    {
+        /**
+         * @return array<string, mixed>
+         */
+        public function getParams() {}
+
+        /**
+         * @param mixed $key
+         *
+         * @return mixed
+         */
+        public function getParam($key) {}
+    }
+}
+
+namespace XF\Mvc\Entity {
+
+    abstract class Entity
+    {
+        /**
+         * @param mixed $throw
+         * @param mixed $newTransaction
+         *
+         * @return bool
+         */
+        final public function save($throw = true, $newTransaction = true) {}
+    }
+
+    /**
+     * The class docblock is the real one, repeated: a stub class with a docblock replaces the
+     * real class's, so leaving the generics out here would take them away.
+     *
+     * @template T of \XF\Mvc\Entity\Entity
+     * @implements \IteratorAggregate<string|int, T>
+     * @implements \ArrayAccess<string|int, T>
+     */
+    abstract class AbstractCollection implements \Countable, \IteratorAggregate, \ArrayAccess
+    {
+        /**
+         * @return list<array-key>
+         */
+        public function keys() {}
+    }
+
+    /**
+     * The fluent methods return $this. XenForo documents order() as returning Finder, and the rest
+     * not at all, so one chained call lost the entity type the finder was created with.
+     *
+     * @template T of \XF\Mvc\Entity\Entity
+     * @implements \IteratorAggregate<string|int, T>
+     */
+    class Finder implements \IteratorAggregate
+    {
+        /**
+         * @param mixed $condition
+         * @param mixed $operator
+         * @param mixed $value
+         *
+         * @return static
+         */
+        public function where($condition, $operator = null, $value = null) {}
+
+        /**
+         * @param mixed $sql
+         *
+         * @return static
+         */
+        public function whereSql($sql) {}
+
+        /**
+         * @param array<mixed> $conditionA
+         * @param array<mixed>|null $conditionB
+         *
+         * @return static
+         */
+        public function whereOr(array $conditionA, ?array $conditionB = null) {}
+
+        /**
+         * @param mixed $id
+         *
+         * @return static
+         */
+        public function whereId($id) {}
+
+        /**
+         * @param array<mixed> $ids
+         *
+         * @return static
+         */
+        public function whereIds(array $ids) {}
+
+        /**
+         * @param mixed $condition
+         * @param mixed $true
+         * @param mixed $false
+         *
+         * @return static
+         */
+        public function whereIf($condition, $true, $false) {}
+
+        /**
+         * @return static
+         */
+        public function whereImpossible() {}
+
+        /**
+         * @param array<mixed> $options
+         *
+         * @return static
+         */
+        public function whereAddOnActive(array $options = []) {}
+
+        /**
+         * @return static
+         */
+        public function resetWhere() {}
+
+        /**
+         * @param mixed $field
+         * @param string $direction
+         *
+         * @return static
+         */
+        public function order($field, $direction = 'ASC') {}
+
+        /**
+         * @param mixed $field
+         * @param mixed $direction
+         *
+         * @return static
+         */
+        public function setDefaultOrder($field, $direction = 'ASC') {}
+
+        /**
+         * @return static
+         */
+        public function resetOrder() {}
+
+        /**
+         * @param mixed $name
+         * @param mixed $mustExist
+         *
+         * @return static
+         */
+        public function with($name, $mustExist = false) {}
+
+        /**
+         * @param array<mixed> $condition
+         *
+         * @return static
+         */
+        public function withEntity(string $alias, array $condition) {}
+
+        /**
+         * @param mixed $limit
+         * @param mixed $offset
+         *
+         * @return static
+         */
+        public function limit($limit, $offset = null) {}
+
+        /**
+         * @param mixed $page
+         * @param mixed $perPage
+         * @param mixed $thisPageExtra
+         *
+         * @return static
+         */
+        public function limitByPage($page, $perPage, $thisPageExtra = 0) {}
+
+        /**
+         * @param mixed $offset
+         *
+         * @return static
+         */
+        public function offset($offset) {}
+
+        /**
+         * @param mixed $keyedBy
+         *
+         * @return static
+         */
+        public function keyedBy($keyedBy) {}
+
+        /**
+         * @param mixed $pluckFrom
+         * @param mixed $keyedBy
+         *
+         * @return static
+         */
+        public function pluckFrom($pluckFrom, $keyedBy = null) {}
+
+        /**
+         * @param mixed $hintType
+         * @param mixed $indexName
+         *
+         * @return static
+         */
+        public function indexHint($hintType, $indexName) {}
+    }
+}
+
+namespace XF\Db {
+
+    abstract class AbstractAdapter
+    {
+        /**
+         * @param mixed $data
+         * @param mixed $type
+         *
+         * @return string
+         */
+        public function quote($data, $type = null) {}
+
+        /**
+         * @param mixed $query
+         * @param mixed $params
+         * @param mixed $column
+         *
+         * @return list<mixed>
+         */
+        public function fetchAllColumn($query, $params = [], $column = 0) {}
+
+        /**
+         * @return int
+         */
+        public function getQueryCount() {}
+    }
+}
+
+namespace XF\Http {
+
+    class Request
+    {
+        /**
+         * @param mixed $key
+         * @param mixed $type
+         * @param mixed $default
+         *
+         * @return ($key is array ? array<string, mixed> : mixed)
+         */
+        public function filter($key, $type = null, $default = null) {}
+    }
+}

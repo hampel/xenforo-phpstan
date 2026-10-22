@@ -6,9 +6,49 @@ abstract class Controller
 {
     protected App $app;
 
+    protected $request;
+
     public function app(): \XF\App
     {
         return $this->app;
+    }
+
+    /**
+     * @return \XF\Http\Request
+     */
+    public function request()
+    {
+        return $this->request;
+    }
+
+    public function view($viewClass = '', $templateName = '', array $params = [])
+    {
+        return new Reply\View();
+    }
+
+    public function redirect($url, $message = null, $type = 'temporary')
+    {
+        return new Reply\Redirect();
+    }
+
+    public function redirectPermanently($url, $message = null)
+    {
+        return new Reply\Redirect();
+    }
+
+    public function error($error, $code = 200)
+    {
+        return new Reply\Error();
+    }
+
+    public function message($message, $code = 200)
+    {
+        return new Reply\Message();
+    }
+
+    public function exception(Reply\AbstractReply $reply)
+    {
+        return new Reply\Exception($reply);
     }
 
     /**

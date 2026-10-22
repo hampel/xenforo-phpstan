@@ -50,6 +50,7 @@ them, the fixture will keep passing. Re-verify against a forum when touching the
 ```text
 extension.neon          the fragment an add-on includes: parameters, schema, services
 crates.neon             opt-in universalObjectCratesClasses, with its cost stated
+stubs/                  PHPDoc stubs: return types XenForo leaves undeclared, and one correction
 bin/xenforo-phpstan     the generator's entry point
 src/
   Classes.php           loads the generated map, lazily; refuses a stale one by versionId
@@ -104,6 +105,13 @@ tests/Fixtures/forum/   the stand-in XenForo install
   loses `T`, and it validates stubs against classes it cannot see. The pattern names the exact
   shortcut methods and a string argument, with `reportUnmatched: false` so an add-on that
   passes `::class` everywhere is not penalised for it.
+- **The stubs carry return types, and parameters only as XenForo declares them.** A return type
+  is a fact about the method body, read from 2.3.13; a parameter type is a claim about every
+  caller, and the first draft of `core.stub` typed `redirect()`'s URL as a string, which
+  reported an add-on passing a route parameter - a new error from a stub meant to remove them.
+  Parameters are `mixed` unless XenForo's own docblock says otherwise, and are declared at all
+  because PHPStan checks a stub at the consumer's level, where an untyped parameter is itself a
+  report. A method whose result depends on data, such as a database fetch, is not stubbed.
 - **A stale generated set is refused, not tolerated.** It fails as a flood of undefined-method
   errors naming renamed classes, which reads as the add-on being broken. `Classes` compares the
   recorded `versionId` with the forum's `src/XF.php` on first use and throws with the command to
@@ -131,6 +139,11 @@ tests/Fixtures/forum/   the stand-in XenForo install
   level-6 end-to-end test is what catches a regression, but only when run against 2.1.22: it
   passed locally on the current PHPStan and failed on the `--prefer-lowest` job on 2026-10-22.
   Before tagging, run the suite once on the lowest set, as the `lowest` CI job does.
+- **A class may be declared in one stub file only**, so every correction to `AbstractDdl` is in
+  `db-schema.stub` although `addColumn()` belongs with the return types. **A stub class with a
+  docblock replaces the real class's docblock**, so a generic class restated in a stub repeats its
+  `@template` and `@implements` lines in full or loses them. **A stub needs bracketed namespaces**
+  to declare a global class such as `XF` beside namespaced ones; PHP refuses to mix the forms.
 - **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
   `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
 
