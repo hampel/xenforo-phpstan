@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.2 (2026-10-22)
 
 - `NodeRepository::filterViewable()` returns the collection it was given, keeping its entity
   type, and `Node::getNodeListExtras()` returns a string-keyed array
