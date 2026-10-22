@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.2 (2026-10-22)
 
 - within the add-on that extends a class, a shortcut given `::class` returns that extension, as
   it already did for the short identifier; 0.2.0 left a class-name argument to XenForo's own
