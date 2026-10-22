@@ -179,13 +179,15 @@ XenForo declares no return type on many of the methods every add-on calls: the c
 `view()`, `redirect()`, `error()`, `message()` and `exception()`, the reply classes' parameter
 getters, the finder's fluent methods, `Router::buildLink()`, `\XF::phrase()`, the database
 adapter's `quote()`, `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`,
-`AbstractCollection::keys()`, `AbstractDdl::addColumn()`, `Request::filter()` and
-`App::findByContentType()`. Below level 7 that costs nothing; at level 7 and above each result is
-`mixed`, and everything it is passed to is reported. `stubs/core.stub` restates them with the
-type the method body returns, read from 2.3.13, and `stubs/db-schema.stub` corrects the schema
-builder's documented `null` index name. The finder's fluent methods are declared as returning
-`static`, so a chain keeps the entity type the finder was created with, which XenForo's own
-`@return Finder` on `order()` lost.
+`AbstractCollection::keys()`, `AbstractDdl::addColumn()`, `Request::filter()`,
+`App::findByContentType()`, `NodeRepository::getFullNodeList()` and `Node::getBreadcrumbs()`.
+Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
+is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
+read from 2.3.13, and `stubs/db-schema.stub` corrects the schema builder's documented `null`
+index name. The finder's fluent methods are declared as returning `static`, so a chain keeps the
+entity type the finder was created with, which XenForo's own `@return Finder` on `order()` lost.
+Iterating a collection, or a finder, yields its entity: `getIterator()` is restated on both,
+because a class declared in a stub loses XenForo's own docblock on that one method.
 
 The parameters are left as XenForo declares them, `mixed` where it declares nothing. A
 parameter type is a claim about every caller, and this package types what comes back.

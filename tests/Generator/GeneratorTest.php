@@ -34,7 +34,7 @@ final class GeneratorTest extends TestCase
         [$this->out, $summary] = Fixture::generate();
         $stub = (string) file_get_contents($this->out . '/' . Generator::ALIASES_STUB);
 
-        $this->assertStringContainsString('namespace XF\Repository' . "\n" . '{' . "\n" . "\t" . 'class User extends \XF\Repository\UserRepository {}' . "\n" . '}', $stub);
+        $this->assertStringContainsString('namespace XF\Repository' . "\n" . '{' . "\n" . "\t" . 'class Node extends \XF\Repository\NodeRepository {}' . "\n" . "\t" . 'class User extends \XF\Repository\UserRepository {}' . "\n" . '}', $stub);
         $this->assertStringContainsString("\t" . 'class User extends \XF\Finder\UserFinder {}', $stub);
         $this->assertStringContainsString("\t" . 'class Editor extends \XF\ControllerPlugin\EditorPlugin {}', $stub);
 
@@ -82,6 +82,7 @@ final class GeneratorTest extends TestCase
             'XF\ControllerPlugin\Abstract' => 'XF\ControllerPlugin\AbstractPlugin',
             'XF\ControllerPlugin\Editor' => 'XF\ControllerPlugin\EditorPlugin',
             'XF\Finder\User' => 'XF\Finder\UserFinder',
+            'XF\Repository\Node' => 'XF\Repository\NodeRepository',
             'XF\Repository\User' => 'XF\Repository\UserRepository',
             'XF\Service\Abstract' => 'XF\Service\AbstractService',
             'XF\Service\User\AbstractConfirmation' => 'XF\Service\User\AbstractConfirmationService',

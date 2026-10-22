@@ -44,7 +44,7 @@ final class CommandTest extends TestCase
         $this->assertSame(0, $code, $stderr);
         $this->assertSame('', $stderr);
         $this->assertStringContainsString('XenForo 2031370 at ' . Fixture::forum(), $stdout);
-        $this->assertStringContainsString('legacy-aliases.stub.php: 5 legacy class names (1 abstract), 2 skipped as undeclarable', $stdout);
+        $this->assertStringContainsString('legacy-aliases.stub.php: 6 legacy class names (1 abstract), 2 skipped as undeclarable', $stdout);
         $this->assertStringContainsString('class-extensions.stub.php: 3 class extensions of 2 classes, 1 registered on a legacy name', $stdout);
         $this->assertStringContainsString('written to ' . $this->out, $stdout);
         $this->assertFileExists($this->out . '/classes.php');

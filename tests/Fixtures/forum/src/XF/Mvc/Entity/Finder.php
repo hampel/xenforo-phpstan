@@ -55,8 +55,12 @@ class Finder implements \IteratorAggregate
         return new ArrayCollection();
     }
 
-    public function getIterator(): \Traversable
+    /**
+     * @return AbstractCollection<T>
+     */
+    #[\ReturnTypeWillChange]
+    public function getIterator()
     {
-        return new \ArrayIterator([]);
+        return $this->fetch();
     }
 }

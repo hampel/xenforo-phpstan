@@ -9,6 +9,14 @@ namespace XF\Mvc\Entity;
  */
 abstract class AbstractCollection implements \Countable, \IteratorAggregate, \ArrayAccess
 {
+    /**
+     * @return \ArrayIterator<string|int, T>
+     */
+    public function getIterator(): \ArrayIterator
+    {
+        return new \ArrayIterator([]);
+    }
+
     public function keys()
     {
         return [];

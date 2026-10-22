@@ -197,6 +197,15 @@ namespace XF\Mvc\Entity {
          * @return list<array-key>
          */
         public function keys() {}
+
+        /**
+         * getIterator() implements an interface method PHPStan stubs itself, and for a class
+         * declared in a stub that ancestor stub outranks the real docblock, which every other
+         * method here keeps. Restated from the real one, or iterating a collection yields mixed.
+         *
+         * @return \ArrayIterator<string|int, T>
+         */
+        public function getIterator(): \ArrayIterator {}
     }
 
     /**
@@ -208,6 +217,13 @@ namespace XF\Mvc\Entity {
      */
     class Finder implements \IteratorAggregate
     {
+        /**
+         * As AbstractCollection::getIterator(): restated so the real docblock is not outranked.
+         *
+         * @return AbstractCollection<T>
+         */
+        public function getIterator() {}
+
         /**
          * @param mixed $condition
          * @param mixed $operator
@@ -354,6 +370,43 @@ namespace XF\Mvc\Entity {
          * @return static
          */
         public function indexHint($hintType, $indexName) {}
+    }
+}
+
+namespace XF\Entity {
+
+    class Node extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * The crumbs the method body builds, one array per ancestor and optionally the node itself.
+         *
+         * @param mixed $includeSelf
+         * @param mixed $linkType
+         *
+         * @return list<array{value: string, href: string, node_id: int}>
+         */
+        public function getBreadcrumbs($includeSelf = true, $linkType = 'public') {}
+    }
+}
+
+namespace XF\Repository {
+
+    /**
+     * No parent named: PHPStan validates a stub against the classes in stubs and the autoloader,
+     * not the scanned forum, so the real Repository is unknown here. Node above names Entity
+     * because the collection's bound needs it, and Entity is declared in this file.
+     */
+    class NodeRepository
+    {
+        /**
+         * A node finder's fetch(). The tree built from it is not typed here: Tree and SubTree are
+         * not generic, and typing their children is a design question, not a transcription.
+         *
+         * @param mixed $with
+         *
+         * @return \XF\Mvc\Entity\AbstractCollection<\XF\Entity\Node>
+         */
+        public function getFullNodeList(?\XF\Entity\Node $withinNode = null, $with = null) {}
     }
 }
 

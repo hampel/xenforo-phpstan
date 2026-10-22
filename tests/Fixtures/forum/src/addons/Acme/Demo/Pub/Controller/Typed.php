@@ -3,6 +3,7 @@
 namespace Acme\Demo\Pub\Controller;
 
 use XF\Db\Schema\Column;
+use XF\Entity\Node;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Reply\Error;
@@ -62,6 +63,22 @@ class Typed extends AbstractController
         }
 
         $this->takesList($this->finder('XF:User')->fetch()->keys());
+
+        // Iterating a collection, or the finder itself, yields the entity. getIterator() implements
+        // an interface method PHPStan stubs, and for a stubbed class that stub outranks XenForo's
+        // own docblock; without the stub restating it, the collection's $member is mixed.
+        foreach ($this->finder('XF:User')->fetch() as $member) {
+            $member->canUseDemo();
+        }
+        foreach ($this->finder('XF:User') as $member) {
+            $member->canUseDemo();
+        }
+    }
+
+    public function actionNode(): void
+    {
+        $this->takesNodes($this->repository('XF:Node')->getFullNodeList());
+        $this->takesCrumbs($this->assertRecordExists('XF:Node', 1)->getBreadcrumbs(false));
     }
 
     public function actionApp(): void
@@ -133,6 +150,16 @@ class Typed extends AbstractController
 
     /** @param AbstractCollection<Entity> $value */
     private function takesCollection(AbstractCollection $value): void
+    {
+    }
+
+    /** @param AbstractCollection<Node> $value */
+    private function takesNodes(AbstractCollection $value): void
+    {
+    }
+
+    /** @param list<array{value: string, href: string, node_id: int}> $value */
+    private function takesCrumbs(array $value): void
     {
     }
 }

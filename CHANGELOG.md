@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- iterating an `AbstractCollection`, or a `Finder`, yields the entity again. 0.3.0 declared both
+  classes in `stubs/core.stub`, and for a class declared in a stub PHPStan resolves
+  `getIterator()` from its own `IteratorAggregate` stub rather than from XenForo's docblock, so
+  every `foreach` over a `fetch()` saw `mixed`; both `getIterator()` methods are now restated
+- `NodeRepository::getFullNodeList()` returns `AbstractCollection<Node>` and
+  `Node::getBreadcrumbs()` the list of crumb arrays the method body builds
+
 ## 0.3.0 (2026-10-22)
 
 - `stubs/core.stub`: return types for the methods XenForo 2.3 leaves undeclared and every add-on

@@ -144,6 +144,17 @@ tests/Fixtures/forum/   the stand-in XenForo install
   docblock replaces the real class's docblock**, so a generic class restated in a stub repeats its
   `@template` and `@implements` lines in full or loses them. **A stub needs bracketed namespaces**
   to declare a global class such as `XF` beside namespaced ones; PHP refuses to mix the forms.
+- **A class declared in a stub keeps its real method docblocks, except on a method that
+  implements an interface PHPStan stubs itself.** `getIterator()`, from `IteratorAggregate`, is
+  resolved from PHPStan's stub of the interface instead, so 0.3.0 made every `foreach` over a
+  collection yield `mixed` while `first()`, `filter()` and `fetchOne()` kept their types. Found by
+  an adopter on 2026-10-22, the day of the release; the fixture now carries the real
+  `getIterator()` declarations and a loop in `Typed.php`. Restate such a method in the stub.
+- **PHPStan validates a stub against the classes in stubs and the autoloader, not the scanned
+  forum.** A stub class may name a parent only if that parent is also in a stub: `Node` extends
+  `Entity`, which the stub declares, because `AbstractCollection<Node>` has to satisfy the bound;
+  `NodeRepository` names no parent, because the real `Repository` is unknown to the validator and
+  naming it is reported as an unknown class in the consumer's run.
 - **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
   `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
 

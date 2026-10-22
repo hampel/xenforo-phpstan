@@ -13,11 +13,6 @@ class ArrayCollection extends AbstractCollection
         return 0;
     }
 
-    public function getIterator(): \Traversable
-    {
-        return new \ArrayIterator([]);
-    }
-
     public function offsetExists(mixed $offset): bool
     {
         return false;
