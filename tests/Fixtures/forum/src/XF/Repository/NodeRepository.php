@@ -9,4 +9,9 @@ class NodeRepository extends \XF\Mvc\Entity\Repository
     {
         return new \XF\Mvc\Entity\ArrayCollection();
     }
+
+    public function filterViewable(\XF\Mvc\Entity\AbstractCollection $nodes)
+    {
+        return $nodes;
+    }
 }

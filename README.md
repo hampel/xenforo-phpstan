@@ -180,7 +180,8 @@ XenForo declares no return type on many of the methods every add-on calls: the c
 getters, the finder's fluent methods, `Router::buildLink()`, `\XF::phrase()`, the database
 adapter's `quote()`, `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`,
 `AbstractCollection::keys()`, `AbstractDdl::addColumn()`, `Request::filter()`,
-`App::findByContentType()`, `NodeRepository::getFullNodeList()` and `Node::getBreadcrumbs()`.
+`App::findByContentType()`, `NodeRepository::getFullNodeList()` and `filterViewable()`,
+`Node::getBreadcrumbs()` and `getNodeListExtras()`.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
 read from 2.3.13, and `stubs/db-schema.stub` corrects the schema builder's documented `null`

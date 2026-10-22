@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- `NodeRepository::filterViewable()` returns the collection it was given, keeping its entity
+  type, and `Node::getNodeListExtras()` returns a string-keyed array
+
 ## 0.3.1 (2026-10-22)
 
 - iterating an `AbstractCollection`, or a `Finder`, yields the entity again. 0.3.0 declared both

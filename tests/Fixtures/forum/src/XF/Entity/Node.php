@@ -8,4 +8,9 @@ class Node extends \XF\Mvc\Entity\Entity
     {
         return [];
     }
+
+    public function getNodeListExtras()
+    {
+        return [];
+    }
 }

@@ -77,8 +77,13 @@ class Typed extends AbstractController
 
     public function actionNode(): void
     {
-        $this->takesNodes($this->repository('XF:Node')->getFullNodeList());
-        $this->takesCrumbs($this->assertRecordExists('XF:Node', 1)->getBreadcrumbs(false));
+        $nodes = $this->repository('XF:Node')->getFullNodeList();
+        $this->takesNodes($nodes);
+        $this->takesNodes($this->repository('XF:Node')->filterViewable($nodes));
+
+        $node = $this->assertRecordExists('XF:Node', 1);
+        $this->takesCrumbs($node->getBreadcrumbs(false));
+        $this->takesArray($node->getNodeListExtras());
     }
 
     public function actionApp(): void

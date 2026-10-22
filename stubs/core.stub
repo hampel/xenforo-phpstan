@@ -386,6 +386,13 @@ namespace XF\Entity {
          * @return list<array{value: string, href: string, node_id: int}>
          */
         public function getBreadcrumbs($includeSelf = true, $linkType = 'public') {}
+
+        /**
+         * The node type's own extras, or nothing: string keys in every implementation.
+         *
+         * @return array<string, mixed>
+         */
+        public function getNodeListExtras() {}
     }
 }
 
@@ -407,6 +414,17 @@ namespace XF\Repository {
          * @return \XF\Mvc\Entity\AbstractCollection<\XF\Entity\Node>
          */
         public function getFullNodeList(?\XF\Entity\Node $withinNode = null, $with = null) {}
+
+        /**
+         * The collection it was given, filtered, so what came in is what goes out.
+         *
+         * @template T of \XF\Mvc\Entity\Entity
+         *
+         * @param \XF\Mvc\Entity\AbstractCollection<T> $nodes
+         *
+         * @return \XF\Mvc\Entity\AbstractCollection<T>
+         */
+        public function filterViewable(\XF\Mvc\Entity\AbstractCollection $nodes) {}
     }
 }
 
