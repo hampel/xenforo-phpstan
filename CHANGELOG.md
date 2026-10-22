@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1 (2026-10-22)
 
 - iterating an `AbstractCollection`, or a `Finder`, yields the entity again. 0.3.0 declared both
   classes in `stubs/core.stub`, and for a class declared in a stub PHPStan resolves
