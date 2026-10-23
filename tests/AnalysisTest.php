@@ -57,6 +57,7 @@ final class AnalysisTest extends TestCase
             'Demo.php:48 Call to an undefined method Acme\Demo\XF\Repository\User::noSuchOnClass().',
             // From an add-on that does not extend it, the core class under the legacy name.
             'Typed.php:146 Access to an undefined property XF\AddOn\AddOn::$titel.',
+            'Typed.php:185 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
             'Other.php:23 Call to an undefined method XF\Repository\User::nope().',
             'Other.php:24 Call to an undefined method XF\Repository\UserRepository::nopeClass().',
         ], $messages);
@@ -71,21 +72,25 @@ final class AnalysisTest extends TestCase
         $this->assertArrayHasKey('files', $result);
 
         $identifiers = [];
+        $messages = [];
         foreach ($result['files'] ?? [] as $errors) {
             foreach ($errors['messages'] as $error) {
                 $identifiers[] = $error['identifier'];
+                $messages[] = $error['message'];
             }
         }
 
         $this->assertNotContains('argument.templateType', $identifiers, implode("\n", $identifiers));
-        $this->assertNotContains('argument.type', $identifiers);
+        // The class-string report is the one the first ignore pattern exists for; the fixture's
+        // deliberate argument errors elsewhere are not it.
+        $this->assertSame([], preg_grep('/expects class-string/', $messages), implode("\n", $messages));
     }
 
     public function testTheCoreStubsHoldAtLevelMax(): void
     {
         // The controller that uses every member stubs/core.stub types, alone, at level max:
         // each call passes the result where only the stubbed type is accepted, so a stub that
-        // is missing or wrong is a report here. Two lines are wrong on purpose.
+        // is missing or wrong is a report here. Three lines are wrong on purpose.
         $neon = str_replace('level: 5', 'level: max', $this->addonConfig());
         $neon = preg_replace('#^(\s+)paths:\n(?:\1\s+- .*\n)+#m', "\\1paths:\n\\1    - {$this->addon()}/Pub/Controller/Typed.php\n", $neon);
 
@@ -102,7 +107,8 @@ final class AnalysisTest extends TestCase
 
         $this->assertSame([
             'Typed.php:146 Access to an undefined property XF\AddOn\AddOn::$titel.',
-            'Typed.php:166 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
+            'Typed.php:185 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
+            'Typed.php:187 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
         ], $messages);
     }
 

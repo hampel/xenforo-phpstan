@@ -290,6 +290,15 @@ The add-on object `AddOn\Manager::getById()` returns answers `$addOn->title` and
 the entity's own docblock, so a mistyped key is still reported. A key that exists only in the
 add-on's `addon.json` is not offered; read it through `getJson()`.
 
+### Request input
+
+`$this->filter('id', 'uint')` on a controller, and `filter()` on the request, are typed from the
+filter string, as `XF\InputFilterer` casts the value: `str` is a string, `uint` an int, `bool` a
+bool, `num` an int or float, `datetime,obj` a `DateTime`, `array-uint` an array of int, and a
+leading `?` lets null through. An array of filters is an array shape with one entry per key,
+nested arrays included, so `$input['username']` is a string. A filter in a variable, or a name
+the filterer does not have, leaves the call `mixed` as before.
+
 `XF\Tree` and `XF\SubTree` are generic over the record they hold. `NodeRepository::createNodeTree()`
 returns a `Tree<Node>`, a tree built by hand is typed by what it was given, and a subtree's
 `record`, `children()` and `parent()` follow. That makes a bare `Tree` or `SubTree` in an add-on's
@@ -313,7 +322,8 @@ never infers a return type across a method boundary, so an untyped method of the
 hands `mixed` to every caller, and each use of the result is a report. On one add-on, half of the
 level-max total came from a single untyped test helper; typing the helpers answered all of it.
 Before reading a residual as XenForo's, `\PHPStan\dumpType()` on the value says whose type is
-missing.
+missing. One residual that is neither: Symfony Console's `getOption()` and `getArgument()`
+return `mixed` by Symfony's own declaration, so a CLI command narrows them itself.
 
 ## Limitations
 

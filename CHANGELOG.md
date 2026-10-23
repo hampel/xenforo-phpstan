@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 (2026-10-23)
+
+- `filter()` on a controller and on the request is typed from the filter string, as
+  `XF\InputFilterer` casts the value: named filters, `?` for nullable, `array-<type>`,
+  `datetime,obj`, and an array of filters as an array shape. A new service, hence the minor; a
+  check written for a `mixed` result may now read as always true
+- **Upgrading:** `composer require --dev hampel/xenforo-phpstan:^0.7`; a `^0.6` constraint does not
+  reach this release
+
 ## 0.6.0 (2026-10-23)
 
 - the properties `XF\AddOn\AddOn` answers by magic are typed: its nine own keys from their

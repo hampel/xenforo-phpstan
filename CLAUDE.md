@@ -60,7 +60,8 @@ src/
   Reflection/           ClassExtensionMethodsExtension - methods added by class extensions;
                         AddOnPropertiesExtension - the keys XF\AddOn\AddOn answers by magic
   Type/                 Shortcut (the identifier expansion), ShortcutTypes (the method table and
-                        the type it yields), the instance and static return type extensions
+                        the type it yields), the instance and static return type extensions;
+                        FilterTypes (filter string to type) and FilterReturnTypeExtension
 tests/Fixtures/forum/   the stand-in XenForo install
 ```
 
@@ -135,6 +136,11 @@ tests/Fixtures/forum/   the stand-in XenForo install
   lines. It builds the reflection with PHPStan's `AnnotationPropertyReflection`, which is not
   `@api`; its constructor is the same from 2.1.22 to the current release, and the lowest CI
   job is what notices if that changes.
+- **A filter result is typed from the filter string alone, because the filterer casts.**
+  `XF\InputFilterer::filter()` returns the named type whatever the input was, so the result does
+  not depend on data; `num` is `float|int` because the body does `strval($value) + 0`. The
+  mapping was read from 2.3.13 and the names are XenForo's constants; an unknown name answers
+  null rather than guessing, since the filterer throws on one.
 - **A stale generated set is refused, not tolerated.** It fails as a flood of undefined-method
   errors naming renamed classes, which reads as the add-on being broken. `Classes` compares the
   recorded `versionId` with the forum's `src/XF.php` on first use and throws with the command to

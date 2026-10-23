@@ -156,3 +156,16 @@ services:
     -
         class: Hampel\XenForo\PHPStan\Type\StaticContainerShortcutExtension
         tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+
+    # Request input, typed from the filter string: filter('id', 'uint') is an int and an array
+    # of filters is an array shape, as XF\InputFilterer casts them. One service per class.
+    -
+        class: Hampel\XenForo\PHPStan\Type\FilterReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+        arguments:
+            className: XF\Mvc\Controller
+    -
+        class: Hampel\XenForo\PHPStan\Type\FilterReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+        arguments:
+            className: XF\Http\Request

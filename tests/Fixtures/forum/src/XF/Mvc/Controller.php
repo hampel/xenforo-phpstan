@@ -21,6 +21,12 @@ abstract class Controller
         return $this->request;
     }
 
+    // As XenForo declares it: no types, delegating to the request.
+    public function filter($key, $type = null, $default = null)
+    {
+        return $this->request()->filter($key, $type, $default);
+    }
+
     public function view($viewClass = '', $templateName = '', array $params = [])
     {
         return new Reply\View();

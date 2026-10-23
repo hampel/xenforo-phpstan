@@ -162,6 +162,27 @@ class Typed extends AbstractController
     public function actionRequest(): void
     {
         $this->takesArray($this->request()->filter(['a' => 'str', 'b' => 'uint']));
+    }
+
+    public function actionInput(): void
+    {
+        // Request input typed from the filter string, as XF\InputFilterer casts it.
+        $this->takesString($this->filter('note', 'str'));
+        $this->takesInt($this->filter('id', 'uint'));
+        $this->takesBool($this->filter('flag', 'bool'));
+        $this->takesNumber($this->filter('amount', 'num'));
+        $this->takesStringOrNull($this->filter('maybe', '?str'));
+        $this->takesIntArray($this->filter('ids', 'array-uint'));
+        $this->takesDateTime($this->filter('when', 'datetime,obj'));
+        $this->takesString($this->request()->filter('q', 'string'));
+
+        $input = $this->filter(['username' => 'str', 'is_admin' => 'bool', 'ids' => 'array-uint', 'extra' => ['x' => 'int']]);
+        $this->takesString($input['username']);
+        $this->takesBool($input['is_admin']);
+        $this->takesIntArray($input['ids']);
+        $this->takesInt($input['extra']['x']);
+
+        $this->takesInt($this->filter('note', 'str'));                 // ERROR: str is a string
 
         $this->takesInt($this->view()->getParam('x'));                 // ERROR: a single parameter is mixed
     }
@@ -209,6 +230,19 @@ class Typed extends AbstractController
     }
 
     private function takesStringOrNull(?string $value): void
+    {
+    }
+
+    private function takesNumber(float|int $value): void
+    {
+    }
+
+    /** @param array<int> $value */
+    private function takesIntArray(array $value): void
+    {
+    }
+
+    private function takesDateTime(\DateTime $value): void
     {
     }
 
