@@ -14,3 +14,11 @@ parameters:
         # \XF is supplied by the forum the generator is pointed at; the fixture's stand-in
         # declares the members it uses. The same line is in phpstan.neon.dist, for the same reason.
         - %currentWorkingDirectory%/tests/Fixtures/forum/src/XF.php
+
+    ignoreErrors:
+        # The compatibility-promise rules run at every level. The same ignore, with its reason,
+        # is in phpstan.neon.dist.
+        -
+            identifier: phpstanApi.constructor
+            path: %currentWorkingDirectory%/src/Reflection/AddOnPropertiesExtension.php
+            count: 1

@@ -177,6 +177,13 @@ tests/Fixtures/forum/   the stand-in XenForo install
   `AddOn` is declared empty so that `Manager::getById()` may return it. The end-to-end test
   reports the violation as `core.stub:<line> ... has invalid return type`, which is how the
   `AddOn` case was found on 2026-10-23.
+- **A new PHPStan symbol in `src/` fails the `Declared dependencies` job twice.** The
+  require-checker cannot open the phar, so every PHPStan class the package touches is named in
+  `.github/composer-require-checker.json`; and the dev-free PHPStan run has its own config, so an
+  ignore added to `phpstan.neon.dist` is not in force there. The 0.6.0 tag went out red on that
+  job on 2026-10-23 for both reasons, with the other four jobs green, after a local pre-tag check
+  that ran `composer check` and the lowest suite but neither half of that job. Run both before
+  tagging anything that adds a PHPStan import; the require-checker is a one-line scratch install.
 - **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
   `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
 
