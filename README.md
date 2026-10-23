@@ -41,6 +41,17 @@ add-on at `src/addons/<Vendor>/<AddOn>`. From anywhere else, name it:
 vendor/bin/xenforo-phpstan generate --root=/path/to/forum
 ```
 
+The set is shared by every add-on on the forum, so before regenerating it under someone else's
+analysis, ask whether it is still current:
+
+```bash
+vendor/bin/xenforo-phpstan generate --check
+```
+
+It writes nothing and applies the test PHPStan applies on first use: exit 0 and the generated
+date when the set is current, exit 1 and the reason when it is missing, stale or written by an
+older release.
+
 ## Configuration
 
 The add-on's own `phpstan.neon` includes the fragment and supplies what is the add-on's: its paths,
@@ -232,7 +243,7 @@ missing.
   `XF\Entity\User`; that is the variable's type being too wide, and the fix is at the variable.
 - **A stale generated set is detected only for a XenForo upgrade.** A class extension added after
   generation is reported as an unknown `XFCP_` parent, which is loud enough; one removed is simply
-  still offered.
+  still offered. `generate --check` asks the same question and no more.
 - **PHPStan resolves symbols from the project that installed it.** Run it from the add-on's own
   directory with the add-on's own `vendor/bin/phpstan`. A phar borrowed from another project
   consults that project's autoloader first, and the result quietly describes a different

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 (2026-10-23)
+
+- `generate --check` reports whether the generated set is one PHPStan will accept for the forum,
+  without writing: exit 0 and the generated date when current, exit 1 and the reason when
+  missing, stale or from an older release. The set is shared by every add-on on a forum, and
+  until now the only way to ask was to regenerate it or to run PHPStan and see it refused
+- **Upgrading:** below 1.0 a caret constraint pins the minor, so `^0.4` does not reach this
+  release and `composer update` reports nothing to do. Move with
+  `composer require --dev hampel/xenforo-phpstan:^0.5`
+
 ## 0.4.2 (2026-10-23)
 
 - `AddOn\Manager::getById()` returns `AddOn|null`

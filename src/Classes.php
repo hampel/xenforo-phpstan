@@ -22,7 +22,7 @@ final class Classes
      */
     public const FORMAT = 2;
 
-    /** @var array{xenforo: array{versionId: int, root: string}, aliases: array<string, string>, extensions: array<string, list<array{class: string, addon: string}>>}|null */
+    /** @var array{xenforo: array{versionId: int, root: string}, generated?: string, aliases: array<string, string>, extensions: array<string, list<array{class: string, addon: string}>>}|null */
     private ?array $data = null;
 
     private readonly string $root;
@@ -88,6 +88,16 @@ final class Classes
     }
 
     /**
+     * When the set was generated, as the generator stated it, or null for a file written before
+     * the date was recorded. Loading it applies the staleness check, so a stale set throws here
+     * as it does everywhere else.
+     */
+    public function generated(): ?string
+    {
+        return $this->load()['generated'] ?? null;
+    }
+
+    /**
      * The versionId declared in a forum's src/XF.php, read without loading it. Null when the
      * file is absent or does not carry the line.
      */
@@ -102,7 +112,7 @@ final class Classes
     }
 
     /**
-     * @return array{xenforo: array{versionId: int, root: string}, aliases: array<string, string>, extensions: array<string, list<array{class: string, addon: string}>>}
+     * @return array{xenforo: array{versionId: int, root: string}, generated?: string, aliases: array<string, string>, extensions: array<string, list<array{class: string, addon: string}>>}
      */
     private function load(): array
     {
@@ -138,7 +148,7 @@ final class Classes
     }
 
     /**
-     * @phpstan-assert array{xenforo: array{versionId: int, root: string}, aliases: array<string, string>, extensions: array<string, list<array{class: string, addon: string}>>} $data
+     * @phpstan-assert array{xenforo: array{versionId: int, root: string}, generated?: string, aliases: array<string, string>, extensions: array<string, list<array{class: string, addon: string}>>} $data
      */
     private function assertGenerated(mixed $data): void
     {
@@ -154,6 +164,7 @@ final class Classes
             && is_array($data['xenforo'] ?? null)
             && is_int($data['xenforo']['versionId'] ?? null)
             && is_string($data['xenforo']['root'] ?? null)
+            && (! isset($data['generated']) || is_string($data['generated']))
             && is_array($data['aliases'] ?? null)
             && is_array($data['extensions'] ?? null)) {
             return;

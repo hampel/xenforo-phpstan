@@ -50,6 +50,58 @@ final class CommandTest extends TestCase
         $this->assertFileExists($this->out . '/classes.php');
     }
 
+    public function testCheckReportsACurrentSetAndWritesNothing(): void
+    {
+        $this->runCommand('generate', '--root=' . Fixture::forum(), '--out=' . $this->out);
+        $before = (string) file_get_contents($this->out . '/classes.php');
+
+        [$code, $stdout, $stderr] = $this->runCommand('generate', '--check', '--root=' . Fixture::forum(), '--out=' . $this->out);
+
+        $this->assertSame(0, $code, $stderr);
+        $this->assertSame('', $stderr);
+        $this->assertStringContainsString('XenForo 2031370 at ' . Fixture::forum(), $stdout);
+        $this->assertMatchesRegularExpression('#classes\.php is current, generated \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC: 8 aliases, 3 class extensions of 2 classes#', $stdout);
+        $this->assertSame($before, file_get_contents($this->out . '/classes.php'));
+    }
+
+    public function testCheckReportsAMissingSet(): void
+    {
+        [$code, $stdout, $stderr] = $this->runCommand('generate', '--check', '--root=' . Fixture::forum(), '--out=' . $this->out);
+
+        $this->assertSame(1, $code);
+        $this->assertSame('', $stdout);
+        $this->assertStringContainsString($this->out . '/classes.php does not exist', $stderr);
+        $this->assertFileDoesNotExist($this->out . '/classes.php');
+    }
+
+    public function testCheckReportsASetGeneratedForAnotherVersion(): void
+    {
+        $this->runCommand('generate', '--root=' . Fixture::forum(), '--out=' . $this->out);
+        $file = $this->out . '/classes.php';
+        $stale = str_replace("'versionId' => 2031370", "'versionId' => 2020000", (string) file_get_contents($file));
+        $this->assertNotFalse(file_put_contents($file, $stale));
+
+        [$code, $stdout, $stderr] = $this->runCommand('generate', '--check', '--root=' . Fixture::forum(), '--out=' . $this->out);
+
+        $this->assertSame(1, $code);
+        $this->assertSame('', $stdout);
+        $this->assertStringContainsString('was generated for XenForo 2020000, but the forum at ' . Fixture::forum() . ' is 2031370', $stderr);
+        $this->assertSame($stale, file_get_contents($file));
+    }
+
+    public function testCheckReportsASetFromAnOlderRelease(): void
+    {
+        $this->assertNotFalse(file_put_contents(
+            $this->out . '/classes.php',
+            "<?php return ['xenforo' => ['versionId' => 2031370, 'root' => '/x'], 'aliases' => [], 'extensions' => []];",
+        ));
+
+        [$code, , $stderr] = $this->runCommand('generate', '--check', '--root=' . Fixture::forum(), '--out=' . $this->out);
+
+        $this->assertSame(1, $code);
+        $this->assertStringContainsString('was written by an older release of this package', $stderr);
+    }
+
     public function testADirectoryWithoutXenForoInItIsRefusedByName(): void
     {
         [$code, , $stderr] = $this->runCommand('generate', '--root=' . $this->out);

@@ -21,6 +21,7 @@ composer analyse                                # phpstan on this package, level
 composer format                                 # pint, PSR-12
 vendor/bin/phpunit --filter AnalysisTest        # the end-to-end run alone
 bin/xenforo-phpstan generate --root=tests/Fixtures/forum --out=/tmp/x   # the generator by hand
+bin/xenforo-phpstan generate --check --root=tests/Fixtures/forum --out=/tmp/x   # is that set current
 ```
 
 ## Nothing here needs XenForo, and that is the design constraint
@@ -121,7 +122,11 @@ tests/Fixtures/forum/   the stand-in XenForo install
   recorded `versionId` with the forum's `src/XF.php` on first use and throws with the command to
   run; PHPStan surfaces that as one internal error with the message intact.
 - **No console component, no dependencies beyond PHPStan.** The generator is one command with
-  two options; a dependency here lands in every add-on's dev install.
+  two options and a flag; a dependency here lands in every add-on's dev install.
+- **`--check` reuses the loader's refusals rather than restating them.** `Classes::load()` is
+  the test PHPStan applies on first use, and its messages already name both version ids and the
+  command to run; `--check` constructs the loader against the set and prints what it throws. A
+  second implementation of the staleness test would be a second place for it to drift.
 
 ## Traps met while building it
 
