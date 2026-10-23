@@ -16,6 +16,16 @@ parameters:
         # from the fixture's stand-in, which declares exactly the members the generator uses.
         - tests/Fixtures/forum/src/XF.php
 
+    ignoreErrors:
+        # AnnotationPropertyReflection is the reflection PHPStan itself builds for a @property
+        # line, and the only way to hand back a typed property that is not written anywhere.
+        # It is not under the backward-compatibility promise; its constructor is the same from
+        # 2.1.22 to the current release, and the lowest CI job is what notices a change.
+        -
+            identifier: phpstanApi.constructor
+            path: src/Reflection/AddOnPropertiesExtension.php
+            count: 1
+
     # Analyse against every PHP version the package claims to support, in one run. Keep in
     # step with the "php" constraint in composer.json.
     phpVersion:

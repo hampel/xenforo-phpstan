@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0 (2026-10-23)
+
+- the properties `XF\AddOn\AddOn` answers by magic are typed: its nine own keys from their
+  getters, and the installed `XF\Entity\AddOn`'s columns from the entity's docblock, so
+  `$addOn->title` and `$addOn->version_string` resolve and a mistyped key is still reported. A
+  new service, hence the minor
+- **Upgrading:** `composer require --dev hampel/xenforo-phpstan:^0.6`; a `^0.5` constraint does not
+  reach this release
+
 ## 0.5.1 (2026-10-23)
 
 - `AbstractAdapter::query()` accepts a scalar for `$params`, as core passes one and the statement

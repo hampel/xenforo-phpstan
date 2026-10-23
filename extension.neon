@@ -101,6 +101,13 @@ services:
         tags:
             - phpstan.broker.methodsClassReflectionExtension
 
+    # The properties XF\AddOn\AddOn answers by magic: its own nine keys, then the installed
+    # entity's columns. Typed one by one, so a mistyped key is still reported.
+    -
+        class: Hampel\XenForo\PHPStan\Reflection\AddOnPropertiesExtension
+        tags:
+            - phpstan.broker.propertiesClassReflectionExtension
+
     # Container shortcuts given the short Vendor\AddOn:Name identifier. XenForo 2.3 already
     # types them for a class-string argument; these resolve the identifier form, one service
     # per class that declares the shortcuts.

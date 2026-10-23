@@ -109,7 +109,9 @@ parameters:
 ### Magic properties
 
 Entity columns, options and route parameters are magic properties, and PHPStan reports each
-access as undefined. `crates.neon` opts the three classes into PHPStan's object-crate treatment:
+access as undefined. The add-on object's are typed individually, as the next section describes;
+these three classes have no static answer, and `crates.neon` opts them into PHPStan's
+object-crate treatment:
 
 ```yaml
 includes:
@@ -276,10 +278,17 @@ is passed to is reported. `stubs/core.stub` restates them with the type the meth
 read from 2.3.13. Two documented types are corrected rather than transcribed:
 `stubs/db-schema.stub` the schema builder's `null` index name, and `core.stub` the `array`
 XenForo claims for `AbstractAdapter::query()`'s parameters, which core itself passes as a scalar
-and the statement wraps. The finder's fluent methods are declared as returning `static`, so a chain keeps the
-entity type the finder was created with, which XenForo's own `@return Finder` on `order()` lost.
-Iterating a collection, or a finder, yields its entity: `getIterator()` is restated on both,
-because a class declared in a stub loses XenForo's own docblock on that one method.
+and the statement wraps. The finder's fluent methods are declared as returning `static`, so a
+chain keeps the entity type the finder was created with, which XenForo's own `@return Finder`
+on `order()` lost. Iterating a collection, or a finder, yields its entity: `getIterator()` is
+restated on both, because a class declared in a stub loses XenForo's own docblock on that one
+method.
+
+The add-on object `AddOn\Manager::getById()` returns answers `$addOn->title` and
+`$addOn->version_string` by magic, nine keys of its own and then any column of the installed
+`XF\Entity\AddOn`. Each is typed individually, the keys from their getters and the columns from
+the entity's own docblock, so a mistyped key is still reported. A key that exists only in the
+add-on's `addon.json` is not offered; read it through `getJson()`.
 
 `XF\Tree` and `XF\SubTree` are generic over the record they hold. `NodeRepository::createNodeTree()`
 returns a `Tree<Node>`, a tree built by hand is typed by what it was given, and a subtree's

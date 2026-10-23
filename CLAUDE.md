@@ -21,7 +21,7 @@ composer analyse                                # phpstan on this package, level
 composer format                                 # pint, PSR-12
 vendor/bin/phpunit --filter AnalysisTest        # the end-to-end run alone
 bin/xenforo-phpstan generate --root=tests/Fixtures/forum --out=/tmp/x   # the generator by hand
-bin/xenforo-phpstan generate --check --root=tests/Fixtures/forum --out=/tmp/x   # is that set current
+bin/xenforo-phpstan generate --check --root=tests/Fixtures/forum --out=/tmp/x   # is it current
 ```
 
 ## Nothing here needs XenForo, and that is the design constraint
@@ -57,7 +57,8 @@ src/
   Classes.php           loads the generated map, lazily; refuses a stale one by versionId
   Generator/            Generator (boots XF, walks the forum, writes three files), Command (argv),
                         ClassExtension (one XML line), Stub (grouped declarations), Summary
-  Reflection/           ClassExtensionMethodsExtension - methods added by class extensions
+  Reflection/           ClassExtensionMethodsExtension - methods added by class extensions;
+                        AddOnPropertiesExtension - the keys XF\AddOn\AddOn answers by magic
   Type/                 Shortcut (the identifier expansion), ShortcutTypes (the method table and
                         the type it yields), the instance and static return type extensions
 tests/Fixtures/forum/   the stand-in XenForo install
@@ -119,6 +120,13 @@ tests/Fixtures/forum/   the stand-in XenForo install
   report every callback declared narrower than `int|string` for the id. The one parameter
   corrected against XenForo's declaration is `AbstractAdapter::query()`'s `$params`, documented
   `array` and passed as a scalar by core itself, which the documented type reported at level 5.
+- **The add-on object's properties are typed one by one, not crated.** `XF\AddOn\AddOn` answers
+  nine keys itself and then the installed entity's columns, and every add-on that reports its
+  version reads them. A crate would silence a mistyped key with the rest; the extension offers
+  exactly the keys the class answers, with the getters' types and the entity's `@property`
+  lines. It builds the reflection with PHPStan's `AnnotationPropertyReflection`, which is not
+  `@api`; its constructor is the same from 2.1.22 to the current release, and the lowest CI
+  job is what notices if that changes.
 - **A stale generated set is refused, not tolerated.** It fails as a flood of undefined-method
   errors naming renamed classes, which reads as the add-on being broken. `Classes` compares the
   recorded `versionId` with the forum's `src/XF.php` on first use and throws with the command to

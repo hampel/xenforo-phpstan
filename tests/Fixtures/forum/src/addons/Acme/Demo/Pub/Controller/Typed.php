@@ -20,8 +20,8 @@ use XF\Tree;
 /**
  * Every member stubs/core.stub types, each used where only the stubbed type passes at level
  * max: XenForo declares none of these, so without the stub every line is a mixed being passed
- * where a type is expected. Analysed alone at level max; the one line marked ERROR is what
- * proves the run looked.
+ * where a type is expected. Analysed alone at level max; the lines marked ERROR are what
+ * prove the run looked.
  */
 class Typed extends AbstractController
 {
@@ -134,6 +134,17 @@ class Typed extends AbstractController
         $this->takesEntityOrNull($this->app()->findByContentType('node', 1));
         $this->takesCollection($this->app()->findByContentType('node', [1, 2]));
         $this->takesAddOnOrNull($this->app()->addOnManager()->getById('Acme/Demo'));
+
+        // The add-on object answers properties by magic: its own keys, then the installed
+        // entity's columns. A key it does not have is reported, which a crate would not do.
+        $addOn = $this->app()->addOnManager()->getById('Acme/Demo');
+        if ($addOn !== null) {
+            $this->takesString($addOn->title);
+            $this->takesInt($addOn->json_version_id);
+            $this->takesStringOrNull($addOn->legacy_addon_id);
+            $this->takesAddOnEntityOrNull($addOn->addon);
+            $typo = $addOn->titel;                                      // ERROR: a mistyped key
+        }
     }
 
     public function actionEntity(): void
@@ -190,6 +201,14 @@ class Typed extends AbstractController
     }
 
     private function takesAddOnOrNull(?AddOn $value): void
+    {
+    }
+
+    private function takesAddOnEntityOrNull(?\XF\Entity\AddOn $value): void
+    {
+    }
+
+    private function takesStringOrNull(?string $value): void
     {
     }
 
