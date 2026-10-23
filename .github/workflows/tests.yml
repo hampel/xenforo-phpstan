@@ -95,6 +95,18 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      # The generator's entry point is run from a clone as bin/xenforo-phpstan. A commit made
+      # from Windows git over the WSL boundary strips the executable bit silently, and nothing
+      # else notices: Composer chmods its own vendor/bin proxies, so a consumer never sees it.
+      # The index is checked, not the filesystem, because the index is what a clone gets.
+      - name: bin/xenforo-phpstan is executable
+        run: |
+          if ! git ls-files -s bin/xenforo-phpstan | grep -q '^100755'; then
+            echo 'bin/xenforo-phpstan has lost its executable bit.'
+            echo 'Restore it with: git update-index --chmod=+x bin/xenforo-phpstan'
+            exit 1
+          fi
+
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: '8.3'
