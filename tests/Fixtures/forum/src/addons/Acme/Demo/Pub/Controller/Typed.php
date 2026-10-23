@@ -2,6 +2,7 @@
 
 namespace Acme\Demo\Pub\Controller;
 
+use XF\AddOn\AddOn;
 use XF\Db\Schema\Column;
 use XF\Entity\Node;
 use XF\Mvc\Entity\AbstractCollection;
@@ -130,6 +131,7 @@ class Typed extends AbstractController
 
         $this->takesEntityOrNull($this->app()->findByContentType('node', 1));
         $this->takesCollection($this->app()->findByContentType('node', [1, 2]));
+        $this->takesAddOnOrNull($this->app()->addOnManager()->getById('Acme/Demo'));
     }
 
     public function actionEntity(): void
@@ -182,6 +184,10 @@ class Typed extends AbstractController
     }
 
     private function takesEntityOrNull(?Entity $value): void
+    {
+    }
+
+    private function takesAddOnOrNull(?AddOn $value): void
     {
     }
 

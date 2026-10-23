@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2 (2026-10-23)
+
+- `AddOn\Manager::getById()` returns `AddOn|null`
+- README: above level 8 the residual is mostly the add-on's own untyped methods, and an add-on
+  with no entity of its own usually needs no crates
+
 ## 0.4.1 (2026-10-23)
 
 - `NodeRepository::mergeNodeListExtras()` returns the string-keyed extras array its body

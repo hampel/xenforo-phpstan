@@ -4,6 +4,14 @@ namespace XF;
 
 class App
 {
+    /**
+     * @return AddOn\Manager
+     */
+    public function addOnManager()
+    {
+        return new AddOn\Manager();
+    }
+
     public function em(): Mvc\Entity\Manager
     {
         return new Mvc\Entity\Manager();

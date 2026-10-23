@@ -155,10 +155,13 @@ tests/Fixtures/forum/   the stand-in XenForo install
   an adopter on 2026-10-22, the day of the release; the fixture now carries the real
   `getIterator()` declarations and a loop in `Typed.php`. Restate such a method in the stub.
 - **PHPStan validates a stub against the classes in stubs and the autoloader, not the scanned
-  forum.** A stub class may name a parent only if that parent is also in a stub: `Node` extends
-  `Entity`, which the stub declares, because `AbstractCollection<Node>` has to satisfy the bound;
-  `NodeRepository` names no parent, because the real `Repository` is unknown to the validator and
-  naming it is reported as an unknown class in the consumer's run.
+  forum.** A stub may name a class, as a parent or in a return type, only if that class is also
+  in a stub: `Node` extends `Entity`, which the stub declares, because `AbstractCollection<Node>`
+  has to satisfy the bound; `NodeRepository` names no parent, because the real `Repository` is
+  unknown to the validator and naming it is reported as an unknown class in the consumer's run;
+  `AddOn` is declared empty so that `Manager::getById()` may return it. The end-to-end test
+  reports the violation as `core.stub:<line> ... has invalid return type`, which is how the
+  `AddOn` case was found on 2026-10-23.
 - **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
   `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
 

@@ -103,7 +103,9 @@ includes:
 mistyped column is silenced as readily as a correct one.** The precise alternative for entities is
 `php cmd.php xf-dev:entity-class-properties`, which writes `@property` docblocks into the add-on's
 own entity classes — an edit to committed source, so a decision for each add-on rather than a
-default.
+default. An add-on with no entity of its own usually needs neither: XenForo's own entities carry
+`@property` docblocks, so `$visitor->user_id` is already typed, and a crate would only hide a
+mistyped name.
 
 ## What it does
 
@@ -181,7 +183,8 @@ getters, the finder's fluent methods, `Router::buildLink()`, `\XF::phrase()`, th
 adapter's `quote()`, `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`,
 `AbstractCollection::keys()`, `AbstractDdl::addColumn()`, `Request::filter()`,
 `App::findByContentType()`, `NodeRepository::getFullNodeList()`, `filterViewable()` and
-`mergeNodeListExtras()`, `Node::getBreadcrumbs()` and `getNodeListExtras()`.
+`mergeNodeListExtras()`, `Node::getBreadcrumbs()` and `getNodeListExtras()`,
+`AddOn\Manager::getById()`.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
 read from 2.3.13, and `stubs/db-schema.stub` corrects the schema builder's documented `null`
@@ -207,6 +210,13 @@ add-on's own to fix. Level 5 is a reasonable target once the call sites are tidy
 missing-typehint wall. With the stubs above, level max is reachable: on one small add-on it
 reports a third fewer than without them, and what remains is the add-on's own typing and
 route parameters, which no static type can know.
+
+**Above level 8, most of what is left is the add-on describing itself, not the forum.** PHPStan
+never infers a return type across a method boundary, so an untyped method of the add-on's own
+hands `mixed` to every caller, and each use of the result is a report. On one add-on, half of the
+level-max total came from a single untyped test helper; typing the helpers answered all of it.
+Before reading a residual as XenForo's, `\PHPStan\dumpType()` on the value says whose type is
+missing.
 
 ## Limitations
 

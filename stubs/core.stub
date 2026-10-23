@@ -230,6 +230,27 @@ namespace XF {
     }
 }
 
+namespace XF\AddOn {
+
+    /** Declared so that the return type below validates: the validator cannot see the forum. */
+    class AddOn
+    {
+    }
+
+    class Manager
+    {
+        /**
+         * Null when the forum has neither an installed record nor an addon.json for the id;
+         * the loaded add-on class otherwise.
+         *
+         * @param mixed $addOnId
+         *
+         * @return AddOn|null
+         */
+        public function getById($addOnId) {}
+    }
+}
+
 namespace XF\Mvc {
 
     use XF\Mvc\Reply\AbstractReply;
