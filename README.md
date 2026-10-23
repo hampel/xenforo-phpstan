@@ -295,6 +295,14 @@ The add-on object `AddOn\Manager::getById()` returns answers `$addOn->title` and
 the entity's own docblock, so a mistyped key is still reported. A key that exists only in the
 add-on's `addon.json` is not offered; read it through `getJson()`.
 
+### Controller actions
+
+Every controller action returns a reply, since the dispatcher rejects anything else, and XenForo
+declares none of them. An `action*` method with no return type of its own is typed
+`AbstractReply`, through `$this->` and through `parent::`, so `return parent::actionIndex()` in
+a controller extension is no longer `mixed`. An action that declares a return type, XenForo's or
+the add-on's, keeps it.
+
 ### Request input
 
 `$this->filter('id', 'uint')` on a controller, and `filter()` on the request, are typed from the

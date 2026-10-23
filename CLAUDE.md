@@ -61,7 +61,8 @@ src/
                         AddOnPropertiesExtension - the keys XF\AddOn\AddOn answers by magic
   Type/                 Shortcut (the identifier expansion), ShortcutTypes (the method table and
                         the type it yields), the instance and static return type extensions;
-                        FilterTypes (filter string to type) and FilterReturnTypeExtension
+                        FilterTypes (filter string to type) and FilterReturnTypeExtension;
+                        ActionReplyExtension (every undeclared action returns a reply)
 tests/Fixtures/forum/   the stand-in XenForo install
 ```
 
@@ -136,6 +137,12 @@ tests/Fixtures/forum/   the stand-in XenForo install
   lines. It builds the reflection with PHPStan's `AnnotationPropertyReflection`, which is not
   `@api`; its constructor is the same from 2.1.22 to the current release, and the lowest CI
   job is what notices if that changes.
+- **Every undeclared controller action returns `AbstractReply`, by extension rather than by
+  stub.** `XF\Mvc\Dispatcher` throws on anything else, so it is a fact about every action at
+  once, and one stub per core action an add-on happens to extend would never be complete. The
+  extension answers for a method named `action*` whose return type is implicit `mixed`, on
+  instance and static calls, the static form being what `parent::actionIndex()` is to PHPStan;
+  a declared return type, native or docblock, is left as it is.
 - **A filter result is typed from the filter string alone, because the filterer casts.**
   `XF\InputFilterer::filter()` returns the named type whatever the input was, so the result does
   not depend on data; `num` is `float|int` because the body does `strval($value) + 0`. The
@@ -182,8 +189,9 @@ tests/Fixtures/forum/   the stand-in XenForo install
   added, silently. A trait declared in a stub types its methods on every class that really uses
   it, parents and traits of a stub-declared class survive, and a probe that reports a method
   undefined is reporting the forum, not the stub. On 2026-10-23 an hour went on a "lost trait"
-  that was a service which never used it; the first probe should have been the real class. **A stub needs bracketed namespaces**
-  to declare a global class such as `XF` beside namespaced ones; PHP refuses to mix the forms.
+  that was a service which never used it; the first probe should have been the real class.
+  **A stub needs bracketed namespaces** to declare a global class such as `XF` beside
+  namespaced ones; PHP refuses to mix the forms.
 - **A class declared in a stub keeps its real method docblocks, except on a method that
   implements an interface PHPStan stubs itself.** `getIterator()`, from `IteratorAggregate`, is
   resolved from PHPStan's stub of the interface instead, so 0.3.0 made every `foreach` over a

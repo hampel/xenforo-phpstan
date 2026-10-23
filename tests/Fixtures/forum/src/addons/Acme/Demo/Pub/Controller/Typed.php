@@ -11,6 +11,7 @@ use XF\Entity\Node;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use XF\Mvc\Reply\AbstractReply;
 use XF\Mvc\Reply\Error;
 use XF\Mvc\Reply\Message;
 use XF\Mvc\Reply\Redirect;
@@ -191,6 +192,14 @@ class Typed extends AbstractController
         $this->takesInt($this->view()->getParam('x'));                 // ERROR: a single parameter is mixed
     }
 
+    public function actionReplies(): void
+    {
+        // Every undeclared action returns a reply, through parent:: as an extension calls it.
+        $this->takesReply(parent::actionIndex());
+        $this->takesReply($this->actionIndex());
+        $this->takesView($this->actionView());                           // a declared type is kept
+    }
+
     public function actionCore(): void
     {
         // Returns XenForo leaves undeclared on members an extension returns through parent::.
@@ -281,6 +290,14 @@ class Typed extends AbstractController
     }
 
     private function takesEntity(Entity $value): void
+    {
+    }
+
+    private function takesReply(AbstractReply $value): void
+    {
+    }
+
+    private function takesView(View $value): void
     {
     }
 

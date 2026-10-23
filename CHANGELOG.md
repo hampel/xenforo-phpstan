@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0 (2026-10-23)
+
+- every undeclared controller `action*` method returns `AbstractReply`, through `$this->` and
+  `parent::` alike, so a controller extension's `return parent::actionIndex()` is typed. A new
+  service, hence the minor; an action an add-on declares as returning something narrower keeps
+  its own type
+- **Upgrading:** `composer require --dev hampel/xenforo-phpstan:^0.8`; a `^0.7` constraint does not
+  reach this release
+
 ## 0.7.1 (2026-10-23)
 
 - more returns XenForo leaves undeclared, each one an extension returns through `parent::`:

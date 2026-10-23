@@ -56,8 +56,8 @@ final class AnalysisTest extends TestCase
             // extension comes back - there the type is the extension, as for the identifier.
             'Demo.php:48 Call to an undefined method Acme\Demo\XF\Repository\User::noSuchOnClass().',
             // From an add-on that does not extend it, the core class under the legacy name.
-            'Typed.php:150 Access to an undefined property XF\AddOn\AddOn::$titel.',
-            'Typed.php:189 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
+            'Typed.php:151 Access to an undefined property XF\AddOn\AddOn::$titel.',
+            'Typed.php:190 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
             'Other.php:23 Call to an undefined method XF\Repository\User::nope().',
             'Other.php:24 Call to an undefined method XF\Repository\UserRepository::nopeClass().',
         ], $messages);
@@ -106,9 +106,9 @@ final class AnalysisTest extends TestCase
         }
 
         $this->assertSame([
-            'Typed.php:150 Access to an undefined property XF\AddOn\AddOn::$titel.',
-            'Typed.php:189 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
-            'Typed.php:191 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
+            'Typed.php:151 Access to an undefined property XF\AddOn\AddOn::$titel.',
+            'Typed.php:190 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
+            'Typed.php:192 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
         ], $messages);
     }
 

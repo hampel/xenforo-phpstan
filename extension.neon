@@ -157,6 +157,16 @@ services:
         class: Hampel\XenForo\PHPStan\Type\StaticContainerShortcutExtension
         tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
 
+    # Every controller action returns a reply, through $this-> and parent:: alike; an action
+    # that declares its own return type is left alone.
+    -
+        class: Hampel\XenForo\PHPStan\Type\ActionReplyExtension
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+        arguments:
+            className: XF\Mvc\Controller
+
     # Request input, typed from the filter string: filter('id', 'uint') is an int and an array
     # of filters is an array shape, as XF\InputFilterer casts them. One service per class.
     -
