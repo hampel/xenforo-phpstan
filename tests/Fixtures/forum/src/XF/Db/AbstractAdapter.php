@@ -4,6 +4,19 @@ namespace XF\Db;
 
 abstract class AbstractAdapter
 {
+    /**
+     * As XenForo documents it: the array claim the stub corrects.
+     *
+     * @param $query
+     * @param array $params
+     *
+     * @return AbstractStatement
+     */
+    public function query($query, $params = [])
+    {
+        return new class () extends AbstractStatement {};
+    }
+
     public function quote($data, $type = null)
     {
         return "'" . $data . "'";

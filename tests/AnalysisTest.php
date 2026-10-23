@@ -100,7 +100,7 @@ final class AnalysisTest extends TestCase
         }
 
         $this->assertSame([
-            'Typed.php:153 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
+            'Typed.php:155 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
         ], $messages);
     }
 

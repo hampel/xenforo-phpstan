@@ -650,8 +650,26 @@ namespace XF\Repository {
 
 namespace XF\Db {
 
+    /** Declared so that query()'s return type below validates: the validator cannot see the forum. */
+    abstract class AbstractStatement
+    {
+    }
+
     abstract class AbstractAdapter
     {
+        /**
+         * XenForo documents $params as an array, and its own calls pass a scalar everywhere:
+         * AbstractStatement's constructor wraps one in an array. The documented type reports
+         * core's own idiom at level 5, so this is the one parameter corrected rather than
+         * transcribed.
+         *
+         * @param mixed $query
+         * @param array<mixed>|scalar|null $params
+         *
+         * @return AbstractStatement
+         */
+        public function query($query, $params = []) {}
+
         /**
          * @param mixed $data
          * @param mixed $type

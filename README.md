@@ -273,8 +273,10 @@ adapter's `quote()`, `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`,
 `AddOn\Manager::getById()`.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
-read from 2.3.13, and `stubs/db-schema.stub` corrects the schema builder's documented `null`
-index name. The finder's fluent methods are declared as returning `static`, so a chain keeps the
+read from 2.3.13. Two documented types are corrected rather than transcribed:
+`stubs/db-schema.stub` the schema builder's `null` index name, and `core.stub` the `array`
+XenForo claims for `AbstractAdapter::query()`'s parameters, which core itself passes as a scalar
+and the statement wraps. The finder's fluent methods are declared as returning `static`, so a chain keeps the
 entity type the finder was created with, which XenForo's own `@return Finder` on `order()` lost.
 Iterating a collection, or a finder, yields its entity: `getIterator()` is restated on both,
 because a class declared in a stub loses XenForo's own docblock on that one method.

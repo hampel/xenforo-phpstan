@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.1 (2026-10-23)
+
+- `AbstractAdapter::query()` accepts a scalar for `$params`, as core passes one and the statement
+  wraps it; XenForo's own `@param array` reported `$db->query($sql, $id)` at level 5
+
 ## 0.5.0 (2026-10-23)
 
 - `generate --check` reports whether the generated set is one PHPStan will accept for the forum,

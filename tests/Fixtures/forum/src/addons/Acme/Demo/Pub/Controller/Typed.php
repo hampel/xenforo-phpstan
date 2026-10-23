@@ -3,6 +3,7 @@
 namespace Acme\Demo\Pub\Controller;
 
 use XF\AddOn\AddOn;
+use XF\Db\AbstractStatement;
 use XF\Db\Schema\Column;
 use XF\Entity\Node;
 use XF\Mvc\Entity\AbstractCollection;
@@ -128,6 +129,7 @@ class Typed extends AbstractController
         $this->takesString($db->quote('x'));
         $this->takesInt($db->getQueryCount());
         $this->takesList($db->fetchAllColumn('SELECT 1'));
+        $this->takesStatement($db->query('SELECT ?', 1));           // a scalar, as core passes one
 
         $this->takesEntityOrNull($this->app()->findByContentType('node', 1));
         $this->takesCollection($this->app()->findByContentType('node', [1, 2]));
@@ -188,6 +190,10 @@ class Typed extends AbstractController
     }
 
     private function takesAddOnOrNull(?AddOn $value): void
+    {
+    }
+
+    private function takesStatement(AbstractStatement $value): void
     {
     }
 
