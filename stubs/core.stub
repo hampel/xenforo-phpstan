@@ -391,16 +391,6 @@ namespace XF\Mvc\Entity {
         final public function save($throw = true, $newTransaction = true) {}
 
         /**
-         * The relation's entity, created from the relation's defaults when it has none.
-         *
-         * @param mixed $key
-         * @param mixed $cascadeSave
-         *
-         * @return Entity
-         */
-        public function getRelationOrDefault($key, $cascadeSave = true) {}
-
-        /**
          * @return array<string|int, \XF\Phrase|string>
          */
         public function getErrors() {}

@@ -157,6 +157,14 @@ services:
         class: Hampel\XenForo\PHPStan\Type\StaticContainerShortcutExtension
         tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
 
+    # A relation by name: getRelation('Auth') and getRelationOrDefault('Auth') typed from the
+    # receiver's own @property-read for that name, which every entity and extension declares.
+    -
+        class: Hampel\XenForo\PHPStan\Type\RelationReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+        arguments:
+            className: XF\Mvc\Entity\Entity
+
     # Every controller action returns a reply, through $this-> and parent:: alike; an action
     # that declares its own return type is left alone.
     -

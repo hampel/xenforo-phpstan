@@ -2,6 +2,9 @@
 
 namespace XF\Entity;
 
+/**
+ * @property-read UserOption|null $Option
+ */
 class User extends \XF\Mvc\Entity\Entity
 {
     public function isMemberOf(int $groupId): bool

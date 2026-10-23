@@ -8,6 +8,7 @@ use XF\ContinuationResult;
 use XF\Db\AbstractStatement;
 use XF\Db\Schema\Column;
 use XF\Entity\Node;
+use XF\Entity\UserOption;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
@@ -208,7 +209,9 @@ class Typed extends AbstractController
         $this->takesBool($user->canViewFullProfile($error));
         $this->takesBool($user->canViewBasicProfile($error));
         $this->takesBool($user->hasAdminPermission('user'));
-        $this->takesEntity($user->getRelationOrDefault('Option'));
+        $this->takesUserOption($user->getRelationOrDefault('Option'));       // by the relation's @property-read
+        $this->takesUserOptionOrNull($user->getRelation('Option'));
+        $this->takesBool($user->getRelationOrDefault('Option')->receive_admin_email);
         $this->takesErrors($user->getErrors());
 
         $merger = $this->app()->service(MergeService::class);
@@ -289,7 +292,11 @@ class Typed extends AbstractController
     {
     }
 
-    private function takesEntity(Entity $value): void
+    private function takesUserOption(UserOption $value): void
+    {
+    }
+
+    private function takesUserOptionOrNull(?UserOption $value): void
     {
     }
 

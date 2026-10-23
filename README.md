@@ -273,8 +273,8 @@ adapter's `quote()`, `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`,
 `App::findByContentType()`, `NodeRepository::getFullNodeList()`, `filterViewable()` and
 `mergeNodeListExtras()`, `Node::getBreadcrumbs()` and `getNodeListExtras()`,
 `AddOn\Manager::getById()`, `User::canFollowUser()`, `canViewFullProfile()`,
-`canViewBasicProfile()` and `hasAdminPermission()`, `Entity::getRelationOrDefault()` and
-`getErrors()`, `ValidateAndSavableTrait::validate()` and what it writes to `$errors`,
+`canViewBasicProfile()` and `hasAdminPermission()`, `Entity::getErrors()`,
+`ValidateAndSavableTrait::validate()` and what it writes to `$errors`,
 `MergeService::setSource()`, `setTarget()` and `merge()`, `ContinuationResult::completed()`,
 the adapter's `fetchRow()`, `fetchAll()` and `fetchPairs()`, and `Structure`'s `$columns` and
 `$relations`.
@@ -294,6 +294,14 @@ The add-on object `AddOn\Manager::getById()` returns answers `$addOn->title` and
 `XF\Entity\AddOn`. Each is typed individually, the keys from their getters and the columns from
 the entity's own docblock, so a mistyped key is still reported. A key that exists only in the
 add-on's `addon.json` is not offered; read it through `getJson()`.
+
+### Relations by name
+
+`$user->getRelation('Auth')` and `getRelationOrDefault('Auth')` are typed from the receiver's own
+`@property-read UserAuth|null $Auth`, which every XenForo entity declares for each relation and an
+extension declares for the relations it adds. `getRelation()` keeps the declared nullability;
+`getRelationOrDefault()` creates the default, so the result is the entity itself. A name the
+receiver does not declare leaves the call as XenForo left it.
 
 ### Controller actions
 

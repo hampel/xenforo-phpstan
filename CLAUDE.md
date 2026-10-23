@@ -62,7 +62,8 @@ src/
   Type/                 Shortcut (the identifier expansion), ShortcutTypes (the method table and
                         the type it yields), the instance and static return type extensions;
                         FilterTypes (filter string to type) and FilterReturnTypeExtension;
-                        ActionReplyExtension (every undeclared action returns a reply)
+                        ActionReplyExtension (every undeclared action returns a reply);
+                        RelationReturnTypeExtension (a relation by its @property-read)
 tests/Fixtures/forum/   the stand-in XenForo install
 ```
 
@@ -137,6 +138,14 @@ tests/Fixtures/forum/   the stand-in XenForo install
   lines. It builds the reflection with PHPStan's `AnnotationPropertyReflection`, which is not
   `@api`; its constructor is the same from 2.1.22 to the current release, and the lowest CI
   job is what notices if that changes.
+- **A stub return that is wider than what callers read from it is a regression, not an
+  improvement.** 0.7.1 declared `getRelationOrDefault()` as returning `Entity`; the reason to call
+  it is to read a column of the relation, and `Entity` has none without crates, so every such
+  read became `property.notFound` from level 2 where `mixed` had been silent. An adopter at
+  level 9 went from clean to 23 the same day. The test before stubbing a return: what does the
+  caller do with it next, and does the type carry that. Relations are now typed by name from the
+  receiver's `@property-read`, which XenForo and extensions both declare, and an unknown name
+  stays undeclared.
 - **Every undeclared controller action returns `AbstractReply`, by extension rather than by
   stub.** `XF\Mvc\Dispatcher` throws on anything else, so it is a fact about every action at
   once, and one stub per core action an add-on happens to extend would never be complete. The

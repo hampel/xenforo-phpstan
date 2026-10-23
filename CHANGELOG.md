@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.1 (2026-10-23)
+
+- `getRelation()` and `getRelationOrDefault()` are typed from the receiver's `@property-read` for
+  the relation name, so `$user->getRelationOrDefault('Auth')->scheme_class` resolves. 0.7.1 had
+  declared `getRelationOrDefault()` as returning `Entity`, which made every column read on the
+  result `property.notFound` from level 2, where `mixed` had been quiet; that return is withdrawn
+
 ## 0.8.0 (2026-10-23)
 
 - every undeclared controller `action*` method returns `AbstractReply`, through `$this->` and

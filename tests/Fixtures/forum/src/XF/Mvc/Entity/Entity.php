@@ -16,6 +16,11 @@ abstract class Entity
      *
      * @return T
      */
+    public function getRelation($key)
+    {
+        return null;
+    }
+
     public function getRelationOrDefault($key, $cascadeSave = true)
     {
         return $this;
