@@ -98,6 +98,14 @@ tests/Fixtures/forum/   the stand-in XenForo install
   and `Classes::extensionOwnedBy()` matches the analysed file against it, tests included. A
   `::class` argument takes the same check, because XenForo's own annotation would otherwise name
   the core class and lose the override; everywhere else it is left to that annotation.
+- **`ShortcutTypes::typeFor()` is a dependency of another package, so its signature is a
+  contract.** `hampel/xenforo-test-framework` (from its 5.36.0) ships a return type extension
+  for its `makeEntity()` and `createEntity()` helpers that injects the `ShortcutTypes` service as
+  `extension.neon` registers it, passes `Shortcut::ENTITY`, and relies on
+  `typeFor(string $kind, bool $nullable, Type $argument, string $file): ?Type` answering `null`
+  to mean "leave PHPStan's own type standing". Changing any of those three is a minor here and a
+  coordinated move there; say so to that package before tagging. It is a class, not an interface,
+  by choice so far: one consumer, and the framework said it would take an interface the same way.
 - **The methods extension offers only what the extension class itself declares.** A method the
   core class already has never reaches a `MethodsClassReflectionExtension`; one inherited back
   through `XFCP_` must not be offered, and checking the declaring class against the receiver's
