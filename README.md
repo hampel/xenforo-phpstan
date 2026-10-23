@@ -125,6 +125,74 @@ default. An add-on with no entity of its own usually needs neither: XenForo's ow
 `@property` docblocks, so `$visitor->user_id` is already typed, and a crate would only hide a
 mistyped name.
 
+The three classes need not go together. Route parameters have no static type anywhere, while
+entity columns have one wherever a `@property` docblock exists, so an add-on that wants
+`$params->user_id` quiet without crating every entity lists the one class itself instead of
+including the file:
+
+```yaml
+parameters:
+    universalObjectCratesClasses:
+        - XF\Mvc\ParameterBag
+```
+
+### A PHP floor below the analysing PHP
+
+An add-on whose floor is below the PHP it is analysed on can have PHPStan hold it to the floor:
+
+```yaml
+parameters:
+    phpVersion:
+        min: 70400
+        max: 80500
+```
+
+**That reports syntax newer than the floor, and nothing else.** A `match`, a union type, a
+nullsafe call is caught; a call to `str_contains()` on a 7.4 floor is not, because PHPStan reads
+functions from the PHP it runs on. It also applies to everything analysed, and PHPUnit 12 is not
+readable as 7.4 code, so a suite under `tests/` becomes one `method.notFound` per assertion. The
+shape that works is a second config for the shipped code alone, included from the first:
+
+```yaml
+# phpstan.floor.neon
+includes:
+    - phpstan.neon
+
+parameters:
+    phpVersion:
+        min: 70400
+        max: 80500
+    excludePaths:
+        analyse:
+            - tests
+```
+
+`vendor/bin/phpstan analyse -c phpstan.floor.neon` is then the floor check, and the plain run
+analyses the tests. An add-on whose release build already lints on the floor PHP may decide
+that is enough and leave `phpVersion` out.
+
+### Supporting XenForo 2.2
+
+The forum analysed against is a 2.3 install, so a guard for a 2.3 method is always true there:
+
+```php
+if (method_exists('XF', 'accessToken')) { // function.alreadyNarrowedType at level 4 and above
+```
+
+The guard is right, and the report is PHPStan being told the truth about one forum. Ignore it by
+identifier and path, so a guard that stops being needed is still noticed:
+
+```yaml
+parameters:
+    ignoreErrors:
+        -
+            identifier: function.alreadyNarrowedType
+            path: Cli/Command/Validate.php
+```
+
+The same applies to `class_exists()` on a class 2.3 added, and to any branch that runs only on
+2.2.
+
 ## What it does
 
 ### Scans the forum, analyses the add-on
@@ -248,6 +316,20 @@ missing.
 - **A method reached through a base type stays undefined.** `$entity->canUseThing()` on a value
   typed `XF\Mvc\Entity\Entity` cannot be resolved by anything here, because the extension is on
   `XF\Entity\User`; that is the variable's type being too wide, and the fix is at the variable.
+- **A runtime check that the add-on's own extension is applied reads as always true.** Inside the
+  add-on that extends `XF\Entity\User`, `create('XF:User') instanceof Extension\User` is reported
+  `instanceof.alwaysTrue`, because the shortcut returns the extension. The check is still worth
+  making at runtime, where a disabled add-on or a broken extension chain would fail it; put the
+  `instanceof` behind a method taking `object`, so that nothing is decided before it runs.
+- **A value passed by reference inside an array literal is not tracked.** After
+  `$app->fire($event, [&$collected])` PHPStan still types `$collected` as the empty array it
+  started as, and every use of it is reported as unreachable or always false. That is PHPStan's
+  own flow analysis, and nothing here reaches it; declare the variable's type with a docblock
+  after the call.
+- **Code built on another add-on's vendored library does not resolve.** Only the analysed add-on's
+  `vendor/` is scanned, by design, so a class that extends a sibling add-on and calls a library
+  the sibling vendors is `class.notFound`. Exclude that code from analysis; it runs in the
+  sibling's context, not this add-on's.
 - **A stale generated set is detected only for a XenForo upgrade.** A class extension added after
   generation is reported as an unknown `XFCP_` parent, which is loud enough; one removed is simply
   still offered. `generate --check` asks the same question and no more.
