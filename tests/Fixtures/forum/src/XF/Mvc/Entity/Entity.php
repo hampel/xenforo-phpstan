@@ -16,6 +16,16 @@ abstract class Entity
      *
      * @return T
      */
+    public function getRelationOrDefault($key, $cascadeSave = true)
+    {
+        return $this;
+    }
+
+    public function getErrors()
+    {
+        return [];
+    }
+
     public function getBehavior($behavior)
     {
         return new $behavior();

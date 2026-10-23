@@ -34,6 +34,14 @@ namespace {
 
 namespace XF {
 
+    class ContinuationResult
+    {
+        /**
+         * @return self
+         */
+        public static function completed() {}
+    }
+
     class Phrase
     {
     }
@@ -381,6 +389,30 @@ namespace XF\Mvc\Entity {
          * @return bool
          */
         final public function save($throw = true, $newTransaction = true) {}
+
+        /**
+         * The relation's entity, created from the relation's defaults when it has none.
+         *
+         * @param mixed $key
+         * @param mixed $cascadeSave
+         *
+         * @return Entity
+         */
+        public function getRelationOrDefault($key, $cascadeSave = true) {}
+
+        /**
+         * @return array<string|int, \XF\Phrase|string>
+         */
+        public function getErrors() {}
+    }
+
+    class Structure
+    {
+        /** @var array<string, array<string, mixed>> */
+        public $columns = [];
+
+        /** @var array<string, array<string, mixed>> */
+        public $relations = [];
     }
 
     /**
@@ -575,6 +607,36 @@ namespace XF\Mvc\Entity {
 
 namespace XF\Entity {
 
+    // No class docblock: XenForo's own @property lines survive a stub declaration that has none.
+    class User extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return bool
+         */
+        public function canFollowUser(User $user) {}
+
+        /**
+         * @param mixed $error
+         *
+         * @return bool
+         */
+        public function canViewFullProfile(&$error = null) {}
+
+        /**
+         * @param mixed $error
+         *
+         * @return bool
+         */
+        public function canViewBasicProfile(&$error = null) {}
+
+        /**
+         * @param mixed $permissionId
+         *
+         * @return bool
+         */
+        public function hasAdminPermission($permissionId) {}
+    }
+
     class Node extends \XF\Mvc\Entity\Entity
     {
         /**
@@ -648,6 +710,43 @@ namespace XF\Repository {
     }
 }
 
+namespace XF\Service {
+
+    trait ValidateAndSavableTrait
+    {
+        /**
+         * @param mixed $errors
+         * @param-out array<string|int, \XF\Phrase|string> $errors
+         *
+         * @return bool
+         */
+        public function validate(&$errors = []) {}
+    }
+}
+
+namespace XF\Service\User {
+
+    class MergeService
+    {
+        /**
+         * @return static
+         */
+        public function setSource(\XF\Entity\User $source) {}
+
+        /**
+         * @return static
+         */
+        public function setTarget(\XF\Entity\User $target) {}
+
+        /**
+         * @param mixed $maxRunTime
+         *
+         * @return \XF\ContinuationResult
+         */
+        public function merge($maxRunTime = 0) {}
+    }
+}
+
 namespace XF\Db {
 
     /** Declared so that query()'s return type below validates: the validator cannot see the forum. */
@@ -686,6 +785,30 @@ namespace XF\Db {
          * @return list<mixed>
          */
         public function fetchAllColumn($query, $params = [], $column = 0) {}
+
+        /**
+         * @param mixed $query
+         * @param mixed $params
+         *
+         * @return array<string, mixed>|false
+         */
+        public function fetchRow($query, $params = []) {}
+
+        /**
+         * @param mixed $query
+         * @param mixed $params
+         *
+         * @return list<array<string, mixed>>
+         */
+        public function fetchAll($query, $params = []) {}
+
+        /**
+         * @param mixed $query
+         * @param mixed $params
+         *
+         * @return array<int|string, mixed>
+         */
+        public function fetchPairs($query, $params = []) {}
 
         /**
          * @return int

@@ -272,7 +272,12 @@ adapter's `quote()`, `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`,
 `AbstractCollection::keys()`, `AbstractDdl::addColumn()`, `Request::filter()`,
 `App::findByContentType()`, `NodeRepository::getFullNodeList()`, `filterViewable()` and
 `mergeNodeListExtras()`, `Node::getBreadcrumbs()` and `getNodeListExtras()`,
-`AddOn\Manager::getById()`.
+`AddOn\Manager::getById()`, `User::canFollowUser()`, `canViewFullProfile()`,
+`canViewBasicProfile()` and `hasAdminPermission()`, `Entity::getRelationOrDefault()` and
+`getErrors()`, `ValidateAndSavableTrait::validate()` and what it writes to `$errors`,
+`MergeService::setSource()`, `setTarget()` and `merge()`, `ContinuationResult::completed()`,
+the adapter's `fetchRow()`, `fetchAll()` and `fetchPairs()`, and `Structure`'s `$columns` and
+`$relations`.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
 read from 2.3.13. Two documented types are corrected rather than transcribed:

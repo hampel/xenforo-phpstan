@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.1 (2026-10-23)
+
+- more returns XenForo leaves undeclared, each one an extension returns through `parent::`:
+  `User::canFollowUser()`, `canViewFullProfile()`, `canViewBasicProfile()` and
+  `hasAdminPermission()` are bool; `Entity::getRelationOrDefault()` is an entity and
+  `getErrors()` the phrases by field; `ValidateAndSavableTrait::validate()` is bool and types
+  what it writes to `$errors`; `MergeService::setSource()` and `setTarget()` are fluent and
+  `merge()` a `ContinuationResult`, whose `completed()` is itself; the adapter's `fetchRow()`,
+  `fetchAll()` and `fetchPairs()` are the shapes they build; `Structure::$columns` and
+  `$relations` are arrays of arrays
+
 ## 0.7.0 (2026-10-23)
 
 - `filter()` on a controller and on the request is typed from the filter string, as

@@ -175,7 +175,14 @@ tests/Fixtures/forum/   the stand-in XenForo install
 - **A class may be declared in one stub file only**, so every correction to `AbstractDdl` is in
   `db-schema.stub` although `addColumn()` belongs with the return types. **A stub class with a
   docblock replaces the real class's docblock**, so a generic class restated in a stub repeats its
-  `@template` and `@implements` lines in full or loses them. **A stub needs bracketed namespaces**
+  `@template` and `@implements` lines in full or loses them; a stub class with no docblock
+  keeps the real one, which is how `User` and `Node` keep XenForo's `@property` lines (measured
+  on a forum on 2026-10-23: `$node->title` is a string either way). **A stub supplies docblocks
+  and never members**: a method declared in a stub on a class that does not have it is not
+  added, silently. A trait declared in a stub types its methods on every class that really uses
+  it, parents and traits of a stub-declared class survive, and a probe that reports a method
+  undefined is reporting the forum, not the stub. On 2026-10-23 an hour went on a "lost trait"
+  that was a service which never used it; the first probe should have been the real class. **A stub needs bracketed namespaces**
   to declare a global class such as `XF` beside namespaced ones; PHP refuses to mix the forms.
 - **A class declared in a stub keeps its real method docblocks, except on a method that
   implements an interface PHPStan stubs itself.** `getIterator()`, from `IteratorAggregate`, is

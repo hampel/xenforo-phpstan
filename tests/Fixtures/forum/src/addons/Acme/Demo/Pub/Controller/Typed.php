@@ -2,18 +2,22 @@
 
 namespace Acme\Demo\Pub\Controller;
 
+use Acme\Demo\Service\Widget\CreateService;
 use XF\AddOn\AddOn;
+use XF\ContinuationResult;
 use XF\Db\AbstractStatement;
 use XF\Db\Schema\Column;
 use XF\Entity\Node;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
+use XF\Mvc\Entity\Structure;
 use XF\Mvc\Reply\Error;
 use XF\Mvc\Reply\Message;
 use XF\Mvc\Reply\Redirect;
 use XF\Mvc\Reply\View;
 use XF\Phrase;
 use XF\Pub\Controller\AbstractController;
+use XF\Service\User\MergeService;
 use XF\SubTree;
 use XF\Tree;
 
@@ -187,6 +191,36 @@ class Typed extends AbstractController
         $this->takesInt($this->view()->getParam('x'));                 // ERROR: a single parameter is mixed
     }
 
+    public function actionCore(): void
+    {
+        // Returns XenForo leaves undeclared on members an extension returns through parent::.
+        $user = $this->assertRecordExists('XF:User', 1);
+        $this->takesBool($user->canFollowUser($user));
+        $this->takesBool($user->canViewFullProfile($error));
+        $this->takesBool($user->canViewBasicProfile($error));
+        $this->takesBool($user->hasAdminPermission('user'));
+        $this->takesEntity($user->getRelationOrDefault('Option'));
+        $this->takesErrors($user->getErrors());
+
+        $merger = $this->app()->service(MergeService::class);
+        $this->takesContinuation($merger->setSource($user)->setTarget($user)->merge());
+        $this->takesContinuation(ContinuationResult::completed());
+
+        // The trait, declared in the stub, types validate() on any service that uses it.
+        $creator = $this->app()->service(CreateService::class);
+        $this->takesBool($creator->validate($errors));
+        $this->takesErrors($errors);
+
+        $structure = new Structure();
+        $structure->relations['Demo'] = ['entity' => 'Acme\Demo:Thing'];
+        $this->takesArray($structure->relations);
+
+        $db = $this->app()->db();
+        $this->takesRowOrFalse($db->fetchRow('SELECT 1'));
+        $this->takesRows($db->fetchAll('SELECT 1'));
+        $this->takesPairs($db->fetchPairs('SELECT 1'));
+    }
+
     /** @param array<string, mixed> $value */
     private function takesArray(array $value): void
     {
@@ -243,6 +277,34 @@ class Typed extends AbstractController
     }
 
     private function takesDateTime(\DateTime $value): void
+    {
+    }
+
+    private function takesEntity(Entity $value): void
+    {
+    }
+
+    /** @param array<string|int, Phrase|string> $value */
+    private function takesErrors(array $value): void
+    {
+    }
+
+    private function takesContinuation(ContinuationResult $value): void
+    {
+    }
+
+    /** @param array<string, mixed>|false $value */
+    private function takesRowOrFalse(array|false $value): void
+    {
+    }
+
+    /** @param list<array<string, mixed>> $value */
+    private function takesRows(array $value): void
+    {
+    }
+
+    /** @param array<int|string, mixed> $value */
+    private function takesPairs(array $value): void
     {
     }
 

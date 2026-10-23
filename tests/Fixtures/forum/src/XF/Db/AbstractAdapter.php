@@ -27,6 +27,21 @@ abstract class AbstractAdapter
         return [];
     }
 
+    public function fetchRow($query, $params = [])
+    {
+        return false;
+    }
+
+    public function fetchAll($query, $params = [])
+    {
+        return [];
+    }
+
+    public function fetchPairs($query, $params = [])
+    {
+        return [];
+    }
+
     public function getQueryCount()
     {
         return 0;
