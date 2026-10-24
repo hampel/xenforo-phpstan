@@ -352,7 +352,9 @@ adapter's `quote()`, `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`,
 the adapter's `fetchRow()`, `fetchAll()`, `fetchPairs()` and `fetchAllKeyed()`, `Structure`'s
 `$columns` and `$relations`, the schema `Column`'s fluent setters, `User::hasPermission()`,
 `hasContentPermission()` and `hasNodePermission()`, `AddOn::getJson()`,
-`RegistrationService::_save()`, `Request::getUserAgent()` and `Templater::fnAvatar()`.
+`RegistrationService::_save()`, `Request::getUserAgent()`, `Templater::fnAvatar()`,
+`File::getTempFile()` and its three temp-path siblings, `App::applyExternalDataUrl()`,
+`Request::getBasePath()` and `AbstractOption`'s five row helpers.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
 read from 2.3.13. Three documented types are corrected rather than transcribed:
@@ -364,12 +366,16 @@ returning, as most do, and which PHPStan reported as a missing return in every o
 stub adds `void`; only core reads the result. The finder's fluent methods are declared as
 returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
 own `@return Finder` on `order()` lost; the schema `Column`'s setters are declared the same way.
-Two of the types are wider than an adopter asked for, because the body is: `hasPermission()` and
-its two siblings return the permission's value, a bool for a flag and an int for an integer
+Three of the types are wider than an adopter asked for, because the body is: `hasPermission()`
+and its two siblings return the permission's value, a bool for a flag and an int for an integer
 permission such as `maxMentionedUsers`; `getUserAgent()` returns `getServer()`'s default of
-`false` when the request sent no agent, which a string column set from it does not survive. Iterating a collection, or a finder, yields its entity:
-`getIterator()` is restated on both, because a class declared in a stub loses XenForo's own
-docblock on that one method.
+`false` when the request sent no agent, which a string column set from it does not survive; and
+`getTempFile()` returns `tempnam()`, false when the temp directory cannot be written, which
+XenForo does not check. Iterating a collection, or a finder, yields its entity: `getIterator()`
+is restated on both, because a class declared in a stub loses XenForo's own docblock on that
+one method. `Templater::func()`, a template function called directly as a test does, is typed
+by an extension rather than a stub: the result is escaped, so a string, unless `$escape` is
+passed false, when it is whatever the function returned.
 
 The add-on object `AddOn\Manager::getById()` returns answers `$addOn->title` and
 `$addOn->version_string` by magic, nine keys of its own and then any column of the installed
@@ -436,9 +442,9 @@ never infers a return type across a method boundary, so an untyped method of the
 hands `mixed` to every caller, and each use of the result is a report. On one add-on, half of the
 level-max total came from a single untyped test helper; typing the helpers answered all of it.
 What remains once the add-on's own methods are typed is core methods with no declared return
-type that the stubs do not yet cover: on another add-on, six of them. An inline `@var` on the
-result narrows one in shipped code, and `assertIsString()` and its siblings narrow one in a
-test; the list above grows from exactly these reports. Before reading a residual as XenForo's,
+type that the stubs do not yet cover. An inline `@var` on the result narrows one in shipped
+code, and `assertIsString()` and its siblings narrow one in a test; the list above grows from
+exactly these reports, the last six from one add-on. Before reading a residual as XenForo's,
 `\PHPStan\dumpType()` on the value says whose type is missing. One residual that is neither:
 Symfony Console's `getOption()` and `getArgument()` return `mixed` by Symfony's own declaration,
 so a CLI command narrows them itself.

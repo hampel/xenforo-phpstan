@@ -61,6 +61,16 @@ class App
         return $key === null ? new Container() : null;
     }
 
+    public function applyExternalDataUrl($externalPath, $canonical = false)
+    {
+        return $this->applyExternalDataUrlPathed($externalPath, $canonical ? 'canonical' : 'root-base');
+    }
+
+    public function applyExternalDataUrlPathed($externalPath, $pathType)
+    {
+        return '/data/' . $externalPath;
+    }
+
     /**
      * @param string $contentType
      * @param int|array $contentId

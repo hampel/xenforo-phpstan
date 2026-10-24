@@ -337,6 +337,46 @@ class Typed extends AbstractController
         $title = $this->app()->options()->boardTitle;                   // ERROR: an option is magic
     }
 
+    public function actionResidue(): void
+    {
+        // What one add-on had left at level 9 once its own methods were typed: core methods with
+        // no declared return type, each read from its body.
+        $this->takesStringOrFalse(\XF\Util\File::getTempFile());
+        $this->takesString(\XF\Util\File::getTempDir());
+        $this->takesString(\XF\Util\File::getNamedTempFile('banner.png'));
+        $this->takesString(\XF\Util\File::createTempDir());
+        $this->takesString($this->app()->applyExternalDataUrl('acme/banner.png'));
+        $this->takesString($this->app()->applyExternalDataUrlPathed('acme/banner.png', 'canonical'));
+        $this->takesString($this->request()->getBasePath());
+        $this->takesString($this->request()->getFullBasePath());
+
+        // A template function called directly: its result is escaped, so a string, unless told not to.
+        $templater = $this->app()->templater();
+        $this->takesString($templater->func('avatar', [$this->assertRecordExists('XF:User', 1), 's']));
+        $this->takesString($templater->func('avatar', [], true));
+        $this->takesString($templater->func('avatar', [], false));      // ERROR: unescaped, it is whatever the function returned
+        $this->takesString(\XF\Util\File::getTempFile());             // ERROR: tempnam() can fail
+    }
+
+    public function optionRows(): \XF\Option\AbstractOption
+    {
+        // An option's row helpers are protected, so reached from a subclass; the declared list
+        // type on its method is what proves each one at level max.
+        return new class () extends \XF\Option\AbstractOption {
+            /** @return list<string> */
+            public static function rows(\XF\Entity\Option $option): array
+            {
+                return [
+                    self::getTextboxRow($option, []),
+                    self::getSelectRow($option, [], ['a' => 'A']),
+                    self::getRadioRow($option, [], ['a' => 'A']),
+                    self::getCheckboxRow($option, [], ['a' => 'A']),
+                    self::getNumberBoxRow($option, []),
+                ];
+            }
+        };
+    }
+
     /** @param array<string, mixed> $value */
     private function takesArray(array $value): void
     {

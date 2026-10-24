@@ -235,6 +235,24 @@ namespace XF {
          * @return ($contentId is array ? Mvc\Entity\AbstractCollection<Mvc\Entity\Entity> : Mvc\Entity\Entity|null)
          */
         public function findByContentType($contentType, $contentId, $with = []) {}
+
+        /**
+         * The pather closure's result: the url, absolute or prefixed with the path type's base.
+         *
+         * @param mixed $externalPath
+         * @param mixed $canonical
+         *
+         * @return string
+         */
+        public function applyExternalDataUrl($externalPath, $canonical = false) {}
+
+        /**
+         * @param mixed $externalPath
+         * @param mixed $pathType
+         *
+         * @return string
+         */
+        public function applyExternalDataUrlPathed($externalPath, $pathType) {}
     }
 }
 
@@ -636,6 +654,10 @@ namespace XF\Mvc\Entity {
 
 namespace XF\Entity {
 
+    // Declared so that AbstractOption's row helpers may name it; no docblock, for the same reason
+    // as User.
+    class Option extends \XF\Mvc\Entity\Entity {}
+
     // No class docblock: XenForo's own @property lines survive a stub declaration that has none.
     class User extends \XF\Mvc\Entity\Entity
     {
@@ -929,6 +951,105 @@ namespace XF\Http {
          * @return string|false
          */
         public function getUserAgent() {}
+
+        /**
+         * The base url up to its last slash, or '/'.
+         *
+         * @return string
+         */
+        public function getBasePath() {}
+
+        /**
+         * @return string
+         */
+        public function getFullBasePath() {}
+    }
+}
+
+namespace XF\Util {
+
+    class File
+    {
+        /**
+         * @return string
+         */
+        public static function getTempDir() {}
+
+        /**
+         * tempnam(), which is false when the temp directory cannot be written; XenForo does not
+         * check, so a caller that does is ahead of it.
+         *
+         * @param mixed $autoCleanUp
+         *
+         * @return string|false
+         */
+        public static function getTempFile($autoCleanUp = true) {}
+
+        /**
+         * @param mixed $fileName
+         * @param mixed $autoCleanUp
+         *
+         * @return string
+         */
+        public static function getNamedTempFile($fileName, $autoCleanUp = true) {}
+
+        /**
+         * @param mixed $autoCleanUp
+         *
+         * @return string
+         */
+        public static function createTempDir($autoCleanUp = true) {}
+    }
+}
+
+namespace XF\Option {
+
+    // Each row helper returns the templater's form row: markup, or '' for a control that
+    // rendered nothing.
+    abstract class AbstractOption
+    {
+        /**
+         * @param array<string, mixed> $htmlParams
+         * @param mixed $value
+         *
+         * @return string
+         */
+        protected static function getTextboxRow(\XF\Entity\Option $option, array $htmlParams, $value = null) {}
+
+        /**
+         * @param array<string, mixed> $htmlParams
+         * @param array<int|string, mixed> $choices
+         * @param mixed $value
+         *
+         * @return string
+         */
+        protected static function getSelectRow(\XF\Entity\Option $option, array $htmlParams, array $choices, $value = null) {}
+
+        /**
+         * @param array<string, mixed> $htmlParams
+         * @param array<int|string, mixed> $choices
+         * @param mixed $value
+         *
+         * @return string
+         */
+        protected static function getRadioRow(\XF\Entity\Option $option, array $htmlParams, array $choices, $value = null) {}
+
+        /**
+         * @param array<string, mixed> $htmlParams
+         * @param array<int|string, mixed> $choices
+         * @param mixed $value
+         *
+         * @return string
+         */
+        protected static function getCheckboxRow(\XF\Entity\Option $option, array $htmlParams, array $choices, $value = null) {}
+
+        /**
+         * @param array<string, mixed> $htmlParams
+         * @param mixed $value
+         *
+         * @return string
+         */
+        protected static function getNumberBoxRow(\XF\Entity\Option $option, array $htmlParams, $value = null) {}
     }
 }
 

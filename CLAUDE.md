@@ -66,7 +66,8 @@ src/
                         ActionReplyExtension (every undeclared action returns a reply);
                         RelationReturnTypeExtension (a relation by its @property-read);
                         PluckReturnTypeExtension (a plucked finder yields the column);
-                        ContainerReturnTypeExtension (container() with no key is the container)
+                        ContainerReturnTypeExtension (container() with no key is the container);
+                        FuncReturnTypeExtension (a template function's escaped result is a string)
 tests/Fixtures/forum/   the stand-in XenForo install
 ```
 

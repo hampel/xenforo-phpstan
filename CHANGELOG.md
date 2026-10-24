@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.10.2 (2026-10-24)
+
+- return types one adopter met undeclared at level 9 once its own methods were typed, read from
+  2.3.13: `File::getTempFile()` as `string|false` (it is `tempnam()`, unchecked), with
+  `getTempDir()`, `getNamedTempFile()` and `createTempDir()` as strings;
+  `App::applyExternalDataUrl()` and `applyExternalDataUrlPathed()`; `Request::getBasePath()` and
+  `getFullBasePath()`; and `AbstractOption`'s five row helpers as the templater's markup
+- `Templater::func()`, a template function called directly, is a string unless `$escape` is
+  passed false, by an extension: the body escapes the result on every other path
+- README: the level-9 residue once an add-on's own methods are typed, docblock typing on a class
+  other add-ons extend, and the floor config being a second full analysis
+
 ## 0.10.1 (2026-10-24)
 
 - `XF\Options` is XenForo's real class. Every add-on's `_output/option_hint.php` declares an empty

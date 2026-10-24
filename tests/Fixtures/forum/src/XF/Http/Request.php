@@ -14,6 +14,16 @@ class Request
         return $this->getServer('HTTP_USER_AGENT');
     }
 
+    public function getBasePath()
+    {
+        return '/';
+    }
+
+    public function getFullBasePath()
+    {
+        return 'https://example.com' . $this->getBasePath();
+    }
+
     public function getServer($key, $fallback = false)
     {
         return $fallback;

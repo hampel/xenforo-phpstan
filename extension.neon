@@ -201,6 +201,14 @@ services:
         arguments:
             className: XF\App
 
+    # A template function called directly, $templater->func('avatar', [...]), returns its escaped
+    # result, a string, unless $escape is passed false; XenForo declares nothing.
+    -
+        class: Hampel\XenForo\PHPStan\Type\FuncReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+        arguments:
+            className: XF\Template\Templater
+
     # A plucked finder yields the column, or the closure's result, rather than the entity.
     -
         class: Hampel\XenForo\PHPStan\Type\PluckReturnTypeExtension
