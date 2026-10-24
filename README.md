@@ -34,12 +34,13 @@ stub declaring the `XFCP_` parent of every class extension the install has, and 
 extensions read. **Run it again after upgrading XenForo or changing a class extension** — a stale
 set fails loudly, naming the two versions and this command.
 
-**The constraint Composer writes, `^0.5`, is deliberate, and a new minor is a deliberate move.**
+**The `^0.x` constraint Composer writes is deliberate, and a new minor is a deliberate move.**
 Below 1.0 a caret pins the minor, so `^0.4` means `>=0.4 <0.5`: a patch release arrives with
 `composer update`, and a minor does not. Each minor so far has changed what an add-on sees at its
 level, such as a bare `Tree` becoming a missing-generics report, so a minor is taken on purpose,
-with `composer require --dev hampel/xenforo-phpstan:^0.5`, and read against the changelog. If
-`composer update` reports nothing to do after a release, that is the constraint, not Packagist.
+by naming the new minor in the constraint, and read against the changelog, whose entry for each
+minor carries the `composer require` line. If `composer update` reports nothing to do after a
+release, that is the constraint, not Packagist.
 
 The forum is found four directories above the working directory, which is where it is from an
 add-on at `src/addons/<Vendor>/<AddOn>`. From anywhere else, name it:
