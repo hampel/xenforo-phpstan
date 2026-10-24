@@ -42,6 +42,14 @@ class App
     }
 
     /**
+     * @return Options
+     */
+    public function options()
+    {
+        return new Options();
+    }
+
+    /**
      * As XenForo documents it, which PHPStan reads as mixed on both paths.
      *
      * @param string|null $key

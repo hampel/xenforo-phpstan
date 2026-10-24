@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.1 (2026-10-24)
+
+- `XF\Options` is XenForo's real class. Every add-on's `_output/option_hint.php` declares an empty
+  `XF\Options` of its own, and the one PHPStan's directory scan settled on had no `ArrayObject`
+  methods and, under a `phpVersion` below 8.1, carried the analysed add-on's options by accident;
+  the fragment now scans `src/XF/Options.php` by name. An add-on that wants its own options typed
+  lists `_output/option_hint.php` under `stubFiles`, which works at every floor; the README says so
+
 ## 0.10.0 (2026-10-24)
 
 - `$app->container()` with no key, or a null one, is `XF\Container`. XenForo documents the method

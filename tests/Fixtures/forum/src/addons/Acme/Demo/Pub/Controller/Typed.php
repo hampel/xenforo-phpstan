@@ -327,6 +327,16 @@ class Typed extends AbstractController
         $this->takesInt($this->app()->container('acme.demo'));          // ERROR: an entry is mixed
     }
 
+    public function actionOptions(): void
+    {
+        // XF\Options is XenForo's real class, an ArrayObject, scanned by name because every add-on's
+        // option_hint.php declares an empty one too. The add-on's own options are typed from that
+        // hint, listed as a stub; any other option is a magic property and stays undefined.
+        $this->takesMixedArray($this->app()->options()->getArrayCopy());
+        $this->takesStringOrNull($this->app()->options()->acmeDemoTitle);
+        $title = $this->app()->options()->boardTitle;                   // ERROR: an option is magic
+    }
+
     /** @param array<string, mixed> $value */
     private function takesArray(array $value): void
     {
@@ -445,6 +455,11 @@ class Typed extends AbstractController
     }
 
     private function takesContainer(\XF\Container $value): void
+    {
+    }
+
+    /** @param array<mixed> $value */
+    private function takesMixedArray(array $value): void
     {
     }
 

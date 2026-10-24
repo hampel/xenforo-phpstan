@@ -139,6 +139,26 @@ parameters:
         - XF\Mvc\ParameterBag
 ```
 
+Options have a precise answer of their own. XenForo writes an `_output/option_hint.php` for every
+add-on in development mode, each declaring an empty `XF\Options` with that add-on's options as
+`@property` lines, so an install declares the class once for real and once per add-on, and the
+declaration PHPStan's directory scan settled on was not XenForo's: `\XF::options()` had none of
+its `ArrayObject` methods, and carried some add-on's options or none depending on the add-on's
+`phpVersion`. The fragment scans `src/XF/Options.php` by name, which PHPStan consults ahead of the
+directories, so the class is the real one everywhere. An add-on then types its own options by
+listing its hint as a stub:
+
+```yaml
+parameters:
+    stubFiles:
+        - _output/option_hint.php
+```
+
+The stub's `@property` lines are read because the real class allows dynamic properties. Any other
+option, core's included, stays undefined, which is the point: a mistyped name of the add-on's own is
+reported. The stub replaces the class docblock, so `getArrayCopy()` becomes `array<mixed>` with it
+in place.
+
 A crate also decides what a class extension's added columns look like, and the answer depends on
 the PHPStan release. The current release asks the extensions in this package before it applies
 the crate, so a crated `XF\Entity\User` still types `$visitor->vendor_addon_column` from the
@@ -217,8 +237,9 @@ exclude the 2.2 file alone.
 
 PHPStan is told where XenForo's classes are without being asked to report on them:
 `src/XF`, `src/vendor` and `src/addons` are scanned for symbols, `src/XF.php` and `src/utf8.php`
-are read as files because XenForo `require()`s them rather than autoloading them, and every
-add-on's `vendor/` and `_build/` are left out of the scan. The first matters more than it looks:
+are read as files because XenForo `require()`s them rather than autoloading them,
+`src/XF/Options.php` is read as a file because every add-on's option hint declares that class
+too, and every add-on's `vendor/` and `_build/` are left out of the scan. The first matters more than it looks:
 PHPStan consults a scanned directory before the Composer autoloader, so without it an add-on
 resolves a shared dependency from whichever sibling vendored an older release of it. The second
 is the copy of itself a release build makes under `_build/upload/`, which declares every class of

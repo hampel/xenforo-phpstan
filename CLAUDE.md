@@ -245,6 +245,18 @@ tests/Fixtures/forum/   the stand-in XenForo install
   one reported `mixed given` on the same line. The fixture entities now declare their columns as
   XenForo's do, and `crates.neon` is exercised by no test; the README states the two measured
   behaviours rather than a version boundary nobody has measured.
+- **`XF\Options` is declared once per add-on, and the directory scan does not pick XenForo's.**
+  Every `_output/option_hint.php` declares an empty `XF\Options` carrying that add-on's options as
+  `@property` lines. On a forum with 26 of them the class in force had no `ArrayObject` methods,
+  and under a `phpVersion` below 80100, where PHPStan's symbol scan changes mode, it was the
+  analysed add-on's own hint; which declaration wins, and why the floor moves it, was measured on
+  2026-10-24 and not derived. `scanFiles` names the real file, which PHPStan consults before any
+  directory. The fixture cannot reproduce the wrong winner - its one hint loses to core either
+  way - so the forum is the check for that line; the fixture proves the real class is in force
+  and that the hint works as a stub. **PHPStan reads `@property` lines, from a docblock or a
+  stub, only on a class that allows dynamic properties**: `__get()` or `#[\AllowDynamicProperties]`.
+  XenForo's `Options` has the attribute, the fixture's did not, and the stub recipe did nothing in
+  the fixture until it did.
 - **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
   `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
 

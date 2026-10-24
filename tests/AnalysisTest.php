@@ -65,6 +65,7 @@ final class AnalysisTest extends TestCase
             'Typed.php:268 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string|null given.',
             // A class only a sibling's _build/ copy declares: the build directory is not scanned.
             'Typed.php:274 Instantiated class Acme\Other\Stale not found.',
+            'Typed.php:337 Access to an undefined property XF\Options::$boardTitle.',
             'Other.php:23 Call to an undefined method XF\Repository\User::nope().',
             'Other.php:24 Call to an undefined method XF\Repository\UserRepository::nopeClass().',
         ], $messages);
@@ -97,7 +98,7 @@ final class AnalysisTest extends TestCase
     {
         // The controller that uses every member stubs/core.stub types, alone, at level max:
         // each call passes the result where only the stubbed type is accepted, so a stub that
-        // is missing or wrong is a report here. Eleven lines are wrong on purpose.
+        // is missing or wrong is a report here. Twelve lines are wrong on purpose.
         $neon = str_replace('level: 5', 'level: max', $this->addonConfig());
         $neon = preg_replace('#^(\s+)paths:\n(?:\1\s+- .*\n)+#m', "\\1paths:\n\\1    - {$this->addon()}/Pub/Controller/Typed.php\n", $neon);
 
@@ -127,6 +128,8 @@ final class AnalysisTest extends TestCase
             'Typed.php:306 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesString() expects string, string|false given.',
             // container() with no key is the container; a keyed entry is left as XenForo documents it.
             'Typed.php:327 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
+            // XF\Options is the real class, scanned by name; an option is still a magic property.
+            'Typed.php:337 Access to an undefined property XF\Options::$boardTitle.',
         ], $messages);
     }
 
@@ -176,6 +179,9 @@ final class AnalysisTest extends TestCase
                         - {$this->addon()}/_output (?)
                         - {$this->addon()}/_releases (?)
                         - {$this->addon()}/_data (?)
+                # The add-on's own options, typed from the hint XenForo writes for them.
+                stubFiles:
+                    - {$this->addon()}/_output/option_hint.php
                 xenforo:
                     root: {$this->forum()}
                     generated: {$this->generated}
