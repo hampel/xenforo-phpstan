@@ -267,6 +267,12 @@ class declare, with the declared type and writability, so `$visitor->vendor_addo
 is typed and `$visitor->Thing = null` is reported against a `@property-read`. A property the core
 class declares itself is left to PHPStan's own reading of it.
 
+A typed relation exposes the entity behind it. Once `$visitor->Thing` is a `Thing` rather than
+`mixed`, every column read on it is checked, so an add-on entity reached through a relation needs
+its own `@property` block or its columns are reported as undefined from level 2. One adopter's
+move to 0.9 surfaced six such reads on an entity that had never been typed; the docblock from
+`xf-dev:entity-class-properties` cleared them. That is the add-on's gap, found rather than caused.
+
 ### Container shortcuts
 
 `$this->repository('Vendor\AddOn:Name')`, `\XF::service()`, `$this->em()->find('XF:User', $id)`
