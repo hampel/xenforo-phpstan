@@ -105,6 +105,14 @@ services:
         tags:
             - phpstan.broker.methodsClassReflectionExtension
 
+    # Properties a class extension declares on a core class - the columns and relations its
+    # getStructure() adds, as @property and @property-read on the extension - reachable through
+    # the core type.
+    -
+        class: Hampel\XenForo\PHPStan\Reflection\ClassExtensionPropertiesExtension
+        tags:
+            - phpstan.broker.propertiesClassReflectionExtension
+
     # The properties XF\AddOn\AddOn answers by magic: its own nine keys, then the installed
     # entity's columns. Typed one by one, so a mistyped key is still reported.
     -
@@ -178,6 +186,13 @@ services:
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
         arguments:
             className: XF\Mvc\Controller
+
+    # A plucked finder yields the column, or the closure's result, rather than the entity.
+    -
+        class: Hampel\XenForo\PHPStan\Type\PluckReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+        arguments:
+            className: XF\Mvc\Entity\Finder
 
     # Request input, typed from the filter string: filter('id', 'uint') is an int and an array
     # of filters is an array shape, as XF\InputFilterer casts them. One service per class.

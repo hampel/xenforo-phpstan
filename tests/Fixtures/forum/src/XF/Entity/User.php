@@ -3,6 +3,8 @@
 namespace XF\Entity;
 
 /**
+ * @property int|null $user_id
+ * @property string $username
  * @property-read UserOption|null $Option
  */
 class User extends \XF\Mvc\Entity\Entity

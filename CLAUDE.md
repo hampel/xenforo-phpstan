@@ -57,13 +57,15 @@ src/
   Classes.php           loads the generated map, lazily; refuses a stale one by versionId
   Generator/            Generator (boots XF, walks the forum, writes three files), Command (argv),
                         ClassExtension (one XML line), Stub (grouped declarations), Summary
-  Reflection/           ClassExtensionMethodsExtension - methods added by class extensions;
+  Reflection/           ClassExtensionMethodsExtension and ClassExtensionPropertiesExtension -
+                        the methods, columns and relations class extensions add;
                         AddOnPropertiesExtension - the keys XF\AddOn\AddOn answers by magic
   Type/                 Shortcut (the identifier expansion), ShortcutTypes (the method table and
                         the type it yields), the instance and static return type extensions;
                         FilterTypes (filter string to type) and FilterReturnTypeExtension;
                         ActionReplyExtension (every undeclared action returns a reply);
-                        RelationReturnTypeExtension (a relation by its @property-read)
+                        RelationReturnTypeExtension (a relation by its @property-read);
+                        PluckReturnTypeExtension (a plucked finder yields the column)
 tests/Fixtures/forum/   the stand-in XenForo install
 ```
 
@@ -109,6 +111,13 @@ tests/Fixtures/forum/   the stand-in XenForo install
   to mean "leave PHPStan's own type standing". Changing any of those three is a minor here and a
   coordinated move there; say so to that package before tagging. It is a class, not an interface,
   by choice so far: one consumer, and the framework said it would take an interface the same way.
+- **The properties extension steps aside for anything the receiver's lineage declares.** PHPStan
+  consults tagged property extensions before its own reading of `@property` lines and its crate
+  rule, and only on a class that allows dynamic properties, which an entity does through
+  `__get()`. So an extension that restates a core column must not answer ahead of the core
+  class's own declaration, and the fixture `Entity` carries `__get()`/`__set()` because without
+  them PHPStan never asks. `pluckFrom()` reads the column through `Type::hasProperty()` for the
+  same reason: that is the path on which an added column is typed.
 - **The methods extension offers only what the extension class itself declares.** A method the
   core class already has never reaches a `MethodsClassReflectionExtension`; one inherited back
   through `XFCP_` must not be offered, and checking the declaring class against the receiver's
@@ -226,6 +235,15 @@ tests/Fixtures/forum/   the stand-in XenForo install
   job on 2026-10-23 for both reasons, with the other four jobs green, after a local pre-tag check
   that ran `composer check` and the lowest suite but neither half of that job. Run both before
   tagging anything that adds a PHPStan import; the require-checker is a one-line scratch install.
+- **Where PHPStan applies a universal object crate moved between 2.1.22 and the current release,
+  and the fixture stopped including `crates.neon` because of it.** On 2.1.22 the crate is answered
+  inside the first, built-in property extension, so on a crated entity no tagged extension is ever
+  asked and an added column is `mixed`; the current release asks the tagged extensions first. The
+  fixture included `crates.neon` until 0.9.0, which made every entity a crate there and hid this
+  until the lowest job ran on 2026-10-24: the current corner typed the added column, the lowest
+  one reported `mixed given` on the same line. The fixture entities now declare their columns as
+  XenForo's do, and `crates.neon` is exercised by no test; the README states the two measured
+  behaviours rather than a version boundary nobody has measured.
 - **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
   `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
 

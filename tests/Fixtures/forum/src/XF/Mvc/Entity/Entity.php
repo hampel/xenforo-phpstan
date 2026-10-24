@@ -4,6 +4,16 @@ namespace XF\Mvc\Entity;
 
 abstract class Entity
 {
+    // As XenForo declares them: every column and relation is answered by magic.
+    public function __get($key)
+    {
+        return null;
+    }
+
+    public function __set($key, $value)
+    {
+    }
+
     final public function save($throw = true, $newTransaction = true)
     {
         return true;

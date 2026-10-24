@@ -63,4 +63,15 @@ class Finder implements \IteratorAggregate
     {
         return $this->fetch();
     }
+
+    /**
+     * @param $pluckFrom
+     * @param null $keyedBy
+     *
+     * @return Finder
+     */
+    public function pluckFrom($pluckFrom, $keyedBy = null)
+    {
+        return $this;
+    }
 }

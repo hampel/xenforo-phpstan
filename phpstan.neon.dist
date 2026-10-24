@@ -25,6 +25,10 @@ parameters:
             identifier: phpstanApi.constructor
             path: src/Reflection/AddOnPropertiesExtension.php
             count: 1
+        -
+            identifier: phpstanApi.constructor
+            path: src/Reflection/ClassExtensionPropertiesExtension.php
+            count: 1
 
     # Analyse against every PHP version the package claims to support, in one run. Keep in
     # step with the "php" constraint in composer.json.

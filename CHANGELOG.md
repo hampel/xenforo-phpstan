@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.0 (2026-10-24)
+
+- a column or relation a class extension adds to a core entity, declared `@property` or
+  `@property-read` on the extension as `xf-dev:entity-class-properties` writes it, is offered
+  through the core type with its declared type and writability, as the extension's methods
+  already were. Three adopters had the same `property.notFound` from level 2 on `\XF::visitor()`
+  and finder results; `getRelation()` by name finds those relations through the core type too
+- `pluckFrom()` is typed over the plucked value - the entity's type for the column, the closure's
+  return for a closure - so `fetch()->toArray()` after it is no longer an array of entities
+- **Upgrading:** `composer require --dev hampel/xenforo-phpstan:^0.9`; a `^0.8` constraint does not
+  reach this release
+
 ## 0.8.2 (2026-10-24)
 
 - every add-on's `_build/` is left out of the scan, beside its `vendor/`: a release build copies

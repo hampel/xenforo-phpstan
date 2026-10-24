@@ -139,6 +139,13 @@ parameters:
         - XF\Mvc\ParameterBag
 ```
 
+A crate also decides what a class extension's added columns look like, and the answer depends on
+the PHPStan release. The current release asks the extensions in this package before it applies
+the crate, so a crated `XF\Entity\User` still types `$visitor->vendor_addon_column` from the
+extension's `@property` and still reports a write to a `@property-read`; PHPStan 2.1.22 applies
+the crate first, and on a crated entity every added column is `mixed` and nothing is reported.
+Without crates the extension answers on both.
+
 ### A PHP floor below the analysing PHP
 
 An add-on whose floor is below the PHP it is analysed on can have PHPStan hold it to the floor:
@@ -235,7 +242,7 @@ An add-on supporting XenForo 2.2 cannot avoid this by renaming its extensions: t
 classes do not exist in 2.2, and 2.2 has no alias machinery, so the legacy name is the only one
 valid across the range.
 
-### Methods added by class extensions
+### Methods and properties added by class extensions
 
 A class extension adds methods to a core class at runtime — `Vendor\AddOn\XF\Entity\User` adds
 `canUseThing()`, and every `$user` in the forum can call it. Statically every call site is typed to
@@ -249,6 +256,16 @@ the one being analysed**, because the methods a third-party add-on's extensions 
 from any other add-on — and a packaged add-on ships without the `_output/extension_hint.php` that
 would declare its `XFCP_` parents, so those are generated too, from each add-on's committed
 `_data/class_extensions.xml`.
+
+The same goes for a column or a relation an extension adds in `getStructure()`. The extension
+declares it as XenForo declares its own, `@property string $vendor_addon_column` or
+`@property-read Thing|null $Thing` on the class, which is what `xf-dev:entity-class-properties`
+writes; inside the extension PHPStan already reads that, and through the core type, which is what
+`\XF::visitor()`, a finder result or a test helper gives you, the read was `property.notFound`
+from level 2. A second reflection extension offers every property the recorded extensions of a
+class declare, with the declared type and writability, so `$visitor->vendor_addon_column = $x`
+is typed and `$visitor->Thing = null` is reported against a `@property-read`. A property the core
+class declares itself is left to PHPStan's own reading of it.
 
 ### Container shortcuts
 
@@ -311,11 +328,21 @@ the entity's own docblock, so a mistyped key is still reported. A key that exist
 add-on's `addon.json` is not offered; read it through `getJson()`. `XF\Job\JobResult` answers
 `$result->completed` the same way, the one key its `__get()` has, and the stub declares it.
 
+### Plucked columns
+
+`$finder->pluckFrom('user_id')` replaces each fetched entity with that column, or with what a
+closure returns, and XenForo declares it as returning the finder, so `fetch()->toArray()` after it
+was still an array of entities. It is typed over the plucked value instead: the entity's own type
+for the column, an extension's column included, the closure's return type for a closure, and
+`mixed` for a column nothing declares. `fetchOne()` after `pluckFrom('username')` is
+`string|null`.
+
 ### Relations by name
 
 `$user->getRelation('Auth')` and `getRelationOrDefault('Auth')` are typed from the receiver's own
 `@property-read UserAuth|null $Auth`, which every XenForo entity declares for each relation and an
-extension declares for the relations it adds. `getRelation()` keeps the declared nullability;
+extension declares for the relations it adds, through the core type as well since the properties
+extension offers them there. `getRelation()` keeps the declared nullability;
 `getRelationOrDefault()` creates the default, so the result is the entity itself. A name the
 receiver does not declare leaves the call as XenForo left it.
 

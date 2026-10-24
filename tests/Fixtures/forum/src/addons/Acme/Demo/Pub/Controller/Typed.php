@@ -9,6 +9,7 @@ use XF\ContinuationResult;
 use XF\Db\AbstractStatement;
 use XF\Db\Schema\Column;
 use XF\Entity\Node;
+use XF\Entity\User;
 use XF\Entity\UserOption;
 use XF\Job\JobResult;
 use XF\Mvc\Entity\AbstractCollection;
@@ -242,6 +243,31 @@ class Typed extends AbstractController
         $typo = $result->complete;                                      // ERROR: a mistyped job key
     }
 
+    public function profile(User $user): void
+    {
+        // A column and a relation an extension adds, read and written through the core type; the
+        // relation by name finds them too. Another add-on's extension counts the same.
+        $this->takesString($user->acme_demo_note);
+        $user->acme_demo_note = 'x';
+        $this->takesUserOptionOrNull($user->AcmeOption);
+        $this->takesUserOptionOrNull($user->getRelation('AcmeOption'));
+        $this->takesUserOption($user->getRelationOrDefault('AcmeOption'));
+        $this->takesInt($user->acme_other_count);
+        $this->takesInt($user->acme_demo_note);                         // ERROR: the column is a string
+        $user->AcmeOption = null;                                       // ERROR: a relation is read-only
+    }
+
+    public function actionPluck(): void
+    {
+        // pluckFrom() replaces each entity with a column, or with what the closure returns; the
+        // column's type is the entity's own, an extension's column included.
+        $this->takesIdMap($this->finder('XF:User')->pluckFrom('user_id')->fetch()->toArray());
+        $this->takesStringOrNull($this->finder('XF:User')->pluckFrom('username')->fetchOne());
+        $this->takesStringOrNull($this->finder('XF:User')->pluckFrom('acme_demo_note')->fetchOne());
+        $this->takesStrings($this->finder('XF:User')->pluckFrom(fn (User $user): string => $user->username)->fetch()->toArray());
+        $this->takesInt($this->finder('XF:User')->pluckFrom('username')->fetchOne());  // ERROR: plucked a string
+    }
+
     public function actionBuild(): void
     {
         // A sibling's release build is not scanned, so a class only its copy declares is unknown.
@@ -300,6 +326,16 @@ class Typed extends AbstractController
 
     /** @param array<int> $value */
     private function takesIntArray(array $value): void
+    {
+    }
+
+    /** @param array<int|string, int|null> $value */
+    private function takesIdMap(array $value): void
+    {
+    }
+
+    /** @param array<int|string, string> $value */
+    private function takesStrings(array $value): void
     {
     }
 

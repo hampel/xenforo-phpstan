@@ -21,4 +21,12 @@ abstract class AbstractCollection implements \Countable, \IteratorAggregate, \Ar
     {
         return [];
     }
+
+    /**
+     * @return array<int|string,T>
+     */
+    public function toArray()
+    {
+        return [];
+    }
 }

@@ -2,6 +2,13 @@
 
 namespace Acme\Demo\XF\Entity;
 
+/**
+ * A column and a relation the extension adds in getStructure(), declared as XenForo declares
+ * its own and as xf-dev:entity-class-properties writes them.
+ *
+ * @property string $acme_demo_note
+ * @property-read \XF\Entity\UserOption|null $AcmeOption
+ */
 class User extends XFCP_User
 {
     public function canUseDemo(): bool

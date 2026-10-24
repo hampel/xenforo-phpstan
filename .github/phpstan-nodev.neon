@@ -22,3 +22,7 @@ parameters:
             identifier: phpstanApi.constructor
             path: %currentWorkingDirectory%/src/Reflection/AddOnPropertiesExtension.php
             count: 1
+        -
+            identifier: phpstanApi.constructor
+            path: %currentWorkingDirectory%/src/Reflection/ClassExtensionPropertiesExtension.php
+            count: 1
