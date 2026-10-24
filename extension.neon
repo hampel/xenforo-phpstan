@@ -187,6 +187,14 @@ services:
         arguments:
             className: XF\Mvc\Controller
 
+    # $app->container() with no key is the container; XenForo documents it Container|mixed,
+    # which is mixed. A keyed call is left as it is.
+    -
+        class: Hampel\XenForo\PHPStan\Type\ContainerReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+        arguments:
+            className: XF\App
+
     # A plucked finder yields the column, or the closure's result, rather than the entity.
     -
         class: Hampel\XenForo\PHPStan\Type\PluckReturnTypeExtension

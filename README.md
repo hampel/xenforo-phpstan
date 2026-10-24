@@ -292,6 +292,11 @@ classes. It is not safe for a renamed core class while the add-on supports 2.2:
 `\XF\Repository\UserRepository::class` is a string whatever is installed, and on 2.2 the class it
 names does not exist.
 
+`$app->container()` with no key is the container itself, `XF\Container`. XenForo documents the
+method as `Container|mixed`, which PHPStan reads as `mixed` on both paths, so an add-on that
+reaches the container to register or read an entry called every method on it undefined. A keyed
+call stays as XenForo documents it: what an entry holds is a fact about the install.
+
 ### Undeclared return types
 
 XenForo declares no return type on many of the methods every add-on calls: the controller's

@@ -318,6 +318,15 @@ class Typed extends AbstractController
         };
     }
 
+    public function actionContainer(): void
+    {
+        // The container itself when no key is given; an entry is whatever the key holds.
+        $this->takesContainer($this->app()->container());
+        $this->takesContainer($this->app()->container(null));
+        $this->app()->container()->set('acme.demo', 1);
+        $this->takesInt($this->app()->container('acme.demo'));          // ERROR: an entry is mixed
+    }
+
     /** @param array<string, mixed> $value */
     private function takesArray(array $value): void
     {
@@ -432,6 +441,10 @@ class Typed extends AbstractController
     }
 
     private function takesBoolOrInt(bool|int $value): void
+    {
+    }
+
+    private function takesContainer(\XF\Container $value): void
     {
     }
 

@@ -97,7 +97,7 @@ final class AnalysisTest extends TestCase
     {
         // The controller that uses every member stubs/core.stub types, alone, at level max:
         // each call passes the result where only the stubbed type is accepted, so a stub that
-        // is missing or wrong is a report here. Ten lines are wrong on purpose.
+        // is missing or wrong is a report here. Eleven lines are wrong on purpose.
         $neon = str_replace('level: 5', 'level: max', $this->addonConfig());
         $neon = preg_replace('#^(\s+)paths:\n(?:\1\s+- .*\n)+#m', "\\1paths:\n\\1    - {$this->addon()}/Pub/Controller/Typed.php\n", $neon);
 
@@ -125,6 +125,8 @@ final class AnalysisTest extends TestCase
             // Both are partial unions, which level 5 lets through and level 7 reports.
             'Typed.php:305 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesBool() expects bool, bool|int given.',
             'Typed.php:306 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesString() expects string, string|false given.',
+            // container() with no key is the container; a keyed entry is left as XenForo documents it.
+            'Typed.php:327 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
         ], $messages);
     }
 

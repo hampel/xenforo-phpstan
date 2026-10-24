@@ -65,7 +65,8 @@ src/
                         FilterTypes (filter string to type) and FilterReturnTypeExtension;
                         ActionReplyExtension (every undeclared action returns a reply);
                         RelationReturnTypeExtension (a relation by its @property-read);
-                        PluckReturnTypeExtension (a plucked finder yields the column)
+                        PluckReturnTypeExtension (a plucked finder yields the column);
+                        ContainerReturnTypeExtension (container() with no key is the container)
 tests/Fixtures/forum/   the stand-in XenForo install
 ```
 

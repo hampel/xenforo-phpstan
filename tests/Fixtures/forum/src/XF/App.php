@@ -42,6 +42,18 @@ class App
     }
 
     /**
+     * As XenForo documents it, which PHPStan reads as mixed on both paths.
+     *
+     * @param string|null $key
+     *
+     * @return Container|mixed
+     */
+    public function container($key = null)
+    {
+        return $key === null ? new Container() : null;
+    }
+
+    /**
      * @param string $contentType
      * @param int|array $contentId
      * @param string|array $with

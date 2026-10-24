@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0 (2026-10-24)
+
+- `$app->container()` with no key, or a null one, is `XF\Container`. XenForo documents the method
+  as `Container|mixed`, which is `mixed` to PHPStan; a keyed call is left as it is, since what an
+  entry holds is a fact about the install. A new service, hence the minor
+- **Upgrading:** `composer require --dev hampel/xenforo-phpstan:^0.10`; a `^0.9` constraint does
+  not reach this release
+
 ## 0.9.1 (2026-10-24)
 
 - return types two adopters met undeclared at level 10, read from 2.3.13: the schema `Column`'s
