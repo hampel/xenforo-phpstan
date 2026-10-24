@@ -157,7 +157,9 @@ parameters:
 The stub's `@property` lines are read because the real class allows dynamic properties. Any other
 option, core's included, stays undefined, which is the point: a mistyped name of the add-on's own is
 reported. The stub replaces the class docblock, so `getArrayCopy()` becomes `array<mixed>` with it
-in place.
+in place. An add-on that crates `XF\Options` instead is unaffected by any of this, and the choice
+is the usual one: the stub reports a mistyped name of its own and every core option it reads, so
+moving from the crate to the stub costs one ignore per `boardTitle`; the crate checks neither.
 
 A crate also decides what a class extension's added columns look like, and the answer depends on
 the PHPStan release. The current release asks the extensions in this package before it applies
