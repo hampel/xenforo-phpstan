@@ -53,7 +53,7 @@ final class Generator
     ];
 
     /** Directories under an add-on that hold no add-on classes. */
-    private const SKIPPED = ['vendor', 'node_modules', '_data', '_output', '_releases', '_no_upload'];
+    private const SKIPPED = ['vendor', 'node_modules', '_build', '_data', '_output', '_releases', '_no_upload'];
 
     /** @var array<string, string> class => the file its name was derived from */
     private array $files = [];

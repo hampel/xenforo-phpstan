@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.2 (2026-10-24)
+
+- every add-on's `_build/` is left out of the scan, beside its `vendor/`: a release build copies
+  the add-on under `_build/upload/`, which declares each of its classes twice while it exists,
+  and a file deleted while PHPStan read it aborted an adopter's run. `generate` skips it too
+- `AbstractSetup::install()`, `upgrade()` and `uninstall()` may return nothing. XenForo documents
+  `null|StepResult`, against which a setup with a single step, falling out of the method as most
+  do, was a missing return in every add-on that has one
+- `JobResult::$completed`, the one key its `__get()` answers, is `bool`
+- README: PHPStan's `phpVersion` floor is 7.1, below XenForo 2.2's 7.0; a class declared twice
+  inside a `\XF::$versionId` branch gives a `method.childReturnType` PHPStan refuses to ignore,
+  and the answer is two files; the Installation paragraph names no current minor
+
 ## 0.8.1 (2026-10-23)
 
 - `getRelation()` and `getRelationOrDefault()` are typed from the receiver's `@property-read` for

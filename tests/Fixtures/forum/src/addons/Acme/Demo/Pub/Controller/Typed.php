@@ -3,12 +3,14 @@
 namespace Acme\Demo\Pub\Controller;
 
 use Acme\Demo\Service\Widget\CreateService;
+use Acme\Other\Stale;
 use XF\AddOn\AddOn;
 use XF\ContinuationResult;
 use XF\Db\AbstractStatement;
 use XF\Db\Schema\Column;
 use XF\Entity\Node;
 use XF\Entity\UserOption;
+use XF\Job\JobResult;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
@@ -231,6 +233,19 @@ class Typed extends AbstractController
         $this->takesRowOrFalse($db->fetchRow('SELECT 1'));
         $this->takesRows($db->fetchAll('SELECT 1'));
         $this->takesPairs($db->fetchPairs('SELECT 1'));
+    }
+
+    public function jobDone(JobResult $result): void
+    {
+        // The job result answers one key by magic, and nothing else: not a crate.
+        $this->takesBool($result->completed);
+        $typo = $result->complete;                                      // ERROR: a mistyped job key
+    }
+
+    public function actionBuild(): void
+    {
+        // A sibling's release build is not scanned, so a class only its copy declares is unknown.
+        $stale = new Stale();                                           // ERROR: a build copy is not scanned
     }
 
     /** @param array<string, mixed> $value */

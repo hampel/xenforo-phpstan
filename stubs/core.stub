@@ -240,9 +240,41 @@ namespace XF {
 
 namespace XF\AddOn {
 
-    /** Declared so that the return type below validates: the validator cannot see the forum. */
+    /** Declared so that the return types below validate: the validator cannot see the forum. */
     class AddOn
     {
+    }
+
+    class StepResult
+    {
+    }
+
+    abstract class AbstractSetup
+    {
+        /**
+         * XenForo documents each step method as `null|StepResult`, and a setup with a single
+         * step, which is most of them, returns nothing - which PHPStan reports against that
+         * docblock as a missing return. Only core reads the result.
+         *
+         * @param array<string, mixed> $stepParams
+         *
+         * @return StepResult|null|void
+         */
+        abstract public function install(array $stepParams = []);
+
+        /**
+         * @param array<string, mixed> $stepParams
+         *
+         * @return StepResult|null|void
+         */
+        abstract public function upgrade(array $stepParams = []);
+
+        /**
+         * @param array<string, mixed> $stepParams
+         *
+         * @return StepResult|null|void
+         */
+        abstract public function uninstall(array $stepParams = []);
     }
 
     class Manager
@@ -804,6 +836,18 @@ namespace XF\Db {
          * @return int
          */
         public function getQueryCount() {}
+    }
+}
+
+namespace XF\Job {
+
+    /**
+     * The one key __get() answers, as 2.3.13 writes it; any other name is reported.
+     *
+     * @property-read bool $completed
+     */
+    class JobResult
+    {
     }
 }
 

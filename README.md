@@ -172,7 +172,8 @@ parameters:
 
 `vendor/bin/phpstan analyse -c phpstan.floor.neon` is then the floor check, and the plain run
 analyses the tests. An add-on whose release build already lints on the floor PHP may decide
-that is enough and leave `phpVersion` out.
+that is enough and leave `phpVersion` out. PHPStan's own floor is `70100`, so an add-on that
+supports XenForo 2.2's PHP 7.0 holds at 7.1, which is as low as the setting goes.
 
 ### Supporting XenForo 2.2
 
@@ -196,16 +197,26 @@ parameters:
 The same applies to `class_exists()` on a class 2.3 added, and to any branch that runs only on
 2.2.
 
+A class declared twice, inside `if (\XF::$versionId >= 2030000)` and its `else`, because 2.3 added
+a return type to a method the extension overrides, is a different case: read against 2.3, the
+untyped 2.2 declaration is an incompatible override, and `method.childReturnType` is one of the
+reports PHPStan refuses to ignore. Excluding the file loses the 2.3 branch with it. Put the two
+declarations in two files, `require`d from the one the autoloader finds by the same test, and
+exclude the 2.2 file alone.
+
 ## What it does
 
 ### Scans the forum, analyses the add-on
 
 PHPStan is told where XenForo's classes are without being asked to report on them:
 `src/XF`, `src/vendor` and `src/addons` are scanned for symbols, `src/XF.php` and `src/utf8.php`
-are read as files because XenForo `require()`s them rather than autoloading them, and every other
-add-on's `vendor/` is left out of the scan. The last matters more than it looks: PHPStan consults
-a scanned directory before the Composer autoloader, so without it an add-on resolves a shared
-dependency from whichever sibling vendored an older release of it.
+are read as files because XenForo `require()`s them rather than autoloading them, and every
+add-on's `vendor/` and `_build/` are left out of the scan. The first matters more than it looks:
+PHPStan consults a scanned directory before the Composer autoloader, so without it an add-on
+resolves a shared dependency from whichever sibling vendored an older release of it. The second
+is the copy of itself a release build makes under `_build/upload/`, which declares every class of
+that add-on twice while it exists, and aborts the run if the build deletes a file as PHPStan
+reads it.
 
 ### Legacy class names
 
@@ -281,20 +292,24 @@ the adapter's `fetchRow()`, `fetchAll()` and `fetchPairs()`, and `Structure`'s `
 `$relations`.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
-read from 2.3.13. Two documented types are corrected rather than transcribed:
-`stubs/db-schema.stub` the schema builder's `null` index name, and `core.stub` the `array`
+read from 2.3.13. Three documented types are corrected rather than transcribed:
+`stubs/db-schema.stub` the schema builder's `null` index name; `core.stub` the `array`
 XenForo claims for `AbstractAdapter::query()`'s parameters, which core itself passes as a scalar
-and the statement wraps. The finder's fluent methods are declared as returning `static`, so a
-chain keeps the entity type the finder was created with, which XenForo's own `@return Finder`
-on `order()` lost. Iterating a collection, or a finder, yields its entity: `getIterator()` is
-restated on both, because a class declared in a stub loses XenForo's own docblock on that one
-method.
+and the statement wraps; and the `null|StepResult` XenForo documents on `AbstractSetup`'s
+`install()`, `upgrade()` and `uninstall()`, which a setup with a single step falls out of without
+returning, as most do, and which PHPStan reported as a missing return in every one of them. The
+stub adds `void`; only core reads the result. The finder's fluent methods are declared as
+returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
+own `@return Finder` on `order()` lost. Iterating a collection, or a finder, yields its entity:
+`getIterator()` is restated on both, because a class declared in a stub loses XenForo's own
+docblock on that one method.
 
 The add-on object `AddOn\Manager::getById()` returns answers `$addOn->title` and
 `$addOn->version_string` by magic, nine keys of its own and then any column of the installed
 `XF\Entity\AddOn`. Each is typed individually, the keys from their getters and the columns from
 the entity's own docblock, so a mistyped key is still reported. A key that exists only in the
-add-on's `addon.json` is not offered; read it through `getJson()`.
+add-on's `addon.json` is not offered; read it through `getJson()`. `XF\Job\JobResult` answers
+`$result->completed` the same way, the one key its `__get()` has, and the stub declares it.
 
 ### Relations by name
 

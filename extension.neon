@@ -38,6 +38,10 @@ parameters:
             # each file with fnmatch(), so a pattern ending in /vendor matches only the
             # directory entry and nothing inside it.
             - %xenforo.root%/src/addons/*/*/vendor/*
+            # A release build copies the add-on under _build/upload/, present while the build
+            # runs and after one that failed. Scanned, it declares every class of that add-on
+            # twice; a file deleted while PHPStan reads it aborts the run.
+            - %xenforo.root%/src/addons/*/*/_build/*
 
     scanFiles:
         # \XF itself, and utf8_substr() and friends, which XenForo require()s rather than

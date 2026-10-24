@@ -131,6 +131,10 @@ tests/Fixtures/forum/   the stand-in XenForo install
   report every callback declared narrower than `int|string` for the id. The one parameter
   corrected against XenForo's declaration is `AbstractAdapter::query()`'s `$params`, documented
   `array` and passed as a scalar by core itself, which the documented type reported at level 5.
+  The one return widened is `AbstractSetup`'s three step methods, documented `null|StepResult`
+  and given `void` as well, because a single-step setup returns nothing and PHPStan reported
+  every one as a missing return; a stub's own `array` parameter is reported by the stub validator
+  at the consumer's level, so a stub types the value even where XenForo does not.
 - **The add-on object's properties are typed one by one, not crated.** `XF\AddOn\AddOn` answers
   nine keys itself and then the installed entity's columns, and every add-on that reports its
   version reads them. A crate would silence a mistyped key with the rest; the extension offers
