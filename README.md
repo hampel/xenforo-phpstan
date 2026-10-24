@@ -200,9 +200,12 @@ parameters:
 ```
 
 `vendor/bin/phpstan analyse -c phpstan.floor.neon` is then the floor check, and the plain run
-analyses the tests. An add-on whose release build already lints on the floor PHP may decide
-that is enough and leave `phpVersion` out. PHPStan's own floor is `70100`, so an add-on that
-supports XenForo 2.2's PHP 7.0 holds at 7.1, which is as low as the setting goes.
+analyses the tests. It inherits the level as well as the paths, so it is a second full analysis
+of the shipped code, not a syntax check; `level: 0` in the floor file makes it the syntax check
+alone, because a parse error is reported at every level. An add-on whose release build already
+lints on the floor PHP may decide that is enough and leave `phpVersion` out. PHPStan's own floor
+is `70100`, so an add-on that supports XenForo 2.2's PHP 7.0 holds at 7.1, which is as low as the
+setting goes.
 
 ### Supporting XenForo 2.2
 
@@ -225,6 +228,13 @@ parameters:
 
 The same applies to `class_exists()` on a class 2.3 added, and to any branch that runs only on
 2.2.
+
+Level 6 asks for a return type on every method, and on a class other add-ons extend the native
+form is a breaking change: an override written without it, as every one against the untyped
+original was, is an incompatible declaration, which PHP refuses to load. That covers any class
+the add-on registers through `extendClass()`, and any other it expects to be subclassed. Type
+those methods by docblock, which PHPStan reads the same way and PHP does not check; a class
+nobody extends can take the native type.
 
 A class declared twice, inside `if (\XF::$versionId >= 2030000)` and its `else`, because 2.3 added
 a return type to a method the extension overrides, is a different case: read against 2.3, the
@@ -425,9 +435,13 @@ route parameters, which no static type can know.
 never infers a return type across a method boundary, so an untyped method of the add-on's own
 hands `mixed` to every caller, and each use of the result is a report. On one add-on, half of the
 level-max total came from a single untyped test helper; typing the helpers answered all of it.
-Before reading a residual as XenForo's, `\PHPStan\dumpType()` on the value says whose type is
-missing. One residual that is neither: Symfony Console's `getOption()` and `getArgument()`
-return `mixed` by Symfony's own declaration, so a CLI command narrows them itself.
+What remains once the add-on's own methods are typed is core methods with no declared return
+type that the stubs do not yet cover: on another add-on, six of them. An inline `@var` on the
+result narrows one in shipped code, and `assertIsString()` and its siblings narrow one in a
+test; the list above grows from exactly these reports. Before reading a residual as XenForo's,
+`\PHPStan\dumpType()` on the value says whose type is missing. One residual that is neither:
+Symfony Console's `getOption()` and `getArgument()` return `mixed` by Symfony's own declaration,
+so a CLI command narrows them itself.
 
 ## Limitations
 
