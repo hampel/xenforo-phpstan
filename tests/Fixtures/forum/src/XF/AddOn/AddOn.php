@@ -11,6 +11,11 @@ class AddOn
         return null;
     }
 
+    public function getJson()
+    {
+        return [];
+    }
+
     public function __get($key)
     {
         return null;

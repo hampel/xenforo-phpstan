@@ -305,8 +305,10 @@ adapter's `quote()`, `fetchAllColumn()` and `getQueryCount()`, `Entity::save()`,
 `canViewBasicProfile()` and `hasAdminPermission()`, `Entity::getErrors()`,
 `ValidateAndSavableTrait::validate()` and what it writes to `$errors`,
 `MergeService::setSource()`, `setTarget()` and `merge()`, `ContinuationResult::completed()`,
-the adapter's `fetchRow()`, `fetchAll()` and `fetchPairs()`, and `Structure`'s `$columns` and
-`$relations`.
+the adapter's `fetchRow()`, `fetchAll()`, `fetchPairs()` and `fetchAllKeyed()`, `Structure`'s
+`$columns` and `$relations`, the schema `Column`'s fluent setters, `User::hasPermission()`,
+`hasContentPermission()` and `hasNodePermission()`, `AddOn::getJson()`,
+`RegistrationService::_save()`, `Request::getUserAgent()` and `Templater::fnAvatar()`.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
 read from 2.3.13. Three documented types are corrected rather than transcribed:
@@ -317,7 +319,11 @@ and the statement wraps; and the `null|StepResult` XenForo documents on `Abstrac
 returning, as most do, and which PHPStan reported as a missing return in every one of them. The
 stub adds `void`; only core reads the result. The finder's fluent methods are declared as
 returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
-own `@return Finder` on `order()` lost. Iterating a collection, or a finder, yields its entity:
+own `@return Finder` on `order()` lost; the schema `Column`'s setters are declared the same way.
+Two of the types are wider than an adopter asked for, because the body is: `hasPermission()` and
+its two siblings return the permission's value, a bool for a flag and an int for an integer
+permission such as `maxMentionedUsers`; `getUserAgent()` returns `getServer()`'s default of
+`false` when the request sent no agent, which a string column set from it does not survive. Iterating a collection, or a finder, yields its entity:
 `getIterator()` is restated on both, because a class declared in a stub loses XenForo's own
 docblock on that one method.
 

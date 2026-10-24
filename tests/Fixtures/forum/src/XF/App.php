@@ -34,6 +34,14 @@ class App
     }
 
     /**
+     * @return Template\Templater
+     */
+    public function templater()
+    {
+        return new Template\Templater();
+    }
+
+    /**
      * @param string $contentType
      * @param int|array $contentId
      * @param string|array $with

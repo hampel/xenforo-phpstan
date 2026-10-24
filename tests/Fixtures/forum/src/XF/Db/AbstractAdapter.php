@@ -42,6 +42,11 @@ abstract class AbstractAdapter
         return [];
     }
 
+    public function fetchAllKeyed($query, $key, $params = [])
+    {
+        return [];
+    }
+
     public function getQueryCount()
     {
         return 0;

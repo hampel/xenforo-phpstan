@@ -274,6 +274,50 @@ class Typed extends AbstractController
         $stale = new Stale();                                           // ERROR: a build copy is not scanned
     }
 
+    public function actionLevelTen(): void
+    {
+        // Returns adopters met undeclared at level 10, each used as the method body says.
+        $column = (new \XF\Db\Schema\Create())->addColumn('note', 'varchar', 50);
+        $this->takesColumn($column->type('text')->length(100)->values(['a'])->addValues(['b'])->removeValues(['a'])->unsigned());
+        $this->takesColumn($column->nullable()->setDefault('')->autoIncrement()->primaryKey()->comment('x')->after('id'));
+        $this->takesColumn($column->renameTo('memo')->resetDefinition());
+
+        // A permission's value: a flag is a bool, an integer permission is its int.
+        $user = $this->assertRecordExists('XF:User', 1);
+        $this->takesBoolOrInt($user->hasPermission('general', 'maxMentionedUsers'));
+        $this->takesBoolOrInt($user->hasContentPermission('node', 1, 'view'));
+        $this->takesBoolOrInt($user->hasNodePermission(1, 'view'));
+
+        $addOn = $this->app()->addOnManager()->getById('Acme/Demo');
+        if ($addOn !== null) {
+            $this->takesArray($addOn->getJson());
+        }
+
+        $this->takesKeyedRows($this->app()->db()->fetchAllKeyed('SELECT 1', 'id'));
+
+        // No user agent at all is getServer()'s fallback, false; a string column set from it is not.
+        $this->takesStringOrFalse($this->request()->getUserAgent());
+
+        $templater = $this->app()->templater();
+        $this->takesString($templater->fnAvatar($templater, $escape, $user, 's'));
+        $this->takesBool($escape);
+
+        $this->takesBool($user->hasPermission('general', 'maxMentionedUsers'));  // ERROR: an integer permission is an int
+        $this->takesString($this->request()->getUserAgent());                   // ERROR: no user agent is false
+    }
+
+    public function register(): \XF\Service\User\RegistrationService
+    {
+        // An extension's `return parent::_save()`: the registered user, which XenForo leaves
+        // undeclared. A declared return on the override is what proves it at level max.
+        return new class ($this->app()) extends \XF\Service\User\RegistrationService {
+            protected function _save(): User
+            {
+                return parent::_save();
+            }
+        };
+    }
+
     /** @param array<string, mixed> $value */
     private function takesArray(array $value): void
     {
@@ -384,6 +428,19 @@ class Typed extends AbstractController
     }
 
     private function takesStatement(AbstractStatement $value): void
+    {
+    }
+
+    private function takesBoolOrInt(bool|int $value): void
+    {
+    }
+
+    private function takesStringOrFalse(string|false $value): void
+    {
+    }
+
+    /** @param array<int|string, array<string, mixed>> $value */
+    private function takesKeyedRows(array $value): void
     {
     }
 

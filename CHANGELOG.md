@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.1 (2026-10-24)
+
+- return types two adopters met undeclared at level 10, read from 2.3.13: the schema `Column`'s
+  fourteen fluent setters as `static`, `User::hasPermission()`, `hasContentPermission()` and
+  `hasNodePermission()` as `bool|int` (the permission's value: an integer permission returns its
+  int), `AddOn::getJson()`, `AbstractAdapter::fetchAllKeyed()`, `RegistrationService::_save()`
+  as the registered user, `Request::getUserAgent()` as `string|false` (no agent at all is
+  `getServer()`'s fallback, which cost one adopter a broken registration path), and
+  `Templater::fnAvatar()` as a string that sets `$escape` false
+
 ## 0.9.0 (2026-10-24)
 
 - a column or relation a class extension adds to a core entity, declared `@property` or

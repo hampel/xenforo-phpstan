@@ -240,9 +240,16 @@ namespace XF {
 
 namespace XF\AddOn {
 
-    /** Declared so that the return types below validate: the validator cannot see the forum. */
+    /** Declared so that Manager::getById() below validates: the validator cannot see the forum. */
     class AddOn
     {
+        /**
+         * The add-on's addon.json as read: the keys the file declares, which is where a key the
+         * object's magic properties do not answer lives.
+         *
+         * @return array<string, mixed>
+         */
+        public function getJson() {}
     }
 
     class StepResult
@@ -657,6 +664,35 @@ namespace XF\Entity {
          * @return bool
          */
         public function hasAdminPermission($permissionId) {}
+
+        /**
+         * The permission's value, not a flag: the permission cache holds a flag permission as a
+         * bool and an integer permission such as maxMentionedUsers as its int, and these return
+         * whichever the name has, false when it is unknown.
+         *
+         * @param mixed $group
+         * @param mixed $permission
+         *
+         * @return bool|int
+         */
+        public function hasPermission($group, $permission) {}
+
+        /**
+         * @param mixed $contentType
+         * @param mixed $contentId
+         * @param mixed $permission
+         *
+         * @return bool|int
+         */
+        public function hasContentPermission($contentType, $contentId, $permission) {}
+
+        /**
+         * @param mixed $contentId
+         * @param mixed $permission
+         *
+         * @return bool|int
+         */
+        public function hasNodePermission($contentId, $permission) {}
     }
 
     class Node extends \XF\Mvc\Entity\Entity
@@ -767,6 +803,17 @@ namespace XF\Service\User {
          */
         public function merge($maxRunTime = 0) {}
     }
+
+    class RegistrationService
+    {
+        /**
+         * The user it registered, after saving it. Reached as parent::_save() from the extension
+         * every add-on that touches registration has.
+         *
+         * @return \XF\Entity\User
+         */
+        protected function _save() {}
+    }
 }
 
 namespace XF\Db {
@@ -833,6 +880,17 @@ namespace XF\Db {
         public function fetchPairs($query, $params = []) {}
 
         /**
+         * Rows keyed by the named column's value, or by a counter where a row lacks it.
+         *
+         * @param mixed $query
+         * @param mixed $key
+         * @param mixed $params
+         *
+         * @return array<int|string, array<string, mixed>>
+         */
+        public function fetchAllKeyed($query, $key, $params = []) {}
+
+        /**
          * @return int
          */
         public function getQueryCount() {}
@@ -863,5 +921,35 @@ namespace XF\Http {
          * @return ($key is array ? array<string, mixed> : mixed)
          */
         public function filter($key, $type = null, $default = null) {}
+
+        /**
+         * getServer('HTTP_USER_AGENT') with its default fallback, so false when the request sent
+         * no agent at all - which a string column set from it does not survive.
+         *
+         * @return string|false
+         */
+        public function getUserAgent() {}
+    }
+}
+
+namespace XF\Template {
+
+    class Templater
+    {
+        /**
+         * The avatar markup. $escape is set false on every path, as every fn* that returns
+         * markup sets it.
+         *
+         * @param mixed $templater
+         * @param mixed $escape
+         * @param mixed $user
+         * @param mixed $size
+         * @param mixed $canonical
+         * @param mixed $attributes
+         * @param-out bool $escape
+         *
+         * @return string
+         */
+        public function fnAvatar($templater, &$escape, $user, $size, $canonical = false, $attributes = []) {}
     }
 }

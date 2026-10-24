@@ -9,10 +9,10 @@
  * addColumn() is restated too, with the return type XenForo leaves undeclared: a class can be
  * declared in one stub file only, so every correction to AbstractDdl lives here.
  *
- * Index and Column are declared here as well, empty, because PHPStan checks a stub against the
+ * Index and Column are declared here as well, because PHPStan checks a stub against the
  * classes it can autoload or the stub declares - not against the scanned forum - and would
- * otherwise report the return types as unknown. An empty declaration adds nothing to the real
- * class.
+ * otherwise report the return types as unknown. Index is empty, which adds nothing to the real
+ * class; Column carries its fluent setters, since a class may be declared in one stub file only.
  */
 
 namespace XF\Db\Schema;
@@ -23,6 +23,105 @@ class Index
 
 class Column
 {
+    /**
+     * The fluent setters return $this, undeclared, so a chain such as
+     * addColumn()->type()->nullable() lost the column after the first call at level 7 and above.
+     * drop() returns nothing and is left alone.
+     *
+     * @param mixed $renameTo
+     *
+     * @return static
+     */
+    public function renameTo($renameTo) {}
+
+    /**
+     * @param mixed $type
+     * @param mixed $length
+     *
+     * @return static
+     */
+    public function type($type, $length = null) {}
+
+    /**
+     * @param mixed $length
+     *
+     * @return static
+     */
+    public function length($length) {}
+
+    /**
+     * @param mixed $values
+     *
+     * @return static
+     */
+    public function values($values) {}
+
+    /**
+     * @param mixed $values
+     *
+     * @return static
+     */
+    public function addValues($values) {}
+
+    /**
+     * @param mixed $values
+     *
+     * @return static
+     */
+    public function removeValues($values) {}
+
+    /**
+     * @param mixed $unsigned
+     *
+     * @return static
+     */
+    public function unsigned($unsigned = null) {}
+
+    /**
+     * @param mixed $nullable
+     *
+     * @return static
+     */
+    public function nullable($nullable = null) {}
+
+    /**
+     * @param mixed $default
+     *
+     * @return static
+     */
+    public function setDefault($default) {}
+
+    /**
+     * @param mixed $autoIncrement
+     * @param mixed $setAsPrimary
+     *
+     * @return static
+     */
+    public function autoIncrement($autoIncrement = null, $setAsPrimary = true) {}
+
+    /**
+     * @return static
+     */
+    public function primaryKey() {}
+
+    /**
+     * @param mixed $comment
+     *
+     * @return static
+     */
+    public function comment($comment) {}
+
+    /**
+     * @param mixed $after
+     *
+     * @return static
+     */
+    public function after($after) {}
+
+    /**
+     * @return static
+     */
+    public function resetDefinition() {}
 }
 
 abstract class AbstractDdl

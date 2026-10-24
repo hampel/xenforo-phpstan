@@ -34,4 +34,19 @@ class User extends \XF\Mvc\Entity\Entity
     {
         return false;
     }
+
+    public function hasPermission($group, $permission)
+    {
+        return false;
+    }
+
+    public function hasContentPermission($contentType, $contentId, $permission)
+    {
+        return false;
+    }
+
+    public function hasNodePermission($contentId, $permission)
+    {
+        return false;
+    }
 }

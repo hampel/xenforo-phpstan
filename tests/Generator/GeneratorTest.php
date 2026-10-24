@@ -87,6 +87,7 @@ final class GeneratorTest extends TestCase
             'XF\Service\Abstract' => 'XF\Service\AbstractService',
             'XF\Service\User\AbstractConfirmation' => 'XF\Service\User\AbstractConfirmationService',
             'XF\Service\User\Merge' => 'XF\Service\User\MergeService',
+            'XF\Service\User\Registration' => 'XF\Service\User\RegistrationService',
         ], $data['aliases']);
 
         $this->assertSame(2, $data['format']);
