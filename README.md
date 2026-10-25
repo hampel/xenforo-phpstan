@@ -159,7 +159,23 @@ option, core's included, stays undefined, which is the point: a mistyped name of
 reported. The stub replaces the class docblock, so `getArrayCopy()` becomes `array<mixed>` with it
 in place. An add-on that crates `XF\Options` instead is unaffected by any of this, and the choice
 is the usual one: the stub reports a mistyped name of its own and every core option it reads, so
-moving from the crate to the stub costs one ignore per `boardTitle`; the crate checks neither.
+moving from the crate to the stub costs one ignore per `boardTitle`, or the core stub below; the
+crate checks neither.
+
+Core options can be typed the same way. XenForo's `xf-dev:generate-options-stub` writes a file of
+the same shape for any set of add-ons, core alone by default, from the option data, so it needs
+development mode and the database:
+
+```bash
+php cmd.php xf-dev:generate-options-stub --addon=XF --addon=Vendor/AddOn /path/to/Options.stub
+```
+
+Name that one file in `stubFiles` in place of the hint, and `\XF::options()->boardTitle` is
+`string|null` beside the add-on's own options, while a misspelt name is still reported. **One
+file, because a class may be declared in one stub only**, which is why core and the add-on go into
+the same run. It is generated from option data rather than committed source, so it is stale the
+moment an option changes and nothing regenerates it for you; keep it with the other generated
+files rather than in the add-on.
 
 A crate also decides what a class extension's added columns look like, and the answer depends on
 the PHPStan release. The current release asks the extensions in this package before it applies
