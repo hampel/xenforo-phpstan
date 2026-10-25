@@ -160,7 +160,10 @@ reported. The stub replaces the class docblock, so `getArrayCopy()` becomes `arr
 in place. An add-on that crates `XF\Options` instead is unaffected by any of this, and the choice
 is the usual one: the stub reports a mistyped name of its own and every core option it reads, so
 moving from the crate to the stub costs one ignore per `boardTitle`, or the core stub below; the
-crate checks neither.
+crate checks neither. An add-on with no options of its own that reads one or two of core's has no
+hint to list, so its choice is between the generated file below and the crate, and for a
+`boardUrl` read the crate is the usual answer: there is no name of its own for the stub to check,
+and nothing to regenerate.
 
 Core options can be typed the same way. XenForo's `xf-dev:generate-options-stub` writes a file of
 the same shape for any set of add-ons, core alone by default, from the option data, so it needs
@@ -505,7 +508,10 @@ add-on had 8 errors at level 2, 28 of the 44 had ten or fewer, and most of what 
 add-on's own to fix. Level 5 is a reasonable target once the call sites are tidy; level 6 is the
 missing-typehint wall. With the stubs above, level max is reachable: on one small add-on it
 reports a third fewer than without them, and what remains is the add-on's own typing and
-route parameters, which no static type can know.
+route parameters, which no static type can know. The climb finds things on the way: level 8 is
+where a nullable return is reported at the place it is used, and one add-on learned there that
+XFMG's `MediaItem::getThumbnailUrl()` returns null until a thumbnail exists, having rendered the
+null as an empty `src` until then.
 
 **Above level 8, most of what is left is the add-on describing itself, not the forum.** PHPStan
 never infers a return type across a method boundary, so an untyped method of the add-on's own
@@ -518,6 +524,26 @@ exactly these reports, the last six from one add-on. Before reading a residual a
 `\PHPStan\dumpType()` on the value says whose type is missing. One residual that is neither:
 Symfony Console's `getOption()` and `getArgument()` return `mixed` by Symfony's own declaration,
 so a CLI command narrows them itself.
+
+A custom BB code callback is a method of the add-on's own, so its parameters are the add-on's to
+declare, and XenForo's documented signature is wider than what arrives. The renderer parameter is
+documented as `AbstractRenderer`, but only `Html::getCustomTagConfig()` registers a callback and
+`Html::renderTag()` passes itself, so the renderer is always `Html` or one of its subclasses, and
+declaring it so is accurate where the abstract type leaves `filterString()` undefined. The parsed
+tag has one shape, each child a string or another tag of the same shape:
+
+```php
+/**
+ * @param list<string|array<string, mixed>> $children
+ * @param string|null $option
+ * @param array{tag: string, option: string|null, original: array{string, string}, children: list<string|array<string, mixed>>} $tag
+ * @param array<string, mixed> $options
+ */
+public static function renderTagExample($children, $option, array $tag, array $options, Html $renderer)
+```
+
+A tag whose definition has `has_option` set to `yes` never arrives with a null option, because
+`RuleSet::validateTag()` rejects one before the callback is reached.
 
 ## Limitations
 
