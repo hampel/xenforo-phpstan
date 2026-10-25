@@ -52,6 +52,17 @@ abstract class Controller
         return new Reply\Message();
     }
 
+    // As XenForo documents it; the message goes to error(), which also takes a list.
+    /**
+     * @param \XF\Phrase|string|null $message
+     *
+     * @return Reply\AbstractReply
+     */
+    public function noPermission($message = null)
+    {
+        return new Reply\Error();
+    }
+
     public function exception(Reply\AbstractReply $reply)
     {
         return new Reply\Exception($reply);

@@ -83,6 +83,13 @@ tests/Fixtures/forum/   the stand-in XenForo install
   `\XF::start()` registers autoloaders and connects to nothing.
 - **It walks `src/addons` as well as `src/XF`**, because XenForo aliases a renamed add-on class
   exactly as it aliases core; an add-on that has adopted the suffixed names depends on it.
+- **An inactive extension is declared and not applied, and a missing extended class gets
+  XenForo's fake base.** `Extension::extendClass()` skips an extension registered `active="0"`,
+  and for a view, finder or repository requested by name that does not exist it aliases the fake
+  base it was given; the generator mirrors both, from the XML attribute and from file existence
+  by the same path rule it reads classes with, rather than `class_exists()`, which would load
+  add-on code. Anywhere else a missing class gets no extension at runtime, and the hint is left
+  naming it.
 - **The class shape is read from the file, not from reflection.** Loading every aliased class to
   ask `isAbstract()` would execute third-party add-on code in the generator process; a regex on
   the declaration line answers the same question. A trait or enum cannot be subclassed and is
@@ -139,9 +146,12 @@ tests/Fixtures/forum/   the stand-in XenForo install
   The one parameter typed beyond XenForo's declaration is `Tree::__construct()`'s `$data`,
   because a template binds nowhere else and the body iterates it on its first line, so nothing
   that runs is refused; its callbacks stay plain `Closure`, since typing their parameters would
-  report every callback declared narrower than `int|string` for the id. The one parameter
-  corrected against XenForo's declaration is `AbstractAdapter::query()`'s `$params`, documented
-  `array` and passed as a scalar by core itself, which the documented type reported at level 5.
+  report every callback declared narrower than `int|string` for the id. A correction
+  against XenForo's own declaration is a category of its own: marked `Corrected:` in the stub, each
+  held by a fixture class that carries XenForo's docblock, and proved by running the suite against
+  the previous stub, which reports every such line. The first was `AbstractAdapter::query()`'s
+  `$params`, documented `array` and passed as a scalar by core itself, which the documented type
+  reported at level 5; the README lists the rest.
   The one return widened is `AbstractSetup`'s three step methods, documented `null|StepResult`
   and given `void` as well, because a single-step setup returns nothing and PHPStan reported
   every one as a missing return; a stub's own `array` parameter is reported by the stub validator
@@ -258,6 +268,10 @@ tests/Fixtures/forum/   the stand-in XenForo install
   stub, only on a class that allows dynamic properties**: `__get()` or `#[\AllowDynamicProperties]`.
   XenForo's `Options` has the attribute, the fixture's did not, and the stub recipe did nothing in
   the fixture until it did.
+- **PHPStan reads no `@extends` docblock on an anonymous class inside an array literal.** The
+  template stays at its bound, so a `@param T` accepts anything of the bound and a correction to
+  it cannot be proved there; the control run on 2026-10-25 reported twelve of thirteen fixture
+  lines, and the template case moved to a named class, `ActivityLog\UserHandler`.
 - **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
   `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
 

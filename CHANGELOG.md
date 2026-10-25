@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.10.3 (2026-10-25)
+
+- thirteen documented types corrected where XenForo's own code contradicts the docblock, each held
+  by a fixture class carrying that docblock and reported against the previous stub:
+  `AbstractCollection::filter()` and `groupBy()` callables, `Controller::noPermission()` taking a
+  list, `AbstractWidget::render()` returning a renderer, `Purchase::$purchasableId` as an entity
+  id, `ActivityLogRepository::log()` taking one map,
+  `AttachmentRepository::addAttachmentsToContent()` taking an array, the activity log handler's
+  positional `getReplyMetricsSimple()` parameters and its `getReactionMetrics()` taking a child,
+  `Stats\AbstractHandler::adjustStatValue()` returning a float, and three handler titles returned
+  as phrases
+- the generator mirrors two registration-time decisions: an extension registered `active="0"` is
+  declared and not applied, and an extension of a view, finder or repository the forum does not
+  have gets the fake base XenForo substitutes, so an optional integration's chain resolves
+- README: core options typed through XenForo's own `xf-dev:generate-options-stub`, in one stub
+  with the add-on's hint
+
 ## 0.10.2 (2026-10-24)
 
 - return types one adopter met undeclared at level 9 once its own methods were typed, read from

@@ -124,18 +124,41 @@ final class Generator
         $extensionStub = new Stub();
         $map = [];
         $legacy = 0;
+        $inactive = 0;
+        $fakeBased = 0;
         foreach ($extensions as [$extension, $addon]) {
-            $hint = $extension->hintClass();
-            $pos = strrpos($hint, '\\');
-            $extensionStub->add(
-                substr($hint, 0, (int) $pos),
-                sprintf('class %s extends \\%s {}', substr($hint, $pos + 1), $extension->fromClass),
-            );
-
             // Extension::extendClass() normalises the registered name through
             // \XF::getClassForAlias(), so an extension of a legacy name applies to the renamed
             // class. The map is keyed the same way.
             $resolved = \XF::getClassForAlias($extension->fromClass);
+
+            // A view, finder or repository is requested through a path that names a fake base
+            // class, and XenForo aliases that to the extended name when no such class exists -
+            // an optional integration's extension of an add-on this forum does not have. The
+            // hint's parent is the fake base then, as the runtime one is; anywhere else XenForo
+            // applies no extension at all, and the hint is left naming the class it cannot find.
+            $parent = $extension->fromClass;
+            $fakeBase = self::fakeBase($resolved);
+            if ($fakeBase !== null && ! is_file($this->classFile($resolved))) {
+                $parent = $fakeBase;
+                $fakeBased++;
+            }
+
+            $hint = $extension->hintClass();
+            $pos = strrpos($hint, '\\');
+            $extensionStub->add(
+                substr($hint, 0, (int) $pos),
+                sprintf('class %s extends \\%s {}', substr($hint, $pos + 1), $parent),
+            );
+
+            // An inactive extension's class still exists, so its parent is declared; XenForo
+            // does not apply it, so nothing it adds is offered.
+            if (! $extension->active) {
+                $inactive++;
+
+                continue;
+            }
+
             if ($resolved !== $extension->fromClass) {
                 $legacy++;
             }
@@ -172,6 +195,8 @@ final class Generator
             extensions: $extensionStub->count(),
             legacyExtensions: $legacy,
             extendedClasses: count($map),
+            inactiveExtensions: $inactive,
+            fakeBaseExtensions: $fakeBased,
         );
     }
 
@@ -239,6 +264,37 @@ final class Generator
                 yield $prefix . str_replace('/', '\\', $relative) => $file->getPathname();
             }
         }
+    }
+
+    /**
+     * The file a class is declared in, by the same path rule classFiles() reads a class from:
+     * src/XF for core, src/addons for everything else. Asked of the file rather than of
+     * class_exists(), which would load add-on code into the generator.
+     */
+    private function classFile(string $class): string
+    {
+        $dir = str_starts_with($class, 'XF\\') ? '/src/XF/' . substr($class, 3) : '/src/addons/' . $class;
+
+        return $this->root . str_replace('\\', '/', $dir) . '.php';
+    }
+
+    /**
+     * The fake base class XenForo passes for the three kinds of class it requests by name:
+     * a view through App::extendClass(), a finder and a repository through the entity manager.
+     * Decided by the namespace segment, which is how each kind is named.
+     */
+    private static function fakeBase(string $class): ?string
+    {
+        $namespace = explode('\\', $class);
+        array_pop($namespace);
+
+        foreach (['View' => 'XF\\Mvc\\View', 'Finder' => 'XF\\Mvc\\Entity\\Finder', 'Repository' => 'XF\\Mvc\\Entity\\Repository'] as $segment => $base) {
+            if (in_array($segment, $namespace, true)) {
+                return $base;
+            }
+        }
+
+        return null;
     }
 
     /** @return list<string> */

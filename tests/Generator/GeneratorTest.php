@@ -34,7 +34,7 @@ final class GeneratorTest extends TestCase
         [$this->out, $summary] = Fixture::generate();
         $stub = (string) file_get_contents($this->out . '/' . Generator::ALIASES_STUB);
 
-        $this->assertStringContainsString('namespace XF\Repository' . "\n" . '{' . "\n" . "\t" . 'class Node extends \XF\Repository\NodeRepository {}' . "\n" . "\t" . 'class User extends \XF\Repository\UserRepository {}' . "\n" . '}', $stub);
+        $this->assertStringContainsString('namespace XF\Repository' . "\n" . '{' . "\n" . "\t" . 'class ActivityLog extends \XF\Repository\ActivityLogRepository {}' . "\n" . "\t" . 'class Attachment extends \XF\Repository\AttachmentRepository {}' . "\n" . "\t" . 'class Node extends \XF\Repository\NodeRepository {}' . "\n" . "\t" . 'class User extends \XF\Repository\UserRepository {}' . "\n" . '}', $stub);
         $this->assertStringContainsString("\t" . 'class User extends \XF\Finder\UserFinder {}', $stub);
         $this->assertStringContainsString("\t" . 'class Editor extends \XF\ControllerPlugin\EditorPlugin {}', $stub);
 
@@ -63,8 +63,12 @@ final class GeneratorTest extends TestCase
         // add-on that ships without one.
         $this->assertStringContainsString('namespace Acme\Demo\XF\Entity' . "\n" . '{' . "\n" . "\t" . 'class XFCP_User extends \XF\Entity\User {}' . "\n" . '}', $stub);
         $this->assertStringContainsString('namespace Acme\Demo\XF\Repository' . "\n" . '{' . "\n" . "\t" . 'class XFCP_User extends \XF\Repository\User {}' . "\n" . '}', $stub);
-        $this->assertStringContainsString('namespace Acme\Other\XF\Entity' . "\n" . '{' . "\n" . "\t" . 'class XFCP_User extends \XF\Entity\User {}' . "\n" . '}', $stub);
-        $this->assertSame(3, $summary->extensions);
+        $this->assertStringContainsString('namespace Acme\Other\XF\Entity' . "\n" . '{' . "\n" . "\t" . 'class XFCP_User extends \XF\Entity\User {}' . "\n" . "\t" . 'class XFCP_UserInactive extends \XF\Entity\User {}' . "\n" . '}', $stub);
+        // A class the forum does not have, under the fake base XenForo substitutes for a finder.
+        $this->assertStringContainsString('namespace Acme\Other\Gallery\Finder' . "\n" . '{' . "\n" . "\t" . 'class XFCP_MediaItemFinder extends \XF\Mvc\Entity\Finder {}' . "\n" . '}', $stub);
+        $this->assertSame(5, $summary->extensions);
+        $this->assertSame(1, $summary->inactiveExtensions);
+        $this->assertSame(1, $summary->fakeBaseExtensions);
     }
 
     public function testTheClassMapKeysExtensionsByTheClassXenForoResolvesTheRegisteredNameTo(): void
@@ -79,9 +83,12 @@ final class GeneratorTest extends TestCase
         // through this, and the stub's skip list is a property of PHP, not of XenForo.
         $this->assertSame([
             'Acme\Demo\Service\Widget\Create' => 'Acme\Demo\Service\Widget\CreateService',
+            'Acme\Other\Gallery\Finder\MediaItem' => 'Acme\Other\Gallery\Finder\MediaItemFinder',
             'XF\ControllerPlugin\Abstract' => 'XF\ControllerPlugin\AbstractPlugin',
             'XF\ControllerPlugin\Editor' => 'XF\ControllerPlugin\EditorPlugin',
             'XF\Finder\User' => 'XF\Finder\UserFinder',
+            'XF\Repository\ActivityLog' => 'XF\Repository\ActivityLogRepository',
+            'XF\Repository\Attachment' => 'XF\Repository\AttachmentRepository',
             'XF\Repository\Node' => 'XF\Repository\NodeRepository',
             'XF\Repository\User' => 'XF\Repository\UserRepository',
             'XF\Service\Abstract' => 'XF\Service\AbstractService',
@@ -91,7 +98,11 @@ final class GeneratorTest extends TestCase
         ], $data['aliases']);
 
         $this->assertSame(2, $data['format']);
+        // The inactive extension is declared above and applied nowhere, so it is not here.
         $this->assertSame([
+            'Acme\Gallery\Finder\MediaItemFinder' => [
+                ['class' => 'Acme\Other\Gallery\Finder\MediaItemFinder', 'addon' => 'Acme/Other'],
+            ],
             'XF\Entity\User' => [
                 ['class' => 'Acme\Demo\XF\Entity\User', 'addon' => 'Acme/Demo'],
                 ['class' => 'Acme\Other\XF\Entity\User', 'addon' => 'Acme/Other'],
@@ -101,7 +112,7 @@ final class GeneratorTest extends TestCase
             ],
         ], $data['extensions']);
         $this->assertSame(1, $summary->legacyExtensions);
-        $this->assertSame(2, $summary->extendedClasses);
+        $this->assertSame(3, $summary->extendedClasses);
     }
 
     public function testItRefusesADirectoryThatIsNotAForum(): void

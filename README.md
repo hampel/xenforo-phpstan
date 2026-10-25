@@ -306,6 +306,14 @@ from any other add-on — and a packaged add-on ships without the `_output/exten
 would declare its `XFCP_` parents, so those are generated too, from each add-on's committed
 `_data/class_extensions.xml`.
 
+Two things XenForo decides when it registers an extension are mirrored. An extension registered
+`active="0"` has its `XFCP_` parent declared, so the class still compiles, and nothing it adds is
+offered, since XenForo never applies it. An extension of a class the forum does not have, as an
+optional integration's extension of an add-on that is not installed, gets the fake base XenForo
+substitutes when it requests a view, a finder or a repository by name, `XF\Mvc\View`, `Finder` or
+`Repository`, so everything below it resolves; anywhere else XenForo applies no extension at all,
+and the parent is left naming the class it cannot find.
+
 The same goes for a column or a relation an extension adds in `getStructure()`. The extension
 declares it as XenForo declares its own, `@property string $vendor_addon_column` or
 `@property-read Thing|null $Thing` on the class, which is what `xf-dev:entity-class-properties`
@@ -373,13 +381,31 @@ the adapter's `fetchRow()`, `fetchAll()`, `fetchPairs()` and `fetchAllKeyed()`, 
 `Request::getBasePath()` and `AbstractOption`'s five row helpers.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
-read from 2.3.13. Three documented types are corrected rather than transcribed:
-`stubs/db-schema.stub` the schema builder's `null` index name; `core.stub` the `array`
-XenForo claims for `AbstractAdapter::query()`'s parameters, which core itself passes as a scalar
-and the statement wraps; and the `null|StepResult` XenForo documents on `AbstractSetup`'s
-`install()`, `upgrade()` and `uninstall()`, which a setup with a single step falls out of without
-returning, as most do, and which PHPStan reported as a missing return in every one of them. The
-stub adds `void`; only core reads the result. The finder's fluent methods are declared as
+read from 2.3.13.
+
+Documented types are corrected rather than transcribed where XenForo's own code contradicts the
+docblock, and the stub says so at each one. `stubs/db-schema.stub` corrects the schema builder's
+`null` index name. `core.stub` corrects the `array` XenForo claims for `AbstractAdapter::query()`'s
+parameters, which core itself passes as a scalar and the statement wraps; the `null|StepResult`
+documented on `AbstractSetup`'s `install()`, `upgrade()` and `uninstall()`, which a setup with a
+single step falls out of without returning, as most do, so the stub adds `void` and only core reads
+the result; `AbstractCollection::filter()`'s callback, documented as returning bool where the body
+is `array_filter()`; `groupBy()`'s callables, written `callable(T $e): int|string`, which PHPDoc
+reads as a callable returning int beside a plain string; `Controller::noPermission()`'s message,
+which goes to `error()` and so takes a list too; `AbstractWidget::render()`, documented
+`string|null` where every core widget returns `$this->renderer()`; `Purchase::$purchasableId`,
+documented string and assigned an entity id by core's own purchasable;
+`ActivityLogRepository::log()`'s values, one map as core's handlers pass it rather than a list of
+them; `AttachmentRepository::addAttachmentsToContent()`, which iterates its
+`AbstractCollection|Entity[]` and so takes an array; the activity log handler's
+`getReplyMetricsSimple()` parameters, which are positional, and its `getReactionMetrics()`,
+documented as the handler's own entity where core's thread handler passes the first post;
+`Stats\AbstractHandler::adjustStatValue()`, documented int where the attachment handler returns
+`round(..., 2)`; and `ModeratorLog\AbstractHandler::getContentTitle()`,
+`InlineMod\AbstractAction::getTitle()` and `ConnectedAccount\Provider\AbstractProvider::getTitle()`,
+documented string where core's own implementations return a phrase, so an add-on's doing the same
+was an incompatible declaration. Each is held by a fixture class carrying XenForo's docblock, and
+every one is reported against the previous stub. The finder's fluent methods are declared as
 returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
 own `@return Finder` on `order()` lost; the schema `Column`'s setters are declared the same way.
 Three of the types are wider than an adopter asked for, because the body is: `hasPermission()`

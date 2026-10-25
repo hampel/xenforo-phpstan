@@ -8,6 +8,22 @@ abstract class AbstractWidget
     {
     }
 
+    // As XenForo documents it; every core widget returns $this->renderer().
+    /**
+     * @return string|null
+     */
+    abstract public function render();
+
+    /**
+     * @param array<string, mixed> $viewParams
+     *
+     * @return WidgetRenderer
+     */
+    public function renderer($templateName = '', array $viewParams = [])
+    {
+        return new WidgetRenderer();
+    }
+
     /**
      * @template T of \XF\Mvc\Entity\Repository
      *

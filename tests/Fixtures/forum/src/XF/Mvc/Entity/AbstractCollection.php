@@ -29,4 +29,26 @@ abstract class AbstractCollection implements \Countable, \IteratorAggregate, \Ar
     {
         return [];
     }
+
+    // As XenForo documents it; the body is array_filter(), which keeps by truthiness.
+    /**
+     * @param callable(T $entity): bool $callback
+     *
+     * @return AbstractCollection<T>
+     */
+    public function filter(\Closure $callback)
+    {
+        return $this;
+    }
+
+    // As XenForo documents it: the callable's return parses as `int`, with `string` a sibling.
+    /**
+     * @param int|string|callable(T $e): int|string $grouper
+     * @param int|string|callable(T $e): int|string $childKeyFn
+     * @return array<int|string, array<int|string,T>>
+     */
+    public function groupBy($grouper, $childKeyFn = null)
+    {
+        return [];
+    }
 }

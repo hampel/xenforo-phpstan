@@ -370,6 +370,16 @@ namespace XF\Mvc {
         public function message($message, $code = 200) {}
 
         /**
+         * Corrected: XenForo documents a single message, and passes it to error(), which also
+         * takes a list of them.
+         *
+         * @param string|\Stringable|array<string|\Stringable>|null $message
+         *
+         * @return AbstractReply
+         */
+        public function noPermission($message = null) {}
+
+        /**
          * @return Exception
          */
         public function exception(AbstractReply $reply) {}
@@ -476,6 +486,27 @@ namespace XF\Mvc\Entity {
          * @return list<array-key>
          */
         public function keys() {}
+
+        /**
+         * Corrected: XenForo documents the callback as returning bool, and the body is
+         * array_filter(), which keeps an entity for any truthy result.
+         *
+         * @param \Closure(T): mixed $callback
+         *
+         * @return AbstractCollection<T>
+         */
+        public function filter(\Closure $callback) {}
+
+        /**
+         * Corrected: XenForo writes `callable(T $e): int|string`, which PHPDoc reads as a callable
+         * returning int beside a plain string, so every string-keyed grouping was reported.
+         *
+         * @param int|string|(callable(T $e): (int|string)) $grouper
+         * @param int|string|(callable(T $e): (int|string))|null $childKeyFn
+         *
+         * @return array<int|string, array<int|string, T>>
+         */
+        public function groupBy($grouper, $childKeyFn = null) {}
 
         /**
          * getIterator() implements an interface method PHPStan stubs itself, and for a class
@@ -658,6 +689,11 @@ namespace XF\Entity {
     // as User.
     class Option extends \XF\Mvc\Entity\Entity {}
 
+    // Declared so that Purchase's docblock and ModeratorLog\AbstractHandler's signature may name
+    // them; no docblock, as above.
+    class PaymentProfile extends \XF\Mvc\Entity\Entity {}
+    class ModeratorLog extends \XF\Mvc\Entity\Entity {}
+
     // No class docblock: XenForo's own @property lines survive a stub declaration that has none.
     class User extends \XF\Mvc\Entity\Entity
     {
@@ -788,6 +824,165 @@ namespace XF\Repository {
          */
         public function mergeNodeListExtras(array $extras, array $childExtras) {}
     }
+
+    class ActivityLogRepository
+    {
+        /**
+         * Corrected: XenForo documents a list of metric maps and its own handlers pass one map,
+         * which is what the handler's log() documents too.
+         *
+         * @param array<string, int> $values
+         */
+        public function log(\XF\Mvc\Entity\Entity $content, int $logDate, array $values, bool $increment = true): void {}
+    }
+
+    class AttachmentRepository
+    {
+        /**
+         * Corrected: XenForo writes `AbstractCollection|Entity[]`, which PHPStan reads as a
+         * collection only; the body iterates whatever it is given.
+         *
+         * @param iterable<\XF\Mvc\Entity\Entity> $content
+         * @param mixed $contentType
+         * @param mixed $countKey
+         * @param mixed $relationKey
+         *
+         * @return mixed
+         */
+        public function addAttachmentsToContent($content, $contentType, $countKey = 'attach_count', $relationKey = 'Attachments') {}
+    }
+}
+
+namespace XF\Widget {
+
+    class WidgetRenderer {}
+
+    abstract class AbstractWidget
+    {
+        /**
+         * Corrected: XenForo documents string|null, and every core widget returns
+         * $this->renderer(), so an add-on's did too and was reported as incompatible.
+         *
+         * @return string|WidgetRenderer|null
+         */
+        abstract public function render();
+    }
+}
+
+namespace XF\Purchasable {
+
+    /**
+     * Restated in full, because a stub's class docblock replaces the real one. Corrected in one
+     * line: purchasableId is documented string, and core's own purchasable assigns an entity id.
+     *
+     * @property string $title
+     * @property string $description
+     * @property float $cost
+     * @property string $currency
+     * @property bool $recurring
+     * @property int $lengthAmount
+     * @property string $lengthUnit
+     * @property \XF\Entity\User $purchaser
+     * @property \XF\Entity\PaymentProfile $paymentProfile
+     * @property string $purchasableTypeId
+     * @property string|int $purchasableId
+     * @property string $purchasableTitle
+     * @property array<string, mixed> $extraData
+     * @property string $cancelUrl
+     * @property string $returnUrl
+     * @property string $updateUrl
+     * @property string $requestKey
+     */
+    class Purchase {}
+}
+
+namespace XF\ActivityLog {
+
+    /**
+     * @template T of \XF\Mvc\Entity\Entity
+     */
+    abstract class AbstractHandler
+    {
+        /**
+         * Corrected: XenForo documents a map, and the body appends the cut-off date and binds
+         * them positionally.
+         *
+         * @param array<mixed> $params
+         *
+         * @return array<string, string|int>
+         */
+        protected function getReplyMetricsSimple(string $table, string $dateColumn, string $where, array $params): array {}
+
+        /**
+         * Corrected: XenForo documents the handler's own entity, and its thread handler passes
+         * the first post, so a container handler's override was reported.
+         *
+         * @return array<string, string|int>
+         */
+        protected function getReactionMetrics(\XF\Mvc\Entity\Entity $content): array {}
+    }
+}
+
+namespace XF\Stats {
+
+    abstract class AbstractHandler
+    {
+        /**
+         * Corrected: XenForo documents an int, and its attachment handler returns round(..., 2).
+         *
+         * @param string $statsType
+         * @param int $counter
+         *
+         * @return int|float
+         */
+        public function adjustStatValue($statsType, $counter) {}
+    }
+}
+
+namespace XF\ModeratorLog {
+
+    /**
+     * @template T of \XF\Mvc\Entity\Entity
+     */
+    abstract class AbstractHandler
+    {
+        /**
+         * Corrected: XenForo documents a string, and seventeen of its own handlers return a
+         * phrase, as an add-on's does.
+         *
+         * @return string|\XF\Phrase
+         */
+        public function getContentTitle(\XF\Entity\ModeratorLog $log) {}
+    }
+}
+
+namespace XF\InlineMod {
+
+    /**
+     * @template T of \XF\Mvc\Entity\Entity
+     */
+    abstract class AbstractAction
+    {
+        /**
+         * Corrected: XenForo documents a string, and every one of its own actions returns a phrase.
+         *
+         * @return string|\XF\Phrase
+         */
+        abstract public function getTitle();
+    }
+}
+
+namespace XF\ConnectedAccount\Provider {
+
+    abstract class AbstractProvider
+    {
+        /**
+         * Corrected: XenForo documents a string, and the body returns a phrase.
+         *
+         * @return string|\XF\Phrase
+         */
+        public function getTitle() {}
+    }
 }
 
 namespace XF\Service {
@@ -850,8 +1045,8 @@ namespace XF\Db {
         /**
          * XenForo documents $params as an array, and its own calls pass a scalar everywhere:
          * AbstractStatement's constructor wraps one in an array. The documented type reports
-         * core's own idiom at level 5, so this is the one parameter corrected rather than
-         * transcribed.
+         * core's own idiom at level 5. Corrected rather than transcribed, the first of the
+         * corrections marked so in this file.
          *
          * @param mixed $query
          * @param array<mixed>|scalar|null $params

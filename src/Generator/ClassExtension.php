@@ -12,6 +12,7 @@ final class ClassExtension
     public function __construct(
         public readonly string $fromClass,
         public readonly string $toClass,
+        public readonly bool $active = true,
     ) {
     }
 
@@ -43,9 +44,11 @@ final class ClassExtension
             }
 
             foreach ($xml->extension as $extension) {
+                // XenForo writes active="1" on every entry and applies only those that are.
                 $extensions[] = new self(
                     ltrim((string) $extension['from_class'], '\\'),
                     ltrim((string) $extension['to_class'], '\\'),
+                    (string) ($extension['active'] ?? '1') !== '0',
                 );
             }
         }

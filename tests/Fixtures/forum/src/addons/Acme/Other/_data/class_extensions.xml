@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <class_extensions>
   <extension from_class="XF\Entity\User" to_class="Acme\Other\XF\Entity\User" execute_order="10" active="1"/>
+  <extension from_class="XF\Entity\User" to_class="Acme\Other\XF\Entity\UserInactive" execute_order="10" active="0"/>
+  <extension from_class="Acme\Gallery\Finder\MediaItemFinder" to_class="Acme\Other\Gallery\Finder\MediaItemFinder" execute_order="10" active="1"/>
 </class_extensions>

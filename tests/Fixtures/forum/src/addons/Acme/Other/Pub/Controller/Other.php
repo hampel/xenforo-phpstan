@@ -17,7 +17,12 @@ class Other extends AbstractController
             $user->fromOther();                                         // this add-on's extension
             $user->canUseDemo();                                        // another add-on's extension
             $user->isMemberOf(2);                                       // the core signature
+            $user->inactiveMethod();                                    // ERROR: registered inactive, never applied
         }
+
+        // An extension of a class the forum does not have: its parent is the fake base XenForo
+        // would substitute, so the chain resolves.
+        $this->finder(\Acme\Other\Gallery\Finder\MediaItemFinder::class)->withAlbum()->where('album_id', 1);
 
         $this->repository('XF:User')->findDemoUsers();                  // another add-on's extension
         $this->repository('XF:User')->nope();                           // ERROR: names the core class

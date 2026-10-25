@@ -377,6 +377,77 @@ class Typed extends AbstractController
         };
     }
 
+    public function actionCorrections(): void
+    {
+        // Documented types XenForo's own code contradicts, each corrected in the stub to what the
+        // body does. Without the correction every line here is a report at level 5.
+        $users = $this->finder('XF:User')->fetch();
+        $users = $users->filter(fn (User $user) => $user->username);                  // array_filter() keeps by truthiness
+        $grouped = $users->groupBy(fn (User $user) => $user->username);               // a string key
+        $this->noPermission(['first', 'second']);                                      // error() takes a list
+
+        $user = $this->assertRecordExists('XF:User', 1);
+        $this->repository(\XF\Repository\ActivityLogRepository::class)->log($user, 0, ['reaction_count' => 1]);
+        $this->repository(\XF\Repository\AttachmentRepository::class)->addAttachmentsToContent($users->toArray(), 'post');
+
+        $purchase = new \XF\Purchasable\Purchase();
+        $purchase->purchasableId = $user->user_id ?? 0;                                // core assigns an entity id
+    }
+
+    /** @return list<object> */
+    public function correctedOverrides(): array
+    {
+        // Return types core's own subclasses contradict: a widget renders a renderer, the
+        // attachment stats handler scales to a float, handlers title with a phrase. Each override
+        // declares what it returns, which is what PHPStan reports as an incompatible declaration
+        // without the correction. PHPStan reads no @extends on an anonymous class here, so the
+        // activity handler's template case is ActivityLog\UserHandler, a named class.
+        return [
+            new class ($this->app()) extends \XF\Widget\AbstractWidget {
+                /** @return \XF\Widget\WidgetRenderer */
+                public function render()
+                {
+                    return $this->renderer('acme_demo');
+                }
+            },
+            new class () extends \XF\Stats\AbstractHandler {
+                /** @return float */
+                public function adjustStatValue($statsType, $counter)
+                {
+                    return round($counter / 1048576, 2);
+                }
+            },
+            new class () extends \XF\ModeratorLog\AbstractHandler {
+                /** @return \XF\Phrase */
+                public function getContentTitle(\XF\Entity\ModeratorLog $log)
+                {
+                    return \XF::phrase('acme_demo');
+                }
+            },
+            new class () extends \XF\InlineMod\AbstractAction {
+                /** @return \XF\Phrase */
+                public function getTitle()
+                {
+                    return \XF::phrase('acme_demo');
+                }
+            },
+            new class () extends \XF\ConnectedAccount\Provider\AbstractProvider {
+                /** @return \XF\Phrase */
+                public function getTitle()
+                {
+                    return \XF::phrase('acme_demo');
+                }
+            },
+            new class ('acme_demo') extends \XF\ActivityLog\AbstractHandler {
+                /** @return array<string, string|int> */
+                public function metrics(): array
+                {
+                    return $this->getReplyMetricsSimple('xf_acme_demo', 'post_date', 'thread_id = ?', [1]);   // positional
+                }
+            },
+        ];
+    }
+
     /** @param array<string, mixed> $value */
     private function takesArray(array $value): void
     {

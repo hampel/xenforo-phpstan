@@ -66,8 +66,10 @@ final class AnalysisTest extends TestCase
             // A class only a sibling's _build/ copy declares: the build directory is not scanned.
             'Typed.php:274 Instantiated class Acme\Other\Stale not found.',
             'Typed.php:337 Access to an undefined property XF\Options::$boardTitle.',
-            'Other.php:23 Call to an undefined method XF\Repository\User::nope().',
-            'Other.php:24 Call to an undefined method XF\Repository\UserRepository::nopeClass().',
+            // Registered inactive: its parent is declared, nothing it adds is offered.
+            'Other.php:20 Call to an undefined method Acme\Other\XF\Entity\User::inactiveMethod().',
+            'Other.php:28 Call to an undefined method XF\Repository\User::nope().',
+            'Other.php:29 Call to an undefined method XF\Repository\UserRepository::nopeClass().',
         ], $messages);
     }
 

@@ -94,11 +94,13 @@ final class Command
             count($summary->skippedAliases),
         ));
         fwrite($stdout, sprintf(
-            "  %s: %d class extensions of %d classes, %d registered on a legacy name\n",
+            "  %s: %d class extensions of %d classes, %d registered on a legacy name%s%s\n",
             Generator::EXTENSIONS_STUB,
             $summary->extensions,
             $summary->extendedClasses,
             $summary->legacyExtensions,
+            $summary->inactiveExtensions > 0 ? sprintf(', %d inactive', $summary->inactiveExtensions) : '',
+            $summary->fakeBaseExtensions > 0 ? sprintf(', %d on a class the forum does not have', $summary->fakeBaseExtensions) : '',
         ));
         fwrite($stdout, sprintf("  %s\n", Generator::CLASSES));
         fwrite($stdout, sprintf("written to %s\n", $out));
