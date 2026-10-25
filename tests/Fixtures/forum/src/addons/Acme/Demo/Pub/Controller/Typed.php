@@ -466,6 +466,25 @@ class Typed extends AbstractController
         $this->takesNode($em->instantiateEntity(Node::class, [], [], \XF\Mvc\Entity\Manager::INSTANTIATE_ALLOW_INVALID));  // ERROR: an invalid entity is null when allowed
     }
 
+    /**
+     * @param array<string, mixed> $tag
+     * @param array<string, mixed> $options
+     */
+    public function bbCode(\XF\BbCode\Renderer\Html $renderer, \XF\Str\Formatter $formatter, array $tag, array $options): void
+    {
+        // The BB code traverser's render methods concatenate strings, so every renderer returns
+        // one; the HTML renderer's filter returns the filtered string; a link's class and target
+        // come as one shape.
+        $this->takesString($renderer->renderSubTree([], $options));
+        $this->takesString($renderer->renderSubTreePlain([]));
+        $this->takesString($renderer->renderUnparsedTag($tag, $options));
+        $this->takesString($renderer->filterString('text', $options));
+        $link = $formatter->getLinkClassTarget('https://example.com/');
+        $this->takesString($link['class']);
+        $this->takesBool($link['trusted']);
+        $this->takesInt($link['type']);   // ERROR: the link type is one of two strings
+    }
+
     /** @param array<string, mixed> $value */
     private function takesArray(array $value): void
     {

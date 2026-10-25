@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.5 (2026-10-25)
+
+- the BB code traverser's `renderSubTree()`, `renderSubTreePlain()` and `renderUnparsedTag()`
+  typed string on every renderer, `Html::filterString()` string, and
+  `Str\Formatter::getLinkClassTarget()` the shape it returns, so a custom BB code callback can
+  reach level 10 without narrowing each core call itself
+- README: a custom BB code callback's renderer is always `Html`, with the parsed tag's shape; the
+  crate for an add-on with no options of its own; what level 8 finds
+
 ## 0.10.4 (2026-10-25)
 
 - the entity manager's collection factories typed: `getBasicCollection()` is a collection of what

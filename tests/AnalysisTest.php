@@ -9,8 +9,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * The whole package, end to end: generate against the fixture forum, write the phpstan.neon an
  * add-on would, run the real PHPStan from this package's vendor/bin, and read the result. The
- * fixture controller makes every kind of call this package exists to type, and five that are
- * genuinely wrong; the run passes when exactly those five are reported.
+ * fixture controller makes every kind of call this package exists to type, and some that are
+ * wrong on purpose; the run passes when exactly those are reported.
  */
 final class AnalysisTest extends TestCase
 {
@@ -66,6 +66,8 @@ final class AnalysisTest extends TestCase
             // A class only a sibling's _build/ copy declares: the build directory is not scanned.
             'Typed.php:274 Instantiated class Acme\Other\Stale not found.',
             'Typed.php:337 Access to an undefined property XF\Options::$boardTitle.',
+            // The link shape's type key is one of two strings.
+            'Typed.php:485 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
             // Registered inactive: its parent is declared, nothing it adds is offered.
             'Other.php:20 Call to an undefined method Acme\Other\XF\Entity\User::inactiveMethod().',
             'Other.php:28 Call to an undefined method XF\Repository\User::nope().',
@@ -100,7 +102,7 @@ final class AnalysisTest extends TestCase
     {
         // The controller that uses every member stubs/core.stub types, alone, at level max:
         // each call passes the result where only the stubbed type is accepted, so a stub that
-        // is missing or wrong is a report here. Fifteen lines are wrong on purpose.
+        // is missing or wrong is a report here. Sixteen lines are wrong on purpose.
         $neon = str_replace('level: 5', 'level: max', $this->addonConfig());
         $neon = preg_replace('#^(\s+)paths:\n(?:\1\s+- .*\n)+#m', "\\1paths:\n\\1    - {$this->addon()}/Pub/Controller/Typed.php\n", $neon);
 
@@ -137,6 +139,8 @@ final class AnalysisTest extends TestCase
             'Typed.php:358 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesString() expects string, string|false given.',
             // instantiateEntity() is null only under a non-zero option, which XenForo's int-mask misstates.
             'Typed.php:466 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesNode() expects XF\Entity\Node, XF\Entity\Node|null given.',
+            // getLinkClassTarget()'s type key is one of two strings.
+            'Typed.php:485 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
         ], $messages);
     }
 

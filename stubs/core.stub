@@ -1325,3 +1325,67 @@ namespace XF\Template {
         public function fnAvatar($templater, &$escape, $user, $size, $canonical = false, $attributes = []) {}
     }
 }
+
+namespace XF\BbCode {
+
+    abstract class Traverser
+    {
+        /**
+         * Every renderer inherits these three. Each concatenates what renderTag() and
+         * renderString() return onto '', so the result is a string whatever those return.
+         *
+         * @param array<mixed> $tree
+         * @param array<mixed> $options
+         *
+         * @return string
+         */
+        public function renderSubTree(array $tree, array $options) {}
+
+        /**
+         * @param array<mixed> $tree
+         *
+         * @return string
+         */
+        public function renderSubTreePlain(array $tree) {}
+
+        /**
+         * @param array<mixed> $tag
+         * @param array<mixed> $options
+         *
+         * @return string
+         */
+        public function renderUnparsedTag(array $tag, array $options) {}
+    }
+}
+
+namespace XF\BbCode\Renderer {
+
+    /** Declared so that Html may name it; the real class and its docblocks stand. */
+    abstract class AbstractRenderer extends \XF\BbCode\Traverser {}
+
+    class Html extends AbstractRenderer
+    {
+        /**
+         * The only renderer that registers a custom BB code callback, and what it passes to one.
+         *
+         * @param mixed $string
+         * @param array<mixed> $options
+         *
+         * @return string
+         */
+        public function filterString($string, array $options) {}
+    }
+}
+
+namespace XF\Str {
+
+    class Formatter
+    {
+        /**
+         * @param mixed $url
+         *
+         * @return array{class: string, target: string, type: 'external'|'internal', trusted: bool, local: bool}
+         */
+        public function getLinkClassTarget($url) {}
+    }
+}

@@ -396,8 +396,10 @@ the adapter's `fetchRow()`, `fetchAll()`, `fetchPairs()` and `fetchAllKeyed()`, 
 `hasContentPermission()` and `hasNodePermission()`, `AddOn::getJson()`,
 `RegistrationService::_save()`, `Request::getUserAgent()`, `Templater::fnAvatar()`,
 `File::getTempFile()` and its three temp-path siblings, `App::applyExternalDataUrl()`,
-`Request::getBasePath()`, `AbstractOption`'s five row helpers, and the entity manager's
-`getBasicCollection()` and `getEmptyCollection()`.
+`Request::getBasePath()`, `AbstractOption`'s five row helpers, the entity manager's
+`getBasicCollection()` and `getEmptyCollection()`, the BB code `Traverser`'s `renderSubTree()`,
+`renderSubTreePlain()` and `renderUnparsedTag()`, `Renderer\Html::filterString()`, and
+`Str\Formatter::getLinkClassTarget()`.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
 read from 2.3.13.
