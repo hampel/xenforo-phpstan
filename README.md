@@ -177,6 +177,21 @@ the same run. It is generated from option data rather than committed source, so 
 moment an option changes and nothing regenerates it for you; keep it with the other generated
 files rather than in the add-on.
 
+Either file writes an array option with no sub-option structure as a bare `array`, four of core's
+on 2.3.13 and one more nested inside a fifth's shape, and PHPStan reports each on the stub's class
+line as a missing iterable value type. **That report can be neither ignored nor excluded**: PHPStan
+refuses an `ignoreErrors` entry for a stub's own errors, and an `excludePaths` entry does not reach
+them, measured both ways. The remedy is to widen the bare arrays in the generated file, which is
+XenForo's output rather than committed source:
+
+```bash
+sed -E -i '/@property/ s/\barray\b([^<{-]|$)/array<mixed>\1/g' /path/to/Options.stub
+```
+
+An add-on whose own options include such an array meets the same report through its hint, and
+XenForo rewrites the hint whenever options change, so that add-on wants the generated stub, with
+the line above, rather than the hint.
+
 A crate also decides what a class extension's added columns look like, and the answer depends on
 the PHPStan release. The current release asks the extensions in this package before it applies
 the crate, so a crated `XF\Entity\User` still types `$visitor->vendor_addon_column` from the

@@ -272,6 +272,16 @@ tests/Fixtures/forum/   the stand-in XenForo install
   template stays at its bound, so a `@param T` accepts anything of the bound and a correction to
   it cannot be proved there; the control run on 2026-10-25 reported twelve of thirteen fixture
   lines, and the template case moved to a named class, `ActivityLog\UserHandler`.
+- **A probe that names a file in `paths` never sees a stub validator report.** PHPStan drops
+  errors from files outside the analysed set when `paths` holds only files, and every probe here
+  names one file; a real add-on config names directories. So five `missingType.iterableValue`
+  reports on a generated options stub reproduced for an adopter on 2026-10-25 and in none of this
+  session's probes until `paths` was given a directory. A probe for anything about a stub names a
+  directory. The end-to-end test does. **And a stub validator report can be neither ignored nor
+  excluded**: an `ignoreErrors` entry matching one is answered with `cannot be ignored, use
+  excludePaths instead`, as a new error, and an `excludePaths` entry under `analyse` or
+  `analyseAndScan` leaves it reported, measured on 2026-10-25. The only remedy is the stub's text,
+  which is why the README's options recipe carries a `sed` and the fixture hint the widened line.
 - **An exclusion pattern needs a trailing `/*`.** PHPStan matches patterns per file with
   `fnmatch()`, so `*/vendor` matches the directory entry and nothing in it.
 
