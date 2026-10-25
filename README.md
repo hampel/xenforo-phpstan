@@ -408,6 +408,9 @@ was an incompatible declaration. Each is held by a fixture class carrying XenFor
 every one is reported against the previous stub. The finder's fluent methods are declared as
 returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
 own `@return Finder` on `order()` lost; the schema `Column`'s setters are declared the same way.
+An add-on's own finder carries an entity type only if it declares one, `@extends Finder<Thing>` as
+XenForo's finders do; `xf-dev:entity-class-properties` writes nothing for a finder, and one without
+the line fetches `Entity`.
 Three of the types are wider than an adopter asked for, because the body is: `hasPermission()`
 and its two siblings return the permission's value, a bool for a flag and an int for an integer
 permission such as `maxMentionedUsers`; `getUserAgent()` returns `getServer()`'s default of
