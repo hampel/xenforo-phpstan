@@ -472,6 +472,53 @@ namespace XF\Mvc\Entity {
         public $relations = [];
     }
 
+    class Manager
+    {
+        public const INSTANTIATE_ALLOW_INVALID = 0x1;
+        public const INSTANTIATE_PROXIED = 0x2;
+
+        /**
+         * XenForo documents a bare ArrayCollection, which reads as a collection of Entity and so
+         * cannot be returned where a typed collection is declared. The collection is of what it was
+         * given, and the template binds nowhere but the parameter, so this is the second parameter
+         * typed beyond XenForo's declaration: the body stores the array as the collection's
+         * entities, and anything that is not one breaks the first method called on the result.
+         *
+         * @template T of Entity
+         *
+         * @param array<T> $entities
+         *
+         * @return ArrayCollection<T>
+         */
+        public function getBasicCollection(array $entities) {}
+
+        /**
+         * A collection of nothing, which passes wherever a typed collection is expected: the
+         * short-circuit XenForo describes it for. The documented bare ArrayCollection does not.
+         *
+         * @return ArrayCollection<never>
+         */
+        public function getEmptyCollection() {}
+
+        /**
+         * Corrected: XenForo makes the result nullable when `$options` is an
+         * `int-mask<INSTANTIATE_PROXIED>`, and that mask includes 0, so the default call read as
+         * nullable and core's own `instantiateEntity(Draft::class)->user_id` would not pass. The
+         * body returns null only under a non-zero option: always when proxied, and for a missing
+         * key when an invalid entity is allowed.
+         *
+         * @template T of Entity
+         *
+         * @param class-string<T> $shortName
+         * @param array<string, mixed> $values
+         * @param array<string, mixed> $relations
+         * @param int-mask-of<self::INSTANTIATE_*> $options
+         *
+         * @return ($options is 0 ? T : T|null)
+         */
+        public function instantiateEntity($shortName, array $values = [], array $relations = [], $options = 0) {}
+    }
+
     /**
      * The class docblock is the real one, repeated: a stub class with a docblock replaces the
      * real class's, so leaving the generics out here would take them away.
@@ -517,6 +564,15 @@ namespace XF\Mvc\Entity {
          */
         public function getIterator(): \ArrayIterator {}
     }
+
+    /**
+     * Declared so that the manager's factories may name it, with the real docblock repeated for
+     * the reason given on AbstractCollection.
+     *
+     * @template T of \XF\Mvc\Entity\Entity
+     * @extends AbstractCollection<T>
+     */
+    class ArrayCollection extends AbstractCollection {}
 
     /**
      * The fluent methods return $this. XenForo documents order() as returning Finder, and the rest

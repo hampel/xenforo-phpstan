@@ -100,7 +100,7 @@ final class AnalysisTest extends TestCase
     {
         // The controller that uses every member stubs/core.stub types, alone, at level max:
         // each call passes the result where only the stubbed type is accepted, so a stub that
-        // is missing or wrong is a report here. Fourteen lines are wrong on purpose.
+        // is missing or wrong is a report here. Fifteen lines are wrong on purpose.
         $neon = str_replace('level: 5', 'level: max', $this->addonConfig());
         $neon = preg_replace('#^(\s+)paths:\n(?:\1\s+- .*\n)+#m', "\\1paths:\n\\1    - {$this->addon()}/Pub/Controller/Typed.php\n", $neon);
 
@@ -135,6 +135,8 @@ final class AnalysisTest extends TestCase
             // func() with $escape false is whatever the function returned; getTempFile() is tempnam().
             'Typed.php:357 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesString() expects string, mixed given.',
             'Typed.php:358 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesString() expects string, string|false given.',
+            // instantiateEntity() is null only under a non-zero option, which XenForo's int-mask misstates.
+            'Typed.php:466 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesNode() expects XF\Entity\Node, XF\Entity\Node|null given.',
         ], $messages);
     }
 

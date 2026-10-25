@@ -8,6 +8,10 @@ namespace XF\Mvc\Entity;
  */
 class ArrayCollection extends AbstractCollection
 {
+    public function __construct(array $entities)
+    {
+    }
+
     public function count(): int
     {
         return 0;

@@ -393,7 +393,8 @@ the adapter's `fetchRow()`, `fetchAll()`, `fetchPairs()` and `fetchAllKeyed()`, 
 `hasContentPermission()` and `hasNodePermission()`, `AddOn::getJson()`,
 `RegistrationService::_save()`, `Request::getUserAgent()`, `Templater::fnAvatar()`,
 `File::getTempFile()` and its three temp-path siblings, `App::applyExternalDataUrl()`,
-`Request::getBasePath()` and `AbstractOption`'s five row helpers.
+`Request::getBasePath()`, `AbstractOption`'s five row helpers, and the entity manager's
+`getBasicCollection()` and `getEmptyCollection()`.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
 read from 2.3.13.
@@ -419,8 +420,11 @@ documented as the handler's own entity where core's thread handler passes the fi
 `round(..., 2)`; and `ModeratorLog\AbstractHandler::getContentTitle()`,
 `InlineMod\AbstractAction::getTitle()` and `ConnectedAccount\Provider\AbstractProvider::getTitle()`,
 documented string where core's own implementations return a phrase, so an add-on's doing the same
-was an incompatible declaration. Each is held by a fixture class carrying XenForo's docblock, and
-every one is reported against the previous stub. The finder's fluent methods are declared as
+was an incompatible declaration; and `Manager::instantiateEntity()`, documented nullable for an
+`int-mask` of the proxied flag, a mask that includes the default of 0, so every plain call read as
+nullable where the body returns null only under a non-zero option, the allow-invalid one the mask
+leaves out included. Each is held by a fixture class carrying XenForo's docblock, and every one is
+reported against the previous stub. The finder's fluent methods are declared as
 returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
 own `@return Finder` on `order()` lost; the schema `Column`'s setters are declared the same way.
 An add-on's own finder carries an entity type only if it declares one, `@extends Finder<Thing>` as
@@ -433,9 +437,15 @@ permission such as `maxMentionedUsers`; `getUserAgent()` returns `getServer()`'s
 `getTempFile()` returns `tempnam()`, false when the temp directory cannot be written, which
 XenForo does not check. Iterating a collection, or a finder, yields its entity: `getIterator()`
 is restated on both, because a class declared in a stub loses XenForo's own docblock on that
-one method. `Templater::func()`, a template function called directly as a test does, is typed
-by an extension rather than a stub: the result is escaped, so a string, unless `$escape` is
-passed false, when it is whatever the function returned.
+one method. The manager's two collection factories are documented as a bare `ArrayCollection`,
+which reads as a collection of `Entity` and cannot be returned where a typed collection is
+declared. `getBasicCollection()` is a collection of exactly what it was given: XenForo declares the
+collection's template without variance, so a collection of an extension's user is not a collection
+of core's, and an array built from a nullable lookup is reported before it becomes one.
+`getEmptyCollection()` is a collection of nothing, which passes wherever any typed collection is
+expected, the short circuit XenForo describes it for. `Templater::func()`, a template function
+called directly as a test does, is typed by an extension rather than a stub: the result is
+escaped, so a string, unless `$escape` is passed false, when it is whatever the function returned.
 
 The add-on object `AddOn\Manager::getById()` returns answers `$addOn->title` and
 `$addOn->version_string` by magic, nine keys of its own and then any column of the installed

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.10.4 (2026-10-25)
+
+- the entity manager's collection factories typed: `getBasicCollection()` is a collection of what
+  it was given and `getEmptyCollection()` a collection of nothing, so either can be returned where
+  a typed collection is declared, which XenForo's bare `ArrayCollection` could not
+- `Manager::instantiateEntity()` corrected: XenForo's `int-mask` of the proxied flag includes the
+  default of 0, so every plain call read as nullable; it is null only under a non-zero option
+- README: a stub validator report can be neither ignored nor excluded, so the options stub's bare
+  arrays are rewritten before use; an add-on's own finder is typed only by its own `@extends` line
+
 ## 0.10.3 (2026-10-25)
 
 - thirteen documented types corrected where XenForo's own code contradicts the docblock, each held

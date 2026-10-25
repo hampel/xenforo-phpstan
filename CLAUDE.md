@@ -143,13 +143,15 @@ tests/Fixtures/forum/   the stand-in XenForo install
   Parameters are `mixed` unless XenForo's own docblock says otherwise, and are declared at all
   because PHPStan checks a stub at the consumer's level, where an untyped parameter is itself a
   report. A method whose result depends on data, such as a database fetch, is not stubbed.
-  The one parameter typed beyond XenForo's declaration is `Tree::__construct()`'s `$data`,
-  because a template binds nowhere else and the body iterates it on its first line, so nothing
-  that runs is refused; its callbacks stay plain `Closure`, since typing their parameters would
-  report every callback declared narrower than `int|string` for the id. A correction
-  against XenForo's own declaration is a category of its own: marked `Corrected:` in the stub, each
-  held by a fixture class that carries XenForo's docblock, and proved by running the suite against
-  the previous stub, which reports every such line. The first was `AbstractAdapter::query()`'s
+  Two parameters are typed beyond XenForo's declaration, each because a template binds nowhere
+  else: `Tree::__construct()`'s `$data`, which the body iterates on its first line, so nothing
+  that runs is refused, and `Manager::getBasicCollection()`'s `$entities`, which become the
+  collection's entities and break its first method otherwise; the tree's callbacks stay plain
+  `Closure`, since typing their parameters would report every callback declared narrower than
+  `int|string` for the id. A correction against XenForo's own declaration is a category of its
+  own: marked `Corrected:` in the stub, each held by a fixture class that carries XenForo's
+  docblock, and proved by running the suite against the previous stub, which reports every such
+  line. The first was `AbstractAdapter::query()`'s
   `$params`, documented `array` and passed as a scalar by core itself, which the documented type
   reported at level 5; the README lists the rest.
   The one return widened is `AbstractSetup`'s three step methods, documented `null|StepResult`

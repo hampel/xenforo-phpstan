@@ -448,6 +448,24 @@ class Typed extends AbstractController
         ];
     }
 
+    public function collections(User $user, Node $node): void
+    {
+        // The manager's factories. A basic collection is of exactly what it was given, since the
+        // collection's template is invariant; an empty one is a collection of nothing, which
+        // passes wherever a typed collection is expected.
+        $em = $this->app()->em();
+        $this->takesUsers($em->getBasicCollection([$user]));
+        $this->takesNodes($em->getBasicCollection([1 => $node]));
+        $this->takesUsers($em->getEmptyCollection());
+        $this->takesNodes($em->getEmptyCollection());
+
+        // An entity instantiated by class name is one, unless an option asked for null instead.
+        $this->takesNode($em->instantiateEntity(Node::class));
+        $this->takesNode($em->instantiateEntity(Node::class, ['node_id' => 1]));
+        $this->takesNodeOrNull($em->instantiateEntity(Node::class, [], [], \XF\Mvc\Entity\Manager::INSTANTIATE_PROXIED));
+        $this->takesNode($em->instantiateEntity(Node::class, [], [], \XF\Mvc\Entity\Manager::INSTANTIATE_ALLOW_INVALID));  // ERROR: an invalid entity is null when allowed
+    }
+
     /** @param array<string, mixed> $value */
     private function takesArray(array $value): void
     {
@@ -590,6 +608,11 @@ class Typed extends AbstractController
 
     /** @param AbstractCollection<Node> $value */
     private function takesNodes(AbstractCollection $value): void
+    {
+    }
+
+    /** @param AbstractCollection<User> $value */
+    private function takesUsers(AbstractCollection $value): void
     {
     }
 
