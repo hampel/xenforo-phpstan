@@ -201,11 +201,35 @@ enough. To ask whether the set is current without touching it:
 vendor/bin/xenforo-phpstan generate --check
 ```
 
-Composer writes a constraint of `^0.10` or whatever the current minor is. **Below 1.0 a caret
-pins the minor**, so patch releases arrive with `composer update` and a new minor does not. That
-is deliberate: each minor so far has changed what an add-on sees at its level, so a minor is
-taken by naming it in the constraint and reading the changelog entry, which carries the
-`composer require` line.
+One thing about the version Composer records is worth knowing now, because it will puzzle you
+later. The `composer require` line above writes something like this into the add-on's
+`composer.json`:
+
+```json
+"require-dev": {
+    "hampel/xenforo-phpstan": "^0.10"
+}
+```
+
+The `^` is Composer's "compatible with" marker, and **for a package below version 1.0 it means
+something narrower than it usually does.** On a package at 1.x, `^1.4` allows any release up to
+but not including 2.0. On a package at 0.x, `^0.10` allows any release up to but not including
+0.11, so `composer update` will bring in 0.10.6 and 0.10.7, and will not bring in 0.11.0. The
+package is at 0.x, so the second rule applies.
+
+That is how it is meant to work. A patch release, 0.10.5 to 0.10.6, only adds or corrects a type
+and arrives on its own. A minor release, 0.10 to 0.11, is one that can change what PHPStan
+reports on your add-on at the level you run, and you should take it when you have a few minutes
+to read the changelog and look at the run, not in the middle of something else. To take it, name
+the new minor:
+
+```bash
+composer require --dev hampel/xenforo-phpstan:^0.11
+```
+
+The changelog entry for each minor says what changed and carries that line. If you ever run
+`composer update` after a release and Composer reports nothing to do, this is why: the
+constraint, not Packagist.
 
 ### Configure
 
