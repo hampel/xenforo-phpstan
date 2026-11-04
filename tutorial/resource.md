@@ -378,9 +378,9 @@ and finds something in most add-ons. Between them, level 6 finds very little and
 because it asks for declarations rather than checking behaviour: one add-on went from 3 reports
 at level 5 to 67 at 6, another from a clean 5 to 239, a third from 16 to around 600, and almost
 none of those were defects. Above 8, the reports are about your own declarations rather than your
-code's behaviour. So a reasonable aim is level 5 for anything you ship, level 8 for anything you
+code's behaviour. So **a reasonable aim is level 5 for anything you ship, level 8 for anything you
 maintain actively, and max when the add-on is small or new enough that typing everything is an
-afternoon rather than a week.
+afternoon rather than a week**.
 
 The ongoing cost matters as much as the climb. A higher level is more friction on every future
 change, because each new method has to be fully declared before the run is clean, and each new
