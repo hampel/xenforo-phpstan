@@ -177,7 +177,7 @@ asked of the forum.
 
 ### Install and generate
 
-In the add-on's directory:
+Run the following commands **from the add-on's directory**:
 
 ```bash
 composer require --dev hampel/xenforo-phpstan
@@ -185,8 +185,8 @@ vendor/bin/xenforo-phpstan generate
 ```
 
 The first line installs PHPStan and the package into the add-on's own `vendor/`, which is where
-PHPStan must run from. The second finds the forum four directories up, which is where it is from
-an add-on's directory, and writes the three generated files into the forum's
+PHPStan must run from. The second finds the forum itself, which should be four directories up from 
+where your addon is installed and writes the three generated files into the forum's
 `internal_data/phpstan/`. It prints what it wrote: on a 2.3.13 install with a handful of add-ons
 that is around nine hundred legacy names and however many class extensions the install has.
 
@@ -200,36 +200,6 @@ enough. To ask whether the set is current without touching it:
 ```bash
 vendor/bin/xenforo-phpstan generate --check
 ```
-
-One thing about the version Composer records is worth knowing now, because it will puzzle you
-later. The `composer require` line above writes something like this into the add-on's
-`composer.json`:
-
-```json
-"require-dev": {
-    "hampel/xenforo-phpstan": "^0.10"
-}
-```
-
-The `^` is Composer's "compatible with" marker, and **for a package below version 1.0 it means
-something narrower than it usually does.** On a package at 1.x, `^1.4` allows any release up to
-but not including 2.0. On a package at 0.x, `^0.10` allows any release up to but not including
-0.11, so `composer update` will bring in 0.10.6 and 0.10.7, and will not bring in 0.11.0. The
-package is at 0.x, so the second rule applies.
-
-That is how it is meant to work. A patch release, 0.10.5 to 0.10.6, only adds or corrects a type
-and arrives on its own. A minor release, 0.10 to 0.11, is one that can change what PHPStan
-reports on your add-on at the level you run, and you should take it when you have a few minutes
-to read the changelog and look at the run, not in the middle of something else. To take it, name
-the new minor:
-
-```bash
-composer require --dev hampel/xenforo-phpstan:^0.11
-```
-
-The changelog entry for each minor says what changed and carries that line. If you ever run
-`composer update` after a release and Composer reports nothing to do, this is why: the
-constraint, not Packagist.
 
 ### Configure
 
@@ -395,6 +365,30 @@ What each level asks for, in the order you will meet them:
 
 Several of our add-ons are clean at level max with no baseline and no ignores. It is reachable,
 and the climb from 2 to max on a small add-on is an afternoon.
+
+### Where to stop
+
+**Nothing requires you to reach max, and for some add-ons the last few levels are a lot of work
+for no tangible gain.** The levels do not all pay the same, and the right place to stop depends
+on the add-on and on how often you will touch it again.
+
+Two levels find bugs on their own. Level 5 checks every argument against its parameter, and most
+of what it reports on an add-on is real. Level 8 reports a call on a value that might be null,
+and finds something in most add-ons. Between them, level 6 finds very little and costs the most,
+because it asks for declarations rather than checking behaviour: one add-on went from 3 reports
+at level 5 to 67 at 6, another from a clean 5 to 239, a third from 16 to around 600, and almost
+none of those were defects. Above 8, the reports are about your own declarations rather than your
+code's behaviour. So a reasonable aim is level 5 for anything you ship, level 8 for anything you
+maintain actively, and max when the add-on is small or new enough that typing everything is an
+afternoon rather than a week.
+
+The ongoing cost matters as much as the climb. A higher level is more friction on every future
+change, because each new method has to be fully declared before the run is clean, and each new
+release of this package can move the count at level 7 and above as a type is added or corrected.
+A large add-on nobody is going to spend a week on is better at a clean level 5 it can hold than at
+a level max it holds only through a baseline. Where you do want a higher level on an add-on like
+that, the baseline is the honest tool: set the level you want new code held to, record what
+exists, and pay the list down when you are in that file anyway.
 
 ## Supporting XenForo 2.2
 
