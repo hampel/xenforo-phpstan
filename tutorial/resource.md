@@ -195,7 +195,8 @@ it. **Run `generate` again after upgrading XenForo, and after adding or removing
 extension in any add-on.** A set left over from a previous XenForo version is refused rather than
 tolerated: PHPStan stops with one error naming both versions and the command to run. A set that
 predates a new class extension reports that extension's `XFCP_` parent as unknown, which is loud
-enough. To ask whether the set is current without touching it:
+enough. Or stop remembering altogether and run `generate` in front of every analysis, as the Run
+section below shows. To ask whether the set is current without touching it:
 
 ```bash
 vendor/bin/xenforo-phpstan generate --check
@@ -255,6 +256,24 @@ parameters:
 
 The first run is cold and takes a few seconds while PHPStan reads the forum; later runs use its
 cache and are quicker.
+
+Rather than remembering to regenerate after a XenForo upgrade or a new class extension, run
+`generate` in front of every analysis. It takes a fraction of a second (0.2 s on a forum with
+nine hundred legacy names and 123 class extensions), and since 0.10.7 it writes nothing when the
+set already there is current, so PHPStan's cache survives: PHPStan hashes every stub file and
+starts from scratch when one changes, which a rewritten set would have forced on every run. As a
+Composer script in the add-on's `composer.json`:
+
+```json
+"scripts": {
+    "analyse": [
+        "xenforo-phpstan generate",
+        "phpstan analyse"
+    ]
+}
+```
+
+Then `composer analyse` is the one command, and the set is never stale when PHPStan reads it.
 
 ## Reading the first run
 

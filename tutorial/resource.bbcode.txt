@@ -86,7 +86,7 @@ vendor/bin/xenforo-phpstan generate
 
 The first line installs PHPStan and the package into the add-on's own [ICODE]vendor/[/ICODE], which is where PHPStan must run from. The second finds the forum itself, which should be four directories up from where your addon is installed and writes the three generated files into the forum's [ICODE]internal_data/phpstan/[/ICODE]. It prints what it wrote: on a 2.3.13 install with a handful of add-ons that is around nine hundred legacy names and however many class extensions the install has.
 
-The generated set belongs to the forum, not to the add-on, and every add-on on the forum shares it. [B]Run [ICODE]generate[/ICODE] again after upgrading XenForo, and after adding or removing a class extension in any add-on.[/B] A set left over from a previous XenForo version is refused rather than tolerated: PHPStan stops with one error naming both versions and the command to run. A set that predates a new class extension reports that extension's [ICODE]XFCP_[/ICODE] parent as unknown, which is loud enough. To ask whether the set is current without touching it:
+The generated set belongs to the forum, not to the add-on, and every add-on on the forum shares it. [B]Run [ICODE]generate[/ICODE] again after upgrading XenForo, and after adding or removing a class extension in any add-on.[/B] A set left over from a previous XenForo version is refused rather than tolerated: PHPStan stops with one error naming both versions and the command to run. A set that predates a new class extension reports that extension's [ICODE]XFCP_[/ICODE] parent as unknown, which is loud enough. Or stop remembering altogether and run [ICODE]generate[/ICODE] in front of every analysis, as the Run section below shows. To ask whether the set is current without touching it:
 
 [CODE=bash]
 vendor/bin/xenforo-phpstan generate --check
@@ -137,6 +137,19 @@ parameters:
 [/CODE]
 
 The first run is cold and takes a few seconds while PHPStan reads the forum; later runs use its cache and are quicker.
+
+Rather than remembering to regenerate after a XenForo upgrade or a new class extension, run [ICODE]generate[/ICODE] in front of every analysis. It takes a fraction of a second (0.2 s on a forum with nine hundred legacy names and 123 class extensions), and since 0.10.7 it writes nothing when the set already there is current, so PHPStan's cache survives: PHPStan hashes every stub file and starts from scratch when one changes, which a rewritten set would have forced on every run. As a Composer script in the add-on's [ICODE]composer.json[/ICODE]:
+
+[CODE=json]
+"scripts": {
+    "analyse": [
+        "xenforo-phpstan generate",
+        "phpstan analyse"
+    ]
+}
+[/CODE]
+
+Then [ICODE]composer analyse[/ICODE] is the one command, and the set is never stale when PHPStan reads it.
 
 [HEADING=1]Reading the first run[/HEADING]
 
