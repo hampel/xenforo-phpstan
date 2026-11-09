@@ -34,6 +34,20 @@ stub declaring the `XFCP_` parent of every class extension the install has, and 
 extensions read. **Run it again after upgrading XenForo or changing a class extension** — a stale
 set fails loudly, naming the two versions and this command.
 
+The simplest way never to forget is to run it in front of every analysis. It takes a fraction of
+a second (0.2 s on a forum with 963 aliases and 123 class extensions), and it writes nothing when
+the set already there is current, so PHPStan's result cache, which records the hash of every stub
+file and starts over when one changes, is left alone:
+
+```json
+"scripts": {
+    "analyse": [
+        "xenforo-phpstan generate",
+        "phpstan analyse"
+    ]
+}
+```
+
 **The `^0.x` constraint Composer writes is deliberate, and a new minor is a deliberate move.**
 Below 1.0 a caret pins the minor, so `^0.4` means `>=0.4 <0.5`: a patch release arrives with
 `composer update`, and a minor does not. Each minor so far has changed what an add-on sees at its
@@ -575,7 +589,8 @@ A tag whose definition has `has_option` set to `yes` never arrives with a null o
   sibling's context, not this add-on's.
 - **A stale generated set is detected only for a XenForo upgrade.** A class extension added after
   generation is reported as an unknown `XFCP_` parent, which is loud enough; one removed is simply
-  still offered. `generate --check` asks the same question and no more.
+  still offered. `generate --check` asks the same question and no more, which is why the
+  Installation section runs `generate` in front of every analysis instead.
 - **PHPStan resolves symbols from the project that installed it.** Run it from the add-on's own
   directory with the add-on's own `vendor/bin/phpstan`. A phar borrowed from another project
   consults that project's autoloader first, and the result quietly describes a different

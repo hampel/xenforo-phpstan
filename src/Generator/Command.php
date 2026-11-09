@@ -19,7 +19,8 @@ final class Command
         Writes the files PHPStan needs to analyse an add-on against a XenForo install:
         the legacy class names XenForo 2.3 aliases at runtime, and the XFCP_ parent of
         every class extension the install declares. Run it once per forum, and again
-        after upgrading XenForo or changing a class extension.
+        after upgrading XenForo or changing a class extension - or in front of every
+        analysis: it writes nothing when the set already there is current.
 
           --check     write nothing; report whether the set already there is one PHPStan
                       will accept for this forum. Exit 0 when it is current, 1 when it
@@ -103,7 +104,9 @@ final class Command
             $summary->fakeBaseExtensions > 0 ? sprintf(', %d on a class the forum does not have', $summary->fakeBaseExtensions) : '',
         ));
         fwrite($stdout, sprintf("  %s\n", Generator::CLASSES));
-        fwrite($stdout, sprintf("written to %s\n", $out));
+        fwrite($stdout, $summary->written
+            ? sprintf("written to %s\n", $out)
+            : sprintf("unchanged at %s, generated %s\n", $out, $summary->generated));
 
         return 0;
     }

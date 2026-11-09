@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.6 (2026-11-09)
+
+- `generate` writes nothing when the set already there differs from what it would write only by
+  its date, and says so, so it can run in front of every analysis without invalidating PHPStan's
+  result cache, which records the hash of every stub file
+- README: run `generate` before every analysis rather than remembering to; it costs a fraction of
+  a second
+
 ## 0.10.5 (2026-10-25)
 
 - the BB code traverser's `renderSubTree()`, `renderSubTreePlain()` and `renderUnparsedTag()`

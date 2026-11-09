@@ -19,6 +19,8 @@ final class Summary
         public readonly int $extendedClasses,
         public readonly int $inactiveExtensions,
         public readonly int $fakeBaseExtensions,
+        public readonly bool $written,
+        public readonly string $generated,
     ) {
     }
 }

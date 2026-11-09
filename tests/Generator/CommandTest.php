@@ -50,6 +50,41 @@ final class CommandTest extends TestCase
         $this->assertFileExists($this->out . '/classes.php');
     }
 
+    public function testASecondRunWritesNothingWhenNothingChanged(): void
+    {
+        $this->runCommand('generate', '--root=' . Fixture::forum(), '--out=' . $this->out);
+        $files = [$this->out . '/legacy-aliases.stub.php', $this->out . '/class-extensions.stub.php', $this->out . '/classes.php'];
+        $before = [];
+        foreach ($files as $file) {
+            $before[$file] = (string) file_get_contents($file);
+            $this->assertTrue(touch($file, time() - 100));
+        }
+
+        [$code, $stdout, $stderr] = $this->runCommand('generate', '--root=' . Fixture::forum(), '--out=' . $this->out);
+
+        $this->assertSame(0, $code, $stderr);
+        $this->assertStringNotContainsString('written to', $stdout);
+        $this->assertMatchesRegularExpression('#unchanged at ' . preg_quote($this->out, '#') . ', generated \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC#', $stdout);
+        clearstatcache();
+        foreach ($files as $file) {
+            $this->assertSame($before[$file], file_get_contents($file), $file);
+            $this->assertLessThan(time() - 50, filemtime($file), $file . ' was rewritten');
+        }
+    }
+
+    public function testASetThatDiffersBeyondItsDateIsRewritten(): void
+    {
+        $this->runCommand('generate', '--root=' . Fixture::forum(), '--out=' . $this->out);
+        $file = $this->out . '/class-extensions.stub.php';
+        $this->assertNotFalse(file_put_contents($file, "<?php\n// a set from before an extension was added\n"));
+
+        [$code, $stdout, $stderr] = $this->runCommand('generate', '--root=' . Fixture::forum(), '--out=' . $this->out);
+
+        $this->assertSame(0, $code, $stderr);
+        $this->assertStringContainsString('written to ' . $this->out, $stdout);
+        $this->assertStringContainsString('class XFCP_', (string) file_get_contents($file));
+    }
+
     public function testCheckReportsACurrentSetAndWritesNothing(): void
     {
         $this->runCommand('generate', '--root=' . Fixture::forum(), '--out=' . $this->out);
