@@ -111,7 +111,7 @@ and they come from five places.
   yours.
 - **Class extensions add methods and columns to core classes.** When your `XF\Entity\User`
   extension adds `canUseThing()`, every `$user` in the forum can call it. Statically every one of
-  those values is an `XF\Entity\User`, and the method is undefined on it. On a set of 44 add-ons
+  those values is an `XF\Entity\User`, and the method is undefined on it. On a set of 43 add-ons
   this one mechanism was more than half of everything left after the configuration was right.
 - **Container shortcuts hide the type.** `$this->repository('Vendor\AddOn:Thing')` returns your
   repository at runtime. XenForo 2.3 types the method as returning whatever class the argument
@@ -277,8 +277,8 @@ Then `composer analyse` is the one command, and the set is never stale when PHPS
 
 ## Reading the first run
 
-On a set of 44 add-ons with this configuration, the median add-on had 8 errors at level 2, and 28
-of the 44 had ten or fewer. What is left is nearly always real, or at least yours, and it tends to
+On a set of 43 add-ons with this configuration, the median add-on had 8 errors at level 2, and 27
+of the 43 had ten or fewer. What is left is nearly always real, or at least yours, and it tends to
 fall into a few kinds.
 
 **Magic properties.** `$user->custom_column`, `\XF::options()->myOption` and `$params->user_id`

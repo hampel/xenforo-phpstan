@@ -327,7 +327,7 @@ valid across the range.
 
 A class extension adds methods to a core class at runtime — `Vendor\AddOn\XF\Entity\User` adds
 `canUseThing()`, and every `$user` in the forum can call it. Statically every call site is typed to
-`XF\Entity\User`, so PHPStan reports each such method as undefined. On a fleet of 44 add-ons this
+`XF\Entity\User`, so PHPStan reports each such method as undefined. On a fleet of 43 add-ons this
 was 396 of the 757 errors left once the configuration was right.
 
 The reflection extension answers for those methods from the extension classes recorded at
@@ -519,8 +519,8 @@ parameter type is a claim about every caller, and this package types what comes 
 
 ## Levels
 
-**Level 2 is the place to start.** On a fleet of 44 add-ons with this configuration, the median
-add-on had 8 errors at level 2, 28 of the 44 had ten or fewer, and most of what remained was the
+**Level 2 is the place to start.** On a fleet of 43 add-ons with this configuration, the median
+add-on had 8 errors at level 2, 27 of the 43 had ten or fewer, and most of what remained was the
 add-on's own to fix. Level 5 is a reasonable target once the call sites are tidy; level 6 is the
 missing-typehint wall. With the stubs above, level max is reachable: on one small add-on it
 reports a third fewer than without them, and what remains is the add-on's own typing and
