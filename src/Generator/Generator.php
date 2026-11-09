@@ -393,9 +393,19 @@ final class Generator
         return $m[1];
     }
 
+    /**
+     * The date appears twice in classes.php: in the header, as `generated <date>`, and as the
+     * exported `'generated' => '<date>'` entry. 0.10.6 stripped only the first, so a set from an
+     * earlier minute always compared as changed and was rewritten, which is what the comparison
+     * exists to prevent.
+     */
     private static function undated(string $contents): string
     {
-        return (string) preg_replace('/generated \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/', 'generated', $contents);
+        return (string) preg_replace(
+            "/('generated' => '|generated )\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/",
+            '$1',
+            $contents,
+        );
     }
 
     private function write(string $path, string $contents): void

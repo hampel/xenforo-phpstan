@@ -54,17 +54,22 @@ final class CommandTest extends TestCase
     {
         $this->runCommand('generate', '--root=' . Fixture::forum(), '--out=' . $this->out);
         $files = [$this->out . '/legacy-aliases.stub.php', $this->out . '/class-extensions.stub.php', $this->out . '/classes.php'];
+        // Dated in another minute, in the header of all three and in classes.php's exported
+        // entry, as a set generated earlier is: a second run in the same minute proves nothing.
         $before = [];
         foreach ($files as $file) {
-            $before[$file] = (string) file_get_contents($file);
+            $dated = (string) preg_replace('/\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC/', '2000-01-01 00:00 UTC', (string) file_get_contents($file));
+            $this->assertNotFalse(file_put_contents($file, $dated));
+            $before[$file] = $dated;
             $this->assertTrue(touch($file, time() - 100));
         }
+        $this->assertSame(2, substr_count($before[$this->out . '/classes.php'], '2000-01-01 00:00 UTC'));
 
         [$code, $stdout, $stderr] = $this->runCommand('generate', '--root=' . Fixture::forum(), '--out=' . $this->out);
 
         $this->assertSame(0, $code, $stderr);
         $this->assertStringNotContainsString('written to', $stdout);
-        $this->assertMatchesRegularExpression('#unchanged at ' . preg_quote($this->out, '#') . ', generated \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC#', $stdout);
+        $this->assertStringContainsString('unchanged at ' . $this->out . ', generated 2000-01-01 00:00 UTC', $stdout);
         clearstatcache();
         foreach ($files as $file) {
             $this->assertSame($before[$file], file_get_contents($file), $file);

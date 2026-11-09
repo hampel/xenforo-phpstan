@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- `generate` compared a set from an earlier minute as changed and rewrote it, because the date
+  was stripped from the header before comparing but not from the exported `'generated'` entry in
+  `classes.php`; 0.10.6's "writes nothing when current" held only within the minute it was
+  written. Reported by a reader the same day
+
 ## 0.10.6 (2026-11-09)
 
 - `generate` writes nothing when the set already there differs from what it would write only by
