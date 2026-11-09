@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.10.7 (2026-11-09)
 
 - `generate` compared a set from an earlier minute as changed and rewrote it, because the date
   was stripped from the header before comparing but not from the exported `'generated'` entry in
