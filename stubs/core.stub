@@ -750,8 +750,24 @@ namespace XF\Entity {
     class PaymentProfile extends \XF\Mvc\Entity\Entity {}
     class ModeratorLog extends \XF\Mvc\Entity\Entity {}
 
-    // Declared so that the two master phrase corrections below may name it; no docblock, as above.
+    // Declared so that the master phrase methods below may name it; no docblock, as above.
     class Phrase extends \XF\Mvc\Entity\Entity {}
+
+    abstract class AbstractPrefixGroup extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class Widget extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
 
     class StyleProperty extends \XF\Mvc\Entity\Entity
     {

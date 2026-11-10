@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.10.8 (2026-11-10)
 
+- `getMasterPhrase()` on `AbstractPrefixGroup` and `Widget` typed as the `XF\Entity\Phrase` it
+  returns, never null; XenForo declares neither, so above level 8 the phrase was `mixed`
 - `getMasterPhrase()` on `StyleProperty` and `StylePropertyGroup` corrected to the
   `XF\Entity\Phrase` entity it returns; XenForo's docblock resolves to the renderable `XF\Phrase`
   through an import, so the phrase's text and `save()` were reported as undefined from level 2

@@ -485,8 +485,17 @@ class Typed extends AbstractController
         $this->takesInt($link['type']);   // ERROR: the link type is one of two strings
     }
 
-    public function masterPhrases(\XF\Entity\StyleProperty $property, \XF\Entity\StylePropertyGroup $group): void
-    {
+    public function masterPhrases(
+        \XF\Entity\StyleProperty $property,
+        \XF\Entity\StylePropertyGroup $group,
+        \XF\Entity\AbstractPrefixGroup $prefixGroup,
+        \XF\Entity\Widget $widget
+    ): void {
+        // A prefix group's and a widget's master phrase is the phrase entity, created when the
+        // relation is empty, so never null; XenForo declares neither.
+        $this->takesPhraseEntity($prefixGroup->getMasterPhrase());
+        $this->takesPhraseEntity($widget->getMasterPhrase());
+
         // A style property's master phrase is the phrase entity, which is given its text and
         // saved; XenForo's docblock names the renderable phrase, which has neither.
         $this->takesPhraseEntityOrNull($property->getMasterPhrase(true));
@@ -495,6 +504,10 @@ class Typed extends AbstractController
         if ($phrase !== null) {
             $this->takesString($phrase->phrase_text);
         }
+    }
+
+    private function takesPhraseEntity(\XF\Entity\Phrase $value): void
+    {
     }
 
     private function takesPhraseEntityOrNull(?\XF\Entity\Phrase $value): void
