@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- `getMasterPhrase()` on `StyleProperty` and `StylePropertyGroup` corrected to the
+  `XF\Entity\Phrase` entity it returns; XenForo's docblock resolves to the renderable `XF\Phrase`
+  through an import, so the phrase's text and `save()` were reported as undefined from level 2
+
 ## 0.10.7 (2026-11-09)
 
 - `generate` compared a set from an earlier minute as changed and rewrote it, because the date

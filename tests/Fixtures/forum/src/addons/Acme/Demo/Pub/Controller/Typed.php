@@ -485,6 +485,22 @@ class Typed extends AbstractController
         $this->takesInt($link['type']);   // ERROR: the link type is one of two strings
     }
 
+    public function masterPhrases(\XF\Entity\StyleProperty $property, \XF\Entity\StylePropertyGroup $group): void
+    {
+        // A style property's master phrase is the phrase entity, which is given its text and
+        // saved; XenForo's docblock names the renderable phrase, which has neither.
+        $this->takesPhraseEntityOrNull($property->getMasterPhrase(true));
+        $this->takesPhraseEntityOrNull($group->getMasterPhrase(false));
+        $phrase = $property->getMasterPhrase(true);
+        if ($phrase !== null) {
+            $this->takesString($phrase->phrase_text);
+        }
+    }
+
+    private function takesPhraseEntityOrNull(?\XF\Entity\Phrase $value): void
+    {
+    }
+
     /** @param array<string, mixed> $value */
     private function takesArray(array $value): void
     {

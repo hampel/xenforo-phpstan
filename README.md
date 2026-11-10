@@ -439,11 +439,14 @@ documented as the handler's own entity where core's thread handler passes the fi
 `round(..., 2)`; and `ModeratorLog\AbstractHandler::getContentTitle()`,
 `InlineMod\AbstractAction::getTitle()` and `ConnectedAccount\Provider\AbstractProvider::getTitle()`,
 documented string where core's own implementations return a phrase, so an add-on's doing the same
-was an incompatible declaration; and `Manager::instantiateEntity()`, documented nullable for an
+was an incompatible declaration; `Manager::instantiateEntity()`, documented nullable for an
 `int-mask` of the proxied flag, a mask that includes the default of 0, so every plain call read as
 nullable where the body returns null only under a non-zero option, the allow-invalid one the mask
-leaves out included. Each is held by a fixture class carrying XenForo's docblock, and every one is
-reported against the previous stub. The finder's fluent methods are declared as
+leaves out included; and `getMasterPhrase()` on `StyleProperty` and `StylePropertyGroup`, documented
+as the renderable `XF\Phrase` by an import where the body returns the `XF\Entity\Phrase` entity,
+so setting its text and saving it was reported from level 2. Each is held by a fixture class
+carrying XenForo's docblock, and every one is reported against the previous stub. The finder's
+fluent methods are declared as
 returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
 own `@return Finder` on `order()` lost; the schema `Column`'s setters are declared the same way.
 An add-on's own finder carries an entity type only if it declares one, `@extends Finder<Thing>` as
