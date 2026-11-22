@@ -255,6 +255,14 @@ lints on the floor PHP may decide that is enough and leave `phpVersion` out. PHP
 is `70100`, so an add-on that supports XenForo 2.2's PHP 7.0 holds at 7.1, which is as low as the
 setting goes.
 
+**With no `phpVersion` set, PHPStan analyses for the PHP it runs on, so upgrading that PHP can
+move an add-on's count with no change to the add-on or to this package.** PHP 8.5 deprecates
+`null` as an array key, and under it every `$map[$entity->some_id]` whose id XenForo documents
+as `int|null` is reported as a possibly invalid array key. One add-on that was clean at level
+max reported 14 the day its command-line PHP became 8.5, on every release of this package it
+tried, and none under `phpVersion: 80300`. The reports are true of 8.5: narrow the key, or set
+`phpVersion` to the range the add-on supports if that stops below it.
+
 ### Supporting XenForo 2.2
 
 The forum analysed against is a 2.3 install, so a guard for a 2.3 method is always true there:

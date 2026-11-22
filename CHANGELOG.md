@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- README: with no `phpVersion` set PHPStan analyses for the PHP it runs on, and PHP 8.5 reports
+  an `int|null` array key
+
 ## 0.11.1 (2026-11-22)
 
 - `generate` wrote a `legacy-aliases.stub.php` PHP cannot parse when an add-on held PHP under a
