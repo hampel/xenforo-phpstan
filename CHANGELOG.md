@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.11.0 (2026-11-22)
+
+- an add-on's own container keys are typed where it declares them: `xenforo.container` maps a key
+  of the application's container to a PHPDoc type, and `xenforo.subContainers` does the same per
+  sub-container class. `$app->container('key')`, `$app['key']`, `$container['key']`,
+  `$this->container['key']` inside a sub-container and `$subContainer['key']` are all answered;
+  an undeclared key stays `mixed`. On one add-on at level 9 this cleared 37 of 120 reports and
+  added none. Nothing changes for an add-on that declares no keys. Suggested by an adopter
+- below 1.0 a caret holds the minor: `composer require --dev hampel/xenforo-phpstan:^0.11`
+
 ## 0.10.9 (2026-11-22)
 
 - `XF\Http\Reader::get()`, `request()`, `getUntrusted()` and `requestUntrusted()` corrected:

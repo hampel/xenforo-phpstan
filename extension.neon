@@ -23,6 +23,24 @@ parameters:
         # extensions every installed add-on registers - is a property of the install.
         generated: %xenforo.root%/internal_data/phpstan
 
+        # What the add-on's own container keys hold, which nothing in the code declares: an
+        # entry is a closure registered at runtime. Each value is a PHPDoc type, usually a class
+        # name. Empty here; an add-on lists the keys it reads:
+        #
+        #     parameters:
+        #         xenforo:
+        #             container:
+        #                 acme.api: Acme\Demo\SubContainer\Api
+        #             subContainers:
+        #                 Acme\Demo\SubContainer\Api:
+        #                     client: Acme\Demo\Api\Client
+        #
+        # `container` is the application's, read as $app->container('acme.api') or
+        # $app['acme.api']. A sub-container keeps its own entries under keys that mean nothing
+        # outside it, so `subContainers` is keyed by the sub-container class first.
+        container: []
+        subContainers: []
+
     # The add-on is analysed; XenForo is only scanned for symbols. Other add-ons are scanned
     # too, because add-ons reference each other - but not their vendor/ directories, where
     # an older copy of a shared dependency would otherwise shadow the add-on's own. PHPStan
@@ -96,6 +114,8 @@ parametersSchema:
     xenforo: structure([
         root: string()
         generated: string()
+        container: arrayOf(string(), string())
+        subContainers: arrayOf(arrayOf(string(), string()), string())
     ])
 
 services:
@@ -194,12 +214,29 @@ services:
             className: XF\Mvc\Controller
 
     # $app->container() with no key is the container; XenForo documents it Container|mixed,
-    # which is mixed. A keyed call is left as it is.
+    # which is mixed. A read by key - container('key'), or the application, a container or a
+    # sub-container read as an array - is whatever the add-on declared for that key above, and
+    # left as it is for a key it did not declare. One service per class read that way.
+    -
+        class: Hampel\XenForo\PHPStan\Type\ContainerKeys
+        arguments:
+            app: %xenforo.container%
+            subContainers: %xenforo.subContainers%
     -
         class: Hampel\XenForo\PHPStan\Type\ContainerReturnTypeExtension
         tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
         arguments:
             className: XF\App
+    -
+        class: Hampel\XenForo\PHPStan\Type\ContainerReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+        arguments:
+            className: XF\Container
+    -
+        class: Hampel\XenForo\PHPStan\Type\ContainerReturnTypeExtension
+        tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+        arguments:
+            className: XF\SubContainer\AbstractSubContainer
 
     # A template function called directly, $templater->func('avatar', [...]), returns its escaped
     # result, a string, unless $escape is passed false; XenForo declares nothing.

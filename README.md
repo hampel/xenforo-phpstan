@@ -291,6 +291,43 @@ reports PHPStan refuses to ignore. Excluding the file loses the 2.3 branch with 
 declarations in two files, `require`d from the one the autoloader finds by the same test, and
 exclude the 2.2 file alone.
 
+### Container keys
+
+**A container entry is `mixed` until the add-on says what it holds.** An entry is a closure
+registered at runtime, in an `app_setup` listener or a sub-container's `initialize()`, so no
+docblock states its type and every getter that returns one hands PHPStan `mixed`. Declare the
+keys the add-on reads, once:
+
+```yaml
+parameters:
+    xenforo:
+        container:
+            acme.api: Acme\Demo\SubContainer\Api
+            acme.hosts: list<string>
+        subContainers:
+            Acme\Demo\SubContainer\Api:
+                client: Acme\Demo\Api\Client
+                retries: int
+```
+
+Each value is a PHPDoc type: a class name written in full, or anything else a `@return` could
+say.
+
+- `container` is the application's container, and types `$app->container('acme.api')`,
+  `$app['acme.api']` and `$app->container()['acme.api']`.
+- `subContainers` is keyed by the sub-container class first, because a sub-container keeps its
+  entries in a container of its own, under keys that mean nothing outside it. It types
+  `$this->container['client']` written inside that class or a subclass, and `$api['client']` on
+  the sub-container from outside.
+
+A key that is not declared is left as it was, and so is a key that is not a constant string. A
+key of another add-on's, such as a shared logger, is declared by each add-on that reads it.
+
+**The declaration is a claim, checked against nothing.** It moves what a `@var` beside every read
+would say into one place, and like a `@var` it is wrong the day the closure returns something
+else. Where the entry is built by `extendClass()`, declare the class the add-on wrote: an
+extension of it is a subclass.
+
 ## What it does
 
 ### Scans the forum, analyses the add-on
@@ -389,8 +426,10 @@ names does not exist.
 
 `$app->container()` with no key is the container itself, `XF\Container`. XenForo documents the
 method as `Container|mixed`, which PHPStan reads as `mixed` on both paths, so an add-on that
-reaches the container to register or read an entry called every method on it undefined. A keyed
-call stays as XenForo documents it: what an entry holds is a fact about the install.
+reaches the container to register or read an entry called every method on it undefined. A read
+by key is typed where the add-on has declared the key, see [Container keys](#container-keys),
+and stays `mixed` for any other: what an entry holds is a fact about the add-on that registered
+it.
 
 ### Undeclared return types
 

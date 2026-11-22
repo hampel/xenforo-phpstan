@@ -66,7 +66,9 @@ src/
                         ActionReplyExtension (every undeclared action returns a reply);
                         RelationReturnTypeExtension (a relation by its @property-read);
                         PluckReturnTypeExtension (a plucked finder yields the column);
-                        ContainerReturnTypeExtension (container() with no key is the container);
+                        ContainerReturnTypeExtension (container() with no key is the container,
+                        and a read by key is what the add-on declared), ContainerKeys (the
+                        declared map, each value a PHPDoc type);
                         FuncReturnTypeExtension (a template function's escaped result is a string)
 tests/Fixtures/forum/   the stand-in XenForo install
 ```
@@ -158,6 +160,18 @@ tests/Fixtures/forum/   the stand-in XenForo install
   and given `void` as well, because a single-step setup returns nothing and PHPStan reported
   every one as a missing return; a stub's own `array` parameter is reported by the stub validator
   at the consumer's level, so a stub types the value even where XenForo does not.
+- **Container keys are declared by the add-on, not read from its closures.** An entry's type
+  is whatever a closure registered at runtime returns. Scanning for `return new X(...)` would be
+  checked rather than claimed, but it means parsing add-on code and fails on the first closure
+  that is not a bare `new`: the commonest one calls `extendClass()` and returns `new $class`. So
+  `xenforo.container` and `xenforo.subContainers` are a map in the add-on's own configuration,
+  resolved through PHPStan's `TypeStringResolver`, and an undeclared key answers null. A
+  sub-container's keys are scoped by its class because they are unscoped at runtime: `log`
+  is a key of several. Only two receivers are read as a sub-container's own container, the
+  sub-container itself and `$this->container` written inside one; `$this->parent` and every
+  other `XF\Container` are taken to be the application's. An array read reaches the extension
+  as a call to `offsetGet()`, on 2.1.22 as on the current release, which is why one service is
+  registered per class read that way.
 - **The add-on object's properties are typed one by one, not crated.** `XF\AddOn\AddOn` answers
   nine keys itself and then the installed entity's columns, and every add-on that reports its
   version reads them. A crate would silence a mistyped key with the rest; the extension offers

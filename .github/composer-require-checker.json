@@ -1,10 +1,15 @@
 {
     "symbol-whitelist": [
         "XF",
+        "PhpParser\\Node\\Expr",
         "PhpParser\\Node\\Expr\\MethodCall",
+        "PhpParser\\Node\\Expr\\PropertyFetch",
+        "PhpParser\\Node\\Expr\\Variable",
+        "PhpParser\\Node\\Identifier",
         "PhpParser\\Node\\Expr\\StaticCall",
         "PHPStan\\Analyser\\Scope",
         "PHPStan\\PhpDoc\\Tag\\PropertyTag",
+        "PHPStan\\PhpDoc\\TypeStringResolver",
         "PHPStan\\Reflection\\Annotations\\AnnotationPropertyReflection",
         "PHPStan\\Reflection\\ClassReflection",
         "PHPStan\\Reflection\\MethodReflection",

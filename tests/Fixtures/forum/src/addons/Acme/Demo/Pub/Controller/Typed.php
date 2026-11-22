@@ -523,6 +523,31 @@ class Typed extends AbstractController
         $this->takesStringOrPhrase($untrusted);   // ERROR: null when the request succeeded
     }
 
+    public function containerKeys(\XF\App $app): void
+    {
+        // A container entry is a closure registered at runtime, so nothing declares what a
+        // key holds; the add-on's configuration does, and every way of reading it agrees.
+        $this->takesApi($app->container('acme.api'));
+        $this->takesApi($app['acme.api']);
+        $this->takesApi($app->container()['acme.api']);
+        $this->takesApi(\XF::app()->container('acme.api'));
+        $this->takesBool($app->container('acme.api')->client()->ping());
+
+        // The sub-container's own keys, read from outside it.
+        $this->takesBool($app['acme.api']['client']->ping());
+        $this->takesInt($app['acme.api']['retries']);
+
+        // A value may be any type a docblock could state.
+        $this->takesStrings($app->container('acme.hosts'));
+
+        // And a key nobody declared is left as it was.
+        $this->takesInt($app->container('acme.unknown'));   // ERROR: mixed, an undeclared key
+    }
+
+    private function takesApi(\Acme\Demo\SubContainer\Api $value): void
+    {
+    }
+
     private function takesStringOrPhrase(string|Phrase $value): void
     {
     }

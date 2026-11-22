@@ -2,8 +2,32 @@
 
 namespace XF;
 
-class App
+class App implements \ArrayAccess
 {
+    public function offsetExists($key): bool
+    {
+        return false;
+    }
+
+    /**
+     * @param mixed $key
+     *
+     * @return mixed
+     */
+    #[\ReturnTypeWillChange]
+    public function offsetGet($key)
+    {
+        return null;
+    }
+
+    public function offsetSet($key, $value): void
+    {
+    }
+
+    public function offsetUnset($key): void
+    {
+    }
+
     /**
      * @return AddOn\Manager
      */

@@ -68,6 +68,13 @@ final class AnalysisTest extends TestCase
             'Typed.php:337 Access to an undefined property XF\Options::$boardTitle.',
             // The link shape's type key is one of two strings.
             'Typed.php:485 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
+            // Container keys the add-on declared, read inside its sub-container: its own keys
+            // through $this->container and through itself as an array, the application's
+            // through the parent. An undeclared key, and its own key asked of the parent, are not here.
+            'Api.php:34 Parameter #1 $value of method Acme\Demo\SubContainer\Api::takesInt() expects int, Acme\Demo\Api\Client given.',
+            'Api.php:35 Parameter #1 $value of method Acme\Demo\SubContainer\Api::takesString() expects string, int given.',
+            'Api.php:36 Parameter #1 $value of method Acme\Demo\SubContainer\Api::takesString() expects string, int given.',
+            'Api.php:44 Parameter #1 $value of method Acme\Demo\SubContainer\Api::takesInt() expects int, Acme\Demo\SubContainer\Api given.',
             // Registered inactive: its parent is declared, nothing it adds is offered.
             'Other.php:20 Call to an undefined method Acme\Other\XF\Entity\User::inactiveMethod().',
             'Other.php:28 Call to an undefined method XF\Repository\User::nope().',
@@ -102,7 +109,7 @@ final class AnalysisTest extends TestCase
     {
         // The controller that uses every member stubs/core.stub types, alone, at level max:
         // each call passes the result where only the stubbed type is accepted, so a stub that
-        // is missing or wrong is a report here. Sixteen lines are wrong on purpose.
+        // is missing or wrong is a report here. Eighteen lines are wrong on purpose.
         $neon = str_replace('level: 5', 'level: max', $this->addonConfig());
         $neon = preg_replace('#^(\s+)paths:\n(?:\1\s+- .*\n)+#m', "\\1paths:\n\\1    - {$this->addon()}/Pub/Controller/Typed.php\n", $neon);
 
@@ -143,6 +150,8 @@ final class AnalysisTest extends TestCase
             'Typed.php:485 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
             // The reader's error reference is a string, a phrase or null, not XenForo's null.
             'Typed.php:523 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesStringOrPhrase() expects string|XF\Phrase, string|XF\Phrase|null given.',
+            // A container key the add-on did not declare stays mixed.
+            'Typed.php:544 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
         ], $messages);
     }
 
@@ -198,6 +207,14 @@ final class AnalysisTest extends TestCase
                 xenforo:
                     root: {$this->forum()}
                     generated: {$this->generated}
+                    # What the add-on's own container keys hold.
+                    container:
+                        acme.api: Acme\Demo\SubContainer\Api
+                        acme.hosts: list<string>
+                    subContainers:
+                        Acme\Demo\SubContainer\Api:
+                            client: Acme\Demo\Api\Client
+                            retries: int
             NEON;
     }
 
