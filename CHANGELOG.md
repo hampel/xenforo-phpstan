@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.9 (2026-11-22)
+
+- `XF\Http\Reader::get()`, `request()`, `getUntrusted()` and `requestUntrusted()` corrected:
+  `$saveTo` is `string|resource|null`, the path or stream the body is written to, and `$error`
+  comes back as `string|XF\Phrase|null`. XenForo documents both as null, so an add-on downloading
+  to a file was reported from level 5, and a check of the error after the call read as always
+  false. Reported by an adopter
+
 ## 0.10.8 (2026-11-10)
 
 - `getMasterPhrase()` on `AbstractPrefixGroup` and `Widget` typed as the `XF\Entity\Phrase` it

@@ -141,6 +141,8 @@ final class AnalysisTest extends TestCase
             'Typed.php:466 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesNode() expects XF\Entity\Node, XF\Entity\Node|null given.',
             // getLinkClassTarget()'s type key is one of two strings.
             'Typed.php:485 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, string given.',
+            // The reader's error reference is a string, a phrase or null, not XenForo's null.
+            'Typed.php:523 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesStringOrPhrase() expects string|XF\Phrase, string|XF\Phrase|null given.',
         ], $messages);
     }
 

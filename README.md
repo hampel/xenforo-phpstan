@@ -442,12 +442,14 @@ documented string where core's own implementations return a phrase, so an add-on
 was an incompatible declaration; `Manager::instantiateEntity()`, documented nullable for an
 `int-mask` of the proxied flag, a mask that includes the default of 0, so every plain call read as
 nullable where the body returns null only under a non-zero option, the allow-invalid one the mask
-leaves out included; and `getMasterPhrase()` on `StyleProperty` and `StylePropertyGroup`, documented
+leaves out included; `getMasterPhrase()` on `StyleProperty` and `StylePropertyGroup`, documented
 as the renderable `XF\Phrase` by an import where the body returns the `XF\Entity\Phrase` entity,
-so setting its text and saving it was reported from level 2. Each is held by a fixture class
-carrying XenForo's docblock, and every one is reported against the previous stub. The finder's
-fluent methods are declared as
-returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
+so setting its text and saving it was reported from level 2; and the four request methods of
+`Http\Reader`, which document `$saveTo` and `$error` as null where the first is the path or
+stream the body is written to and the second comes back holding the failure, so downloading to a
+file was reported from level 5 and every check of the error read as always false. Each is held
+by a fixture class carrying XenForo's docblock, and every one is reported against the previous
+stub. The finder's fluent methods are declared as returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
 own `@return Finder` on `order()` lost; the schema `Column`'s setters are declared the same way.
 An add-on's own finder carries an entity type only if it declares one, `@extends Finder<Thing>` as
 XenForo's finders do; `xf-dev:entity-class-properties` writes nothing for a finder, and one without

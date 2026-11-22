@@ -506,6 +506,27 @@ class Typed extends AbstractController
         }
     }
 
+    public function reader(\XF\Http\Reader $reader, string $path): void
+    {
+        // The third argument is where the body is written: a path, as core's own services
+        // pass, or an open stream. XenForo's docblock says null, which reported both.
+        $response = $reader->get('https://example.com', ['bytes' => 1024], $path, [], $error);
+        $reader->getUntrusted('https://example.com', [], $path);
+        $reader->request('get', 'https://example.com', [], fopen('php://temp', 'w+') ?: null);
+        $reader->requestUntrusted('get', 'https://example.com', [], null, [], $untrusted);
+
+        // And the error reference comes back holding the failure, where the documented null
+        // made every check of it read as always false.
+        if ($response === null && $error !== null) {
+            $this->takesStringOrPhrase($error);
+        }
+        $this->takesStringOrPhrase($untrusted);   // ERROR: null when the request succeeded
+    }
+
+    private function takesStringOrPhrase(string|Phrase $value): void
+    {
+    }
+
     private function takesPhraseEntity(\XF\Entity\Phrase $value): void
     {
     }

@@ -1228,6 +1228,8 @@ namespace XF\Job {
 
 namespace XF\Http {
 
+    use Psr\Http\Message\ResponseInterface;
+
     class Request
     {
         /**
@@ -1259,6 +1261,76 @@ namespace XF\Http {
          */
         public function getFullBasePath() {}
     }
+
+    class Reader
+    {
+        /**
+         * Corrected: XenForo documents `$saveTo` and `$error` as null. The body opens a string
+         * as the file to write to and hands anything else to Guzzle as a stream, and core's own
+         * services pass a temp file path; `$error` comes back holding the failure, a string or a
+         * phrase, where the documented type left it null after every call.
+         *
+         * @param string $url
+         * @param array<mixed> $limits
+         * @param string|resource|null $saveTo
+         * @param array<mixed> $options
+         * @param mixed $error
+         * @param-out string|\XF\Phrase|null $error
+         *
+         * @return ResponseInterface|null
+         */
+        public function get($url, array $limits = [], $saveTo = null, array $options = [], &$error = null) {}
+
+        /**
+         * Corrected: as get()'s.
+         *
+         * @param string $method
+         * @param string $url
+         * @param array<mixed> $limits
+         * @param string|resource|null $saveTo
+         * @param array<mixed> $options
+         * @param mixed $error
+         * @param-out string|\XF\Phrase|null $error
+         *
+         * @return ResponseInterface|null
+         */
+        public function request($method, $url, array $limits = [], $saveTo = null, array $options = [], &$error = null) {}
+
+        /**
+         * Corrected: as get()'s.
+         *
+         * @param string $url
+         * @param array<mixed> $limits
+         * @param string|resource|null $saveTo
+         * @param array<mixed> $options
+         * @param mixed $error
+         * @param-out string|\XF\Phrase|null $error
+         *
+         * @return ResponseInterface|null
+         */
+        public function getUntrusted($url, array $limits = [], $saveTo = null, array $options = [], &$error = null) {}
+
+        /**
+         * Corrected: as get()'s.
+         *
+         * @param string $method
+         * @param string $url
+         * @param array<mixed> $limits
+         * @param string|resource|null $saveTo
+         * @param array<mixed> $options
+         * @param mixed $error
+         * @param-out string|\XF\Phrase|null $error
+         *
+         * @return ResponseInterface|null
+         */
+        public function requestUntrusted($method, $url, array $limits = [], $saveTo = null, array $options = [], &$error = null) {}
+    }
+}
+
+namespace Psr\Http\Message {
+
+    // Declared so that the reader's methods above may name it; no docblock, so the real one stands.
+    interface ResponseInterface {}
 }
 
 namespace XF\Util {
