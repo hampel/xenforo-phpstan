@@ -79,6 +79,8 @@ final class AnalysisTest extends TestCase
             'Other.php:20 Call to an undefined method Acme\Other\XF\Entity\User::inactiveMethod().',
             'Other.php:28 Call to an undefined method XF\Repository\User::nope().',
             'Other.php:29 Call to an undefined method XF\Repository\UserRepository::nopeClass().',
+            // A class only a worktree under a dot directory declares: dot directories are not scanned.
+            'Other.php:31 Instantiated class Acme\Other\Repository\GadgetRepository not found.',
         ], $messages);
     }
 

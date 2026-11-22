@@ -54,6 +54,24 @@ final class GeneratorTest extends TestCase
         $this->assertSame(1, $summary->abstractAliases);
     }
 
+    public function testAPathThatNamesNoClassIsNotAliased(): void
+    {
+        // The fixture has a suffixed class under a dot directory, as a git worktree checked out
+        // inside an add-on leaves one, and another under a hyphenated directory. Derived from
+        // the path, either alias is a namespace PHP cannot parse, and PHPStan drops a scan
+        // file it cannot parse without a word: every legacy name in it goes undefined.
+        [$this->out] = Fixture::generate();
+        $file = $this->out . '/' . Generator::ALIASES_STUB;
+        $stub = (string) file_get_contents($file);
+
+        $this->assertStringNotContainsString('.worktrees', $stub);
+        $this->assertStringNotContainsString('docs-site', $stub);
+        $this->assertStringNotContainsString('Gadget', $stub);
+
+        exec(escapeshellarg(PHP_BINARY) . ' -l ' . escapeshellarg($file) . ' 2>&1', $output, $status);
+        $this->assertSame(0, $status, implode("\n", $output));
+    }
+
     public function testTheExtensionStubDeclaresAnXfcpParentForEveryExtensionInTheInstall(): void
     {
         [$this->out, $summary] = Fixture::generate();

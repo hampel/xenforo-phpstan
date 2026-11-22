@@ -336,12 +336,15 @@ PHPStan is told where XenForo's classes are without being asked to report on the
 `src/XF`, `src/vendor` and `src/addons` are scanned for symbols, `src/XF.php` and `src/utf8.php`
 are read as files because XenForo `require()`s them rather than autoloading them,
 `src/XF/Options.php` is read as a file because every add-on's option hint declares that class
-too, and every add-on's `vendor/` and `_build/` are left out of the scan. The first matters more than it looks:
-PHPStan consults a scanned directory before the Composer autoloader, so without it an add-on
-resolves a shared dependency from whichever sibling vendored an older release of it. The second
-is the copy of itself a release build makes under `_build/upload/`, which declares every class of
-that add-on twice while it exists, and aborts the run if the build deletes a file as PHPStan
-reads it.
+too, and every add-on's `vendor/`, `_build/` and dot directories are left out of the scan. The
+first matters more than it looks: PHPStan consults a scanned directory before the Composer
+autoloader, so without it an add-on resolves a shared dependency from whichever sibling vendored
+an older release of it. The second is the copy of itself a release build makes under
+`_build/upload/`, which declares every class of that add-on twice while it exists, and aborts
+the run if the build deletes a file as PHPStan reads it. A dot directory is tooling's: a git
+worktree checked out under one is a second copy of the whole add-on, possibly from another
+branch. The generator skips the same directories, and any path with a segment that is not a PHP
+identifier, since no class can be autoloaded from one.
 
 ### Legacy class names
 

@@ -92,6 +92,13 @@ tests/Fixtures/forum/   the stand-in XenForo install
   by the same path rule it reads classes with, rather than `class_exists()`, which would load
   add-on code. Anywhere else a missing class gets no extension at runtime, and the hint is left
   naming it.
+- **A path that names no class is not walked.** The generator derives a class name from each
+  file's path, and XenForo's alias rule is a string rule that answers for any string, so PHP
+  under `.claude/worktrees/some-branch/` became an alias in a namespace PHP cannot parse. PHPStan
+  drops an unparsable scan file silently, and the whole alias stub with it. Dot directories are
+  skipped by name and any other path is tested segment by segment against the identifier rule;
+  the fragment excludes dot directories from the scan for the other half of the same problem, a
+  worktree being a second copy of its add-on. Reported from a real install on 2026-11-13.
 - **The class shape is read from the file, not from reflection.** Loading every aliased class to
   ask `isAbstract()` would execute third-party add-on code in the generator process; a regex on
   the declaration line answers the same question. A trait or enum cannot be subclassed and is

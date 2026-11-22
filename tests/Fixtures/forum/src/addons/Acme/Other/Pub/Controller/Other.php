@@ -27,5 +27,7 @@ class Other extends AbstractController
         $this->repository('XF:User')->findDemoUsers();                  // another add-on's extension
         $this->repository('XF:User')->nope();                           // ERROR: names the core class
         $this->repository(\XF\Repository\UserRepository::class)->nopeClass(); // ERROR: a class name, PHPStan's own answer
+
+        new \Acme\Other\Repository\GadgetRepository();                // ERROR: only a dot directory's copy declares it
     }
 }

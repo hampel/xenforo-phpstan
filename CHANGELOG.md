@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- `generate` wrote a `legacy-aliases.stub.php` PHP cannot parse when an add-on held PHP under a
+  dot directory or any directory whose name is not an identifier, such as a git worktree checked
+  out inside it: the alias took its namespace from the path. PHPStan drops a scan file it cannot
+  parse without reporting it, so every legacy class name went undefined in every add-on analysed
+  against that forum. Dot directories are now skipped, as is any path with a segment that is not
+  an identifier, and dot directories under an add-on are left out of the scan as well, where a
+  worktree declared every class of its add-on twice. Run `generate` again on a forum that was
+  affected (#2)
+
 ## 0.11.0 (2026-11-22)
 
 - an add-on's own container keys are typed where it declares them: `xenforo.container` maps a key

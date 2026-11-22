@@ -53,6 +53,8 @@ final class Generator
     ];
 
     /** Directories under an add-on that hold no add-on classes. */
+    private const SEGMENT = '[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*';
+
     private const SKIPPED = ['vendor', 'node_modules', '_build', '_data', '_output', '_releases', '_no_upload'];
 
     /** @var array<string, string> class => the file its name was derived from */
@@ -268,7 +270,7 @@ final class Generator
             /** @var iterable<string, \SplFileInfo> $files */
             $files = new RecursiveIteratorIterator(new RecursiveCallbackFilterIterator(
                 new RecursiveDirectoryIterator($base, FilesystemIterator::SKIP_DOTS),
-                fn (\SplFileInfo $file): bool => ! ($file->isDir() && in_array($file->getFilename(), self::SKIPPED, true)),
+                fn (\SplFileInfo $file): bool => ! ($file->isDir() && self::skipped($file->getFilename())),
             ));
 
             foreach ($files as $file) {
@@ -277,6 +279,12 @@ final class Generator
                 }
 
                 $relative = substr($file->getPathname(), strlen($base) + 1, -4);
+
+                // A path with a segment that is no identifier names no class XenForo could
+                // autoload, and an alias derived from it would be a namespace PHP cannot parse.
+                if (preg_match('#^' . self::SEGMENT . '(?:/' . self::SEGMENT . ')*$#', $relative) !== 1) {
+                    continue;
+                }
 
                 yield $prefix . str_replace('/', '\\', $relative) => $file->getPathname();
             }
@@ -352,9 +360,18 @@ final class Generator
         };
     }
 
+    /**
+     * A directory that holds no add-on classes: the named ones, and any dot directory, which is
+     * tooling's - a git worktree under one is a second copy of the whole add-on.
+     */
+    private static function skipped(string $directory): bool
+    {
+        return str_starts_with($directory, '.') || in_array($directory, self::SKIPPED, true);
+    }
+
     private static function declarable(string $name): bool
     {
-        return preg_match('/^[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*$/', $name) === 1
+        return preg_match('/^' . self::SEGMENT . '$/', $name) === 1
             && ! in_array(strtolower($name), self::RESERVED, true);
     }
 

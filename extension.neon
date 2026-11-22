@@ -60,6 +60,10 @@ parameters:
             # runs and after one that failed. Scanned, it declares every class of that add-on
             # twice; a file deleted while PHPStan reads it aborts the run.
             - %xenforo.root%/src/addons/*/*/_build/*
+            # A dot directory is tooling's, not the add-on's. A git worktree checked out under
+            # one is a second copy of the whole add-on, and scanned it declares every class twice,
+            # possibly from another branch.
+            - %xenforo.root%/src/addons/*/*/.*/*
 
     scanFiles:
         # \XF itself, and utf8_substr() and friends, which XenForo require()s rather than
