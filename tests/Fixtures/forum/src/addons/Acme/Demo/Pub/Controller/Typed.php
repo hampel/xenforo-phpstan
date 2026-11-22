@@ -531,11 +531,14 @@ class Typed extends AbstractController
         $this->takesApi($app['acme.api']);
         $this->takesApi($app->container()['acme.api']);
         $this->takesApi(\XF::app()->container('acme.api'));
+        $this->takesApi($app->get('acme.api'));
+        $this->takesApi(\XF::app()->get('acme.api'));
         $this->takesBool($app->container('acme.api')->client()->ping());
 
         // The sub-container's own keys, read from outside it.
         $this->takesBool($app['acme.api']['client']->ping());
         $this->takesInt($app['acme.api']['retries']);
+        $this->takesInt($app->get('acme.api')->get('retries'));
 
         // A value may be any type a docblock could state.
         $this->takesStrings($app->container('acme.hosts'));

@@ -20,6 +20,11 @@ class App implements \ArrayAccess
         return null;
     }
 
+    public function get($key)
+    {
+        return $this->offsetGet($key);
+    }
+
     public function offsetSet($key, $value): void
     {
     }

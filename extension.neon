@@ -35,9 +35,10 @@ parameters:
         #                 Acme\Demo\SubContainer\Api:
         #                     client: Acme\Demo\Api\Client
         #
-        # `container` is the application's, read as $app->container('acme.api') or
-        # $app['acme.api']. A sub-container keeps its own entries under keys that mean nothing
-        # outside it, so `subContainers` is keyed by the sub-container class first.
+        # `container` is the application's, read as $app->container('acme.api'),
+        # $app->get('acme.api') or $app['acme.api']. A sub-container keeps its own entries
+        # under keys that mean nothing outside it, so `subContainers` is keyed by the
+        # sub-container class first.
         container: []
         subContainers: []
 
@@ -218,9 +219,10 @@ services:
             className: XF\Mvc\Controller
 
     # $app->container() with no key is the container; XenForo documents it Container|mixed,
-    # which is mixed. A read by key - container('key'), or the application, a container or a
-    # sub-container read as an array - is whatever the add-on declared for that key above, and
-    # left as it is for a key it did not declare. One service per class read that way.
+    # which is mixed. A read by key - container('key'), get('key'), or the application, a
+    # container or a sub-container read as an array - is whatever the add-on declared for that
+    # key above, and left as it is for a key it did not declare. One service per class read
+    # that way.
     -
         class: Hampel\XenForo\PHPStan\Type\ContainerKeys
         arguments:

@@ -18,8 +18,9 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 /**
- * A read from a container: $app->container('key'), $app['key'], $container['key'], and inside a
- * sub-container $this->container['key'] and, from outside it, $subContainer['key'].
+ * A read from a container: $app->container('key'), $app->get('key'), $app['key'],
+ * $container['key'], and inside a sub-container $this->container['key'] and, from outside it,
+ * $subContainer['key'] and $subContainer->get('key').
  *
  * $app->container() with no key is the container itself. XenForo documents the method as
  * `Container|mixed`, which PHPStan reads as mixed on both paths, so an add-on that reaches the
@@ -33,7 +34,8 @@ use PHPStan\Type\TypeCombinator;
  * sub-container class and answered for `$this->container` inside that class and for the
  * sub-container read as an array; any other container is taken to be the application's.
  *
- * One service per class, because an array read reaches this through the class's offsetGet().
+ * One service per class, because an array read reaches this through the class's offsetGet(),
+ * and get() on the application and on a sub-container is the same read under another name.
  */
 final class ContainerReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -58,7 +60,7 @@ final class ContainerReturnTypeExtension implements DynamicMethodReturnTypeExten
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return in_array($methodReflection->getName(), ['container', 'offsetGet'], true);
+        return in_array($methodReflection->getName(), ['container', 'get', 'offsetGet'], true);
     }
 
     public function getTypeFromMethodCall(MethodReflection $methodReflection, MethodCall $methodCall, Scope $scope): ?Type

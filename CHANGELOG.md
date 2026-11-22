@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- a declared container key is typed through `$app->get('key')` and `$subContainer->get('key')`
+  as well, which read the same entry as the array form and were left `mixed` in 0.11.0. Reported
+  by an adopter
+- README: a declared container type that contains a comma is quoted, and a `@phpstan-type` alias
+  is not known in one
 - README: with no `phpVersion` set PHPStan analyses for the PHP it runs on, and PHP 8.5 reports
   an `int|null` array key
 

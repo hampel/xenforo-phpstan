@@ -33,6 +33,11 @@ abstract class AbstractSubContainer implements \ArrayAccess
         $this->initialize();
     }
 
+    public function get($key)
+    {
+        return $this->container->offsetGet($key);
+    }
+
     public function offsetExists($key): bool
     {
         return isset($this->container[$key]);

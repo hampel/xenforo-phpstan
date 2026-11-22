@@ -311,7 +311,7 @@ parameters:
     xenforo:
         container:
             acme.api: Acme\Demo\SubContainer\Api
-            acme.hosts: list<string>
+            acme.hosts: 'array<int, string>'
         subContainers:
             Acme\Demo\SubContainer\Api:
                 client: Acme\Demo\Api\Client
@@ -319,14 +319,16 @@ parameters:
 ```
 
 Each value is a PHPDoc type: a class name written in full, or anything else a `@return` could
-say.
+say. Quote a value that contains a comma, because NEON reads a bare one as the start of the next
+entry and the configuration does not load. A type alias a class declares with `@phpstan-type` is
+not known here; write the type out.
 
 - `container` is the application's container, and types `$app->container('acme.api')`,
-  `$app['acme.api']` and `$app->container()['acme.api']`.
+  `$app->get('acme.api')`, `$app['acme.api']` and `$app->container()['acme.api']`.
 - `subContainers` is keyed by the sub-container class first, because a sub-container keeps its
   entries in a container of its own, under keys that mean nothing outside it. It types
-  `$this->container['client']` written inside that class or a subclass, and `$api['client']` on
-  the sub-container from outside.
+  `$this->container['client']` written inside that class or a subclass, and `$api['client']`
+  and `$api->get('client')` on the sub-container from outside.
 
 A key that is not declared is left as it was, and so is a key that is not a constant string. A
 key of another add-on's, such as a shared logger, is declared by each add-on that reads it.

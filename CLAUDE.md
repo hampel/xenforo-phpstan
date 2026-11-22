@@ -178,7 +178,8 @@ tests/Fixtures/forum/   the stand-in XenForo install
   sub-container itself and `$this->container` written inside one; `$this->parent` and every
   other `XF\Container` are taken to be the application's. An array read reaches the extension
   as a call to `offsetGet()`, on 2.1.22 as on the current release, which is why one service is
-  registered per class read that way.
+  registered per class read that way; `get()` on the application and on a sub-container is the
+  same read by name, missed in 0.11.0 and reported by an adopter the day it shipped.
 - **The add-on object's properties are typed one by one, not crated.** `XF\AddOn\AddOn` answers
   nine keys itself and then the installed entity's columns, and every add-on that reports its
   version reads them. A crate would silence a mistyped key with the rest; the extension offers

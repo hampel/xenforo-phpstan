@@ -153,7 +153,7 @@ final class AnalysisTest extends TestCase
             // The reader's error reference is a string, a phrase or null, not XenForo's null.
             'Typed.php:523 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesStringOrPhrase() expects string|XF\Phrase, string|XF\Phrase|null given.',
             // A container key the add-on did not declare stays mixed.
-            'Typed.php:544 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
+            'Typed.php:547 Parameter #1 $value of method Acme\Demo\Pub\Controller\Typed::takesInt() expects int, mixed given.',
         ], $messages);
     }
 
@@ -212,7 +212,8 @@ final class AnalysisTest extends TestCase
                     # What the add-on's own container keys hold.
                     container:
                         acme.api: Acme\Demo\SubContainer\Api
-                        acme.hosts: list<string>
+                        # Quoted, because NEON reads a bare comma as the next entry.
+                        acme.hosts: 'array<int, string>'
                     subContainers:
                         Acme\Demo\SubContainer\Api:
                             client: Acme\Demo\Api\Client
