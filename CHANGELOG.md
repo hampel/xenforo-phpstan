@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.11.2 (2026-11-22)
 
 - a declared container key is typed through `$app->get('key')` and `$subContainer->get('key')`
   as well, which read the same entry as the array form and were left `mixed` in 0.11.0. Reported
