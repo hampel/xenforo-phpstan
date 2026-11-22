@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.11.1 (2026-11-22)
 
 - `generate` wrote a `legacy-aliases.stub.php` PHP cannot parse when an add-on held PHP under a
   dot directory or any directory whose name is not an identifier, such as a git worktree checked
