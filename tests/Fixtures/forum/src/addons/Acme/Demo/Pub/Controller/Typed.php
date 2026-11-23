@@ -572,7 +572,8 @@ class Typed extends AbstractController
         \XF\Entity\CronEntry $cron,
         \XF\Entity\Trophy $trophy,
         \XF\Entity\BbCode $bbCode,
-        \XF\Entity\Option $option
+        \XF\Entity\Option $option,
+        \XF\Entity\WidgetPosition $position
     ): void {
         // The same getter on the rest of core's entities, in each of its three signatures, and
         // on a class the stub already declared: the phrase entity, never null.
@@ -582,6 +583,10 @@ class Typed extends AbstractController
         $this->takesPhraseEntity($bbCode->getMasterPhrase('desc'));
         $this->takesPhraseEntity($option->getMasterPhrase(false));
         $this->takesString($option->option_id);
+
+        // And the entities that keep a title and a description phrase apart.
+        $this->takesPhraseEntity($position->getMasterTitlePhrase());
+        $this->takesPhraseEntity($position->getMasterDescriptionPhrase());
     }
 
     private function takesApi(\Acme\Demo\SubContainer\Api $value): void

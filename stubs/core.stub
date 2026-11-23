@@ -933,6 +933,60 @@ namespace XF\Entity {
         public function getMasterPhrase($title) {}
     }
 
+    // The four entities that keep a title and a description phrase apart: the same body again,
+    // once per relation, and undeclared on all four.
+    class ActivitySummaryDefinition extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterTitlePhrase() {}
+
+        /**
+         * @return Phrase
+         */
+        public function getMasterDescriptionPhrase() {}
+    }
+
+    class AdvertisingPosition extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterTitlePhrase() {}
+
+        /**
+         * @return Phrase
+         */
+        public function getMasterDescriptionPhrase() {}
+    }
+
+    class WidgetDefinition extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterTitlePhrase() {}
+
+        /**
+         * @return Phrase
+         */
+        public function getMasterDescriptionPhrase() {}
+    }
+
+    class WidgetPosition extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterTitlePhrase() {}
+
+        /**
+         * @return Phrase
+         */
+        public function getMasterDescriptionPhrase() {}
+    }
+
     class StyleProperty extends \XF\Mvc\Entity\Entity
     {
         /**

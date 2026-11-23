@@ -6,6 +6,9 @@
   undeclared, from a cron entry and an option to a trophy and a reaction: each body returns the
   relation or a new phrase when it is empty, so never null. A prefix group and a widget had it
   from 0.10.8
+- `getMasterTitlePhrase()` and `getMasterDescriptionPhrase()` return the phrase entity on a
+  widget definition, a widget position, an advertising position and an activity summary
+  definition, for the same reason
 
 ## 0.11.3 (2026-11-23)
 

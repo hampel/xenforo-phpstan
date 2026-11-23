@@ -466,7 +466,9 @@ the adapter's `fetchRow()`, `fetchAll()`, `fetchPairs()` and `fetchAllKeyed()`, 
 `getBasicCollection()` and `getEmptyCollection()`, the BB code `Traverser`'s `renderSubTree()`,
 `renderSubTreePlain()` and `renderUnparsedTag()`, `Renderer\Html::filterString()`,
 `Str\Formatter::getLinkClassTarget()` and `getProxiedUrlIfActive()`, `getMasterPhrase()` on
-every core entity that leaves it undeclared, `TagRepository::normalizeTag()`, and
+every core entity that leaves it undeclared, with `getMasterTitlePhrase()` and
+`getMasterDescriptionPhrase()` where an entity keeps the two apart,
+`TagRepository::normalizeTag()`, and
 `UserRepository::getUsersByNames()`, documented as a bare collection.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
