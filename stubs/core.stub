@@ -743,7 +743,15 @@ namespace XF\Entity {
 
     // Declared so that AbstractOption's row helpers may name it; no docblock, for the same reason
     // as User.
-    class Option extends \XF\Mvc\Entity\Entity {}
+    class Option extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @param mixed $title
+         *
+         * @return Phrase
+         */
+        public function getMasterPhrase($title) {}
+    }
 
     // Declared so that Purchase's docblock and ModeratorLog\AbstractHandler's signature may name
     // them; no docblock, as above.
@@ -767,6 +775,162 @@ namespace XF\Entity {
          * @return Phrase
          */
         public function getMasterPhrase() {}
+    }
+
+    // The rest of core's master phrase getters, each undeclared and each the same body: the
+    // relation, or a new phrase entity when it is empty, so never null. No docblock on any class,
+    // so its own @property lines stand. Where the method takes an argument it chooses between
+    // the title and the description phrase.
+    abstract class AbstractPrompt extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    abstract class AbstractPromptGroup extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class ActivitySummarySection extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class AdminNavigation extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class AdminPermission extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class ApiScope extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class BbCode extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @param mixed $type
+         *
+         * @return Phrase
+         */
+        public function getMasterPhrase($type = 'title') {}
+    }
+
+    class CronEntry extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class EditorDropdown extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class HelpPage extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @param mixed $title
+         *
+         * @return Phrase
+         */
+        public function getMasterPhrase($title) {}
+    }
+
+    class MemberStat extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class Navigation extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class OptionGroup extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @param mixed $title
+         *
+         * @return Phrase
+         */
+        public function getMasterPhrase($title) {}
+    }
+
+    class Permission extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class PermissionInterfaceGroup extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class Reaction extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class SmilieCategory extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @return Phrase
+         */
+        public function getMasterPhrase() {}
+    }
+
+    class Trophy extends \XF\Mvc\Entity\Entity
+    {
+        /**
+         * @param mixed $title
+         *
+         * @return Phrase
+         */
+        public function getMasterPhrase($title) {}
     }
 
     class StyleProperty extends \XF\Mvc\Entity\Entity

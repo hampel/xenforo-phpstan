@@ -10,4 +10,8 @@ use XF\Mvc\Entity\Entity;
  */
 class Option extends Entity
 {
+    public function getMasterPhrase($title)
+    {
+        return new Phrase();
+    }
 }

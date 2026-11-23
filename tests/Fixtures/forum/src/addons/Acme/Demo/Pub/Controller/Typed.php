@@ -568,6 +568,22 @@ class Typed extends AbstractController
         $this->takesStringOrNull($formatter->getProxiedUrlIfActiveExtended('link', 'https://example.com/'));
     }
 
+    public function moreMasterPhrases(
+        \XF\Entity\CronEntry $cron,
+        \XF\Entity\Trophy $trophy,
+        \XF\Entity\BbCode $bbCode,
+        \XF\Entity\Option $option
+    ): void {
+        // The same getter on the rest of core's entities, in each of its three signatures, and
+        // on a class the stub already declared: the phrase entity, never null.
+        $this->takesPhraseEntity($cron->getMasterPhrase());
+        $this->takesPhraseEntity($trophy->getMasterPhrase(true));
+        $this->takesPhraseEntity($bbCode->getMasterPhrase());
+        $this->takesPhraseEntity($bbCode->getMasterPhrase('desc'));
+        $this->takesPhraseEntity($option->getMasterPhrase(false));
+        $this->takesString($option->option_id);
+    }
+
     private function takesApi(\Acme\Demo\SubContainer\Api $value): void
     {
     }

@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- `getMasterPhrase()` returns the phrase entity on the nineteen core entities that left it
+  undeclared, from a cron entry and an option to a trophy and a reaction: each body returns the
+  relation or a new phrase when it is empty, so never null. A prefix group and a widget had it
+  from 0.10.8
+
 ## 0.11.3 (2026-11-23)
 
 - `TagRepository::normalizeTag()` returns a string, and `Str\Formatter::getProxiedUrlIfActive()`
