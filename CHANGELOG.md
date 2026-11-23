@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.11.4 (2026-11-23)
 
 - `getMasterPhrase()` returns the phrase entity on the nineteen core entities that left it
   undeclared, from a cron entry and an option to a trophy and a reaction: each body returns the
