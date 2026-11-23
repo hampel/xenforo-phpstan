@@ -79,6 +79,22 @@ class App implements \ArrayAccess
     }
 
     /**
+     * @return SimpleCache
+     */
+    public function simpleCache()
+    {
+        return new SimpleCache();
+    }
+
+    // As XenForo declares it: an array built, handed to listeners by reference, and returned.
+    public function getGlobalTemplateData(?Mvc\Reply\AbstractReply $reply = null)
+    {
+        $data = ['reply' => $reply];
+
+        return $data;
+    }
+
+    /**
      * As XenForo documents it, which PHPStan reads as mixed on both paths.
      *
      * @param string|null $key

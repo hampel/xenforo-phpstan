@@ -589,6 +589,35 @@ class Typed extends AbstractController
         $this->takesPhraseEntity($position->getMasterDescriptionPhrase());
     }
 
+    public function cacheAndTemplateData(\XF\Mvc\Reply\View $view, \XF\AddOn\AddOn $addOn): \XF\Template\Templater
+    {
+        // The printable version, which XenForo documents as a string and an int at once.
+        $this->takesString(\XF::$version);
+
+        // Returns XenForo leaves undeclared, each one type on every path.
+        $this->takesCacheSet($this->app()->simpleCache()->getSet('Acme/Demo'));
+        $this->takesString($addOn->getAddOnDirectory());
+        $this->takesString($view->getTemplateName());
+        $this->takesArray($this->app()->getGlobalTemplateData());
+        $this->takesArray($this->app()->getGlobalTemplateData($view));
+
+        // A templater extension reads the default parameters directly; the property is
+        // undeclared, and a declared return is what proves it at level max.
+        return new class () extends \XF\Template\Templater {
+            /**
+             * @return array<string, mixed>
+             */
+            public function defaults(): array
+            {
+                return $this->defaultParams;
+            }
+        };
+    }
+
+    private function takesCacheSet(\XF\SimpleCacheSet $value): void
+    {
+    }
+
     private function takesApi(\Acme\Demo\SubContainer\Api $value): void
     {
     }

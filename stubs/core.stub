@@ -22,6 +22,20 @@ namespace {
     class XF
     {
         /**
+         * Corrected: XenForo's docblock carries `@var string` and `@var int`, one for this and
+         * one for $versionId below it, and the two together read as neither. This is the
+         * printable version.
+         *
+         * @var string
+         */
+        public static $version;
+
+        /**
+         * @var int
+         */
+        public static $versionId;
+
+        /**
          * @param mixed $name
          * @param array<mixed> $params
          * @param mixed $allowHtml
@@ -253,7 +267,30 @@ namespace XF {
          * @return string
          */
         public function applyExternalDataUrlPathed($externalPath, $pathType) {}
+
+        /**
+         * The array the method builds, after the templater_global_data listeners have had it by
+         * reference.
+         *
+         * @param Mvc\Reply\AbstractReply|null $reply
+         *
+         * @return array<string, mixed>
+         */
+        public function getGlobalTemplateData(?Mvc\Reply\AbstractReply $reply = null) {}
     }
+
+    class SimpleCache
+    {
+        /**
+         * @param mixed $addOnId
+         *
+         * @return SimpleCacheSet
+         */
+        public function getSet($addOnId) {}
+    }
+
+    /** Declared so that getSet() above validates. */
+    class SimpleCacheSet {}
 }
 
 namespace XF\AddOn {
@@ -268,6 +305,13 @@ namespace XF\AddOn {
          * @return array<string, mixed>
          */
         public function getJson() {}
+
+        /**
+         * The add-on's directory under src/addons, resolved where it exists.
+         *
+         * @return string
+         */
+        public function getAddOnDirectory() {}
     }
 
     class StepResult
@@ -442,6 +486,14 @@ namespace XF\Mvc\Reply {
          * @return mixed
          */
         public function getParam($key) {}
+
+        /**
+         * The template a controller named: view() and the constructor are given a string, and
+         * the property starts as one.
+         *
+         * @return string
+         */
+        public function getTemplateName() {}
     }
 }
 
@@ -1699,6 +1751,14 @@ namespace XF\Template {
 
     class Templater
     {
+        /**
+         * The parameters every template is rendered with, by name; undeclared, and read by any
+         * extension of the templater.
+         *
+         * @var array<string, mixed>
+         */
+        protected $defaultParams;
+
         /**
          * The avatar markup. $escape is set false on every path, as every fn* that returns
          * markup sets it.

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.11.5 (2026-11-24)
+
+- `SimpleCache::getSet()` returns a `SimpleCacheSet`, `AddOn::getAddOnDirectory()` and
+  `View::getTemplateName()` a string, and `App::getGlobalTemplateData()` an array keyed by name;
+  XenForo declares none of them. `Templater::$defaultParams`, which a templater extension reads
+  directly, is an array keyed by name. Reported by an adopter at level max
+- corrected: `XF::$version` is a string and `XF::$versionId` an int. XenForo documents the pair
+  with one block carrying both `@var` lines, which read as neither
+
 ## 0.11.4 (2026-11-23)
 
 - `getMasterPhrase()` returns the phrase entity on the nineteen core entities that left it

@@ -6,9 +6,16 @@ namespace XF\AddOn;
 // columns, then addon.json. Undeclared, so PHPStan sees only the magic.
 class AddOn
 {
+    protected $addOnDir;
+
     public function getInstalledAddOn()
     {
         return null;
+    }
+
+    public function getAddOnDirectory()
+    {
+        return $this->addOnDir;
     }
 
     public function getJson()

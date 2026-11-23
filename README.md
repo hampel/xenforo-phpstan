@@ -468,7 +468,8 @@ the adapter's `fetchRow()`, `fetchAll()`, `fetchPairs()` and `fetchAllKeyed()`, 
 `Str\Formatter::getLinkClassTarget()` and `getProxiedUrlIfActive()`, `getMasterPhrase()` on
 every core entity that leaves it undeclared, with `getMasterTitlePhrase()` and
 `getMasterDescriptionPhrase()` where an entity keeps the two apart,
-`TagRepository::normalizeTag()`, and
+`TagRepository::normalizeTag()`, `SimpleCache::getSet()`, `AddOn::getAddOnDirectory()`,
+`View::getTemplateName()`, `App::getGlobalTemplateData()`, the templater's `$defaultParams`, and
 `UserRepository::getUsersByNames()`, documented as a bare collection.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
@@ -503,9 +504,11 @@ as the renderable `XF\Phrase` by an import where the body returns the `XF\Entity
 so setting its text and saving it was reported from level 2; the four request methods of
 `Http\Reader`, which document `$saveTo` and `$error` as null where the first is the path or
 stream the body is written to and the second comes back holding the failure, so downloading to a
-file was reported from level 5 and every check of the error read as always false; and
+file was reported from level 5 and every check of the error read as always false;
 `Mailer::getTransportFromOption()`, documented as the transport interface where every branch
-returns an `AbstractTransport`, the only type the mailer accepts back. Each is held
+returns an `AbstractTransport`, the only type the mailer accepts back; and `XF::$version`,
+documented `@var string` and `@var int` in one block meant for it and `$versionId` together,
+which reads as neither, so the stub gives each its own. Each is held
 by a fixture class carrying XenForo's docblock, and every one is reported against the previous
 stub. The finder's fluent methods are declared as returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
 own `@return Finder` on `order()` lost; the schema `Column`'s setters are declared the same way.

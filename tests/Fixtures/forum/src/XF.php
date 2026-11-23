@@ -8,6 +8,15 @@
  */
 class XF
 {
+    /**
+     * As XenForo documents the pair: one block over the first of two properties, which PHPStan
+     * reads as neither type.
+     *
+     * @var string
+     * @var int
+     */
+    public static $version = '2.3.13';
+
     /** @var int */
     public static $versionId = 2031370; // abbccde = a.b.c d (alpha: 1, beta: 3, RC: 5, stable: 7, PL: 9) e
 
