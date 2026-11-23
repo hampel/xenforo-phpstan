@@ -547,6 +547,18 @@ class Typed extends AbstractController
         $this->takesInt($app->container('acme.unknown'));   // ERROR: mixed, an undeclared key
     }
 
+    public function usersAndMail(\XF\Repository\UserRepository $repo, \XF\Mail\Mailer $mailer): void
+    {
+        // Users looked up by name are a collection of users, and the names that matched nobody
+        // are strings; XenForo documents a bare collection and a bare array.
+        $this->takesUsers($repo->getUsersByNames(['one', 'two'], $notFound));
+        $this->takesStrings($notFound);
+
+        // The transport built from the mail option is one the mailer accepts back, which the
+        // interface XenForo documents is not.
+        $mailer->setDefaultTransport(\XF\Mail\Mailer::getTransportFromOption('smtp', []));
+    }
+
     private function takesApi(\Acme\Demo\SubContainer\Api $value): void
     {
     }

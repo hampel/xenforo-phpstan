@@ -925,6 +925,25 @@ namespace XF\Repository {
         public function mergeNodeListExtras(array $extras, array $childExtras) {}
     }
 
+    class UserRepository
+    {
+        /**
+         * XenForo documents a bare ArrayCollection; the body returns users, either the entity
+         * manager's empty collection or the finder's results reordered to match the names. The
+         * names not found come back in the reference, trimmed as the body trims them.
+         *
+         * @param array<mixed> $usernames
+         * @param array<mixed> $notFound
+         * @param-out array<int|string, string> $notFound
+         * @param mixed $with
+         * @param mixed $validOnly
+         * @param mixed $extraWhere
+         *
+         * @return \XF\Mvc\Entity\ArrayCollection<\XF\Entity\User>
+         */
+        public function getUsersByNames(array $usernames, &$notFound = [], $with = [], $validOnly = false, $extraWhere = []) {}
+    }
+
     class ActivityLogRepository
     {
         /**
@@ -1325,6 +1344,32 @@ namespace XF\Http {
          */
         public function requestUntrusted($method, $url, array $limits = [], $saveTo = null, array $options = [], &$error = null) {}
     }
+}
+
+namespace XF\Mail {
+
+    use Symfony\Component\Mailer\Transport\AbstractTransport;
+
+    class Mailer
+    {
+        /**
+         * Corrected: XenForo documents the transport interface, and every branch returns an
+         * AbstractTransport, which is what the mailer's constructor, setDefaultTransport() and
+         * send() all require; the documented type could be passed to none of them.
+         *
+         * @param mixed $type
+         * @param array<string, mixed> $config
+         *
+         * @return AbstractTransport
+         */
+        public static function getTransportFromOption($type, array $config) {}
+    }
+}
+
+namespace Symfony\Component\Mailer\Transport {
+
+    // Declared so that the mailer's method above may name it; no docblock, so the real one stands.
+    abstract class AbstractTransport {}
 }
 
 namespace Psr\Http\Message {

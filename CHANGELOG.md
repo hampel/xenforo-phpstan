@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- `UserRepository::getUsersByNames()` returns a collection of users, and the names it did not
+  find are strings; XenForo documents a bare `ArrayCollection` and a bare array
+- corrected: `Mailer::getTransportFromOption()` returns an `AbstractTransport`, as every branch
+  of it does and as the mailer's constructor, `setDefaultTransport()` and `send()` require;
+  XenForo documents the interface, which none of them accepts
+
 ## 0.11.2 (2026-11-22)
 
 - a declared container key is typed through `$app->get('key')` and `$subContainer->get('key')`
