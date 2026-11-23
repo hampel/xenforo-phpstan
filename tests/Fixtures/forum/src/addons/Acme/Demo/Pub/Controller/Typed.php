@@ -559,6 +559,15 @@ class Typed extends AbstractController
         $mailer->setDefaultTransport(\XF\Mail\Mailer::getTransportFromOption('smtp', []));
     }
 
+    public function tagsAndProxy(\XF\Repository\TagRepository $tags, \XF\Str\Formatter $formatter): void
+    {
+        // A normalised tag is a string, and a proxied URL is one or null; XenForo declares
+        // neither.
+        $this->takesString($tags->normalizeTag(' Example '));
+        $this->takesStringOrNull($formatter->getProxiedUrlIfActive('image', 'https://example.com/a.png'));
+        $this->takesStringOrNull($formatter->getProxiedUrlIfActiveExtended('link', 'https://example.com/'));
+    }
+
     private function takesApi(\Acme\Demo\SubContainer\Api $value): void
     {
     }

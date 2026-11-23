@@ -944,6 +944,18 @@ namespace XF\Repository {
         public function getUsersByNames(array $usernames, &$notFound = [], $with = [], $validOnly = false, $extraWhere = []) {}
     }
 
+    class TagRepository
+    {
+        /**
+         * The tag lowercased and stripped of surrounding punctuation; the body ends in trim().
+         *
+         * @param mixed $tag
+         *
+         * @return string
+         */
+        public function normalizeTag($tag) {}
+    }
+
     class ActivityLogRepository
     {
         /**
@@ -1548,5 +1560,26 @@ namespace XF\Str {
          * @return array{class: string, target: string, type: 'external'|'internal', trusted: bool, local: bool}
          */
         public function getLinkClassTarget($url) {}
+
+        /**
+         * Null with no proxy handler set; otherwise what the handler returns, and the one core
+         * sets answers with the proxy linker's link, a string, or null when the type is off or
+         * the URL is bypassed.
+         *
+         * @param mixed $type
+         * @param mixed $url
+         *
+         * @return string|null
+         */
+        public function getProxiedUrlIfActive($type, $url) {}
+
+        /**
+         * @param mixed $type
+         * @param mixed $url
+         * @param array<mixed> $options
+         *
+         * @return string|null
+         */
+        public function getProxiedUrlIfActiveExtended($type, $url, array $options = []) {}
     }
 }

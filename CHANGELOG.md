@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.11.3 (2026-11-23)
 
+- `TagRepository::normalizeTag()` returns a string, and `Str\Formatter::getProxiedUrlIfActive()`
+  and `getProxiedUrlIfActiveExtended()` a string or null; XenForo declares neither. Asked for by
+  an adopter at level 10
 - `UserRepository::getUsersByNames()` returns a collection of users, and the names it did not
   find are strings; XenForo documents a bare `ArrayCollection` and a bare array
 - corrected: `Mailer::getTransportFromOption()` returns an `AbstractTransport`, as every branch

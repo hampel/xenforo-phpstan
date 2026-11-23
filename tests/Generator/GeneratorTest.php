@@ -34,7 +34,7 @@ final class GeneratorTest extends TestCase
         [$this->out, $summary] = Fixture::generate();
         $stub = (string) file_get_contents($this->out . '/' . Generator::ALIASES_STUB);
 
-        $this->assertStringContainsString('namespace XF\Repository' . "\n" . '{' . "\n" . "\t" . 'class ActivityLog extends \XF\Repository\ActivityLogRepository {}' . "\n" . "\t" . 'class Attachment extends \XF\Repository\AttachmentRepository {}' . "\n" . "\t" . 'class Node extends \XF\Repository\NodeRepository {}' . "\n" . "\t" . 'class User extends \XF\Repository\UserRepository {}' . "\n" . '}', $stub);
+        $this->assertStringContainsString('namespace XF\Repository' . "\n" . '{' . "\n" . "\t" . 'class ActivityLog extends \XF\Repository\ActivityLogRepository {}' . "\n" . "\t" . 'class Attachment extends \XF\Repository\AttachmentRepository {}' . "\n" . "\t" . 'class Node extends \XF\Repository\NodeRepository {}' . "\n" . "\t" . 'class Tag extends \XF\Repository\TagRepository {}' . "\n" . "\t" . 'class User extends \XF\Repository\UserRepository {}' . "\n" . '}', $stub);
         $this->assertStringContainsString("\t" . 'class User extends \XF\Finder\UserFinder {}', $stub);
         $this->assertStringContainsString("\t" . 'class Editor extends \XF\ControllerPlugin\EditorPlugin {}', $stub);
 
@@ -108,6 +108,7 @@ final class GeneratorTest extends TestCase
             'XF\Repository\ActivityLog' => 'XF\Repository\ActivityLogRepository',
             'XF\Repository\Attachment' => 'XF\Repository\AttachmentRepository',
             'XF\Repository\Node' => 'XF\Repository\NodeRepository',
+            'XF\Repository\Tag' => 'XF\Repository\TagRepository',
             'XF\Repository\User' => 'XF\Repository\UserRepository',
             'XF\Service\Abstract' => 'XF\Service\AbstractService',
             'XF\Service\User\AbstractConfirmation' => 'XF\Service\User\AbstractConfirmationService',

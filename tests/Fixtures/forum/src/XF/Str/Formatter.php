@@ -2,7 +2,7 @@
 
 namespace XF\Str;
 
-// As XenForo declares it: the link shape undeclared.
+// As XenForo declares it: the link shape and the proxied URL undeclared.
 class Formatter
 {
     public function getLinkClassTarget($url)
@@ -17,4 +17,23 @@ class Formatter
             'local' => $internal,
         ];
     }
+
+    public function getProxiedUrlIfActive($type, $url)
+    {
+        return $this->getProxiedUrlIfActiveExtended($type, $url);
+    }
+
+    public function getProxiedUrlIfActiveExtended($type, $url, array $options = [])
+    {
+        if (!$this->proxyHandler) {
+            return null;
+        }
+
+        $handler = $this->proxyHandler;
+
+        return $handler($type, $url, $options);
+    }
+
+    /** @var callable|null */
+    protected $proxyHandler;
 }

@@ -465,7 +465,8 @@ the adapter's `fetchRow()`, `fetchAll()`, `fetchPairs()` and `fetchAllKeyed()`, 
 `Request::getBasePath()`, `AbstractOption`'s five row helpers, the entity manager's
 `getBasicCollection()` and `getEmptyCollection()`, the BB code `Traverser`'s `renderSubTree()`,
 `renderSubTreePlain()` and `renderUnparsedTag()`, `Renderer\Html::filterString()`,
-`Str\Formatter::getLinkClassTarget()`, `getMasterPhrase()` on a prefix group and a widget, and
+`Str\Formatter::getLinkClassTarget()` and `getProxiedUrlIfActive()`, `getMasterPhrase()` on a
+prefix group and a widget, `TagRepository::normalizeTag()`, and
 `UserRepository::getUsersByNames()`, documented as a bare collection.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,

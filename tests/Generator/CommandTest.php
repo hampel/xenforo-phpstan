@@ -44,7 +44,7 @@ final class CommandTest extends TestCase
         $this->assertSame(0, $code, $stderr);
         $this->assertSame('', $stderr);
         $this->assertStringContainsString('XenForo 2031370 at ' . Fixture::forum(), $stdout);
-        $this->assertStringContainsString('legacy-aliases.stub.php: 11 legacy class names (1 abstract), 2 skipped as undeclarable', $stdout);
+        $this->assertStringContainsString('legacy-aliases.stub.php: 12 legacy class names (1 abstract), 2 skipped as undeclarable', $stdout);
         $this->assertStringContainsString('class-extensions.stub.php: 5 class extensions of 3 classes, 1 registered on a legacy name, 1 inactive, 1 on a class the forum does not have', $stdout);
         $this->assertStringContainsString('written to ' . $this->out, $stdout);
         $this->assertFileExists($this->out . '/classes.php');
@@ -100,7 +100,7 @@ final class CommandTest extends TestCase
         $this->assertSame(0, $code, $stderr);
         $this->assertSame('', $stderr);
         $this->assertStringContainsString('XenForo 2031370 at ' . Fixture::forum(), $stdout);
-        $this->assertMatchesRegularExpression('#classes\.php is current, generated \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC: 13 aliases, 4 class extensions of 3 classes#', $stdout);
+        $this->assertMatchesRegularExpression('#classes\.php is current, generated \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC: 14 aliases, 4 class extensions of 3 classes#', $stdout);
         $this->assertSame($before, file_get_contents($this->out . '/classes.php'));
     }
 
