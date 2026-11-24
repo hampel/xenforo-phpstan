@@ -614,6 +614,29 @@ class Typed extends AbstractController
         };
     }
 
+    public function apiReplies(\XF\Api\Controller\AbstractController $api): void
+    {
+        // The helpers every API action returns through, undeclared in XenForo: the reply on
+        // every path, and the result it was built from.
+        $this->takesApiResult($api->apiResult(['user_id' => 1]));
+        $this->takesApiResult($api->apiSuccess());
+        $this->takesApiResult($api->apiBoolResult(false, ['reason' => 'x']));
+        $this->takesError($api->apiError('Not found', 'not_found'));
+        $this->takesResult($api->apiResult([])->getApiResult());
+    }
+
+    private function takesApiResult(\XF\Api\Mvc\Reply\ApiResult $value): void
+    {
+    }
+
+    private function takesError(\XF\Mvc\Reply\Error $value): void
+    {
+    }
+
+    private function takesResult(\XF\Entity\ResultInterface $value): void
+    {
+    }
+
     private function takesCacheSet(\XF\SimpleCacheSet $value): void
     {
     }

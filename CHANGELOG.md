@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.6 (2026-11-24)
+
+- the API controller's `apiResult()`, `apiSuccess()` and `apiBoolResult()` return an `ApiResult`
+  and `apiError()` an `Error`, and `ApiResult::getApiResult()` returns the result it was built
+  from; XenForo declares none of them, so at level 9 every API action with a declared return
+  type was reported as returning `mixed`. Reported by an adopter at level max
+
 ## 0.11.5 (2026-11-24)
 
 - `SimpleCache::getSet()` returns a `SimpleCacheSet`, `AddOn::getAddOnDirectory()` and

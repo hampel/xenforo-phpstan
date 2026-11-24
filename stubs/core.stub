@@ -793,6 +793,9 @@ namespace XF\Mvc\Entity {
 
 namespace XF\Entity {
 
+    /** Declared so that ApiResult::getApiResult() may name it. */
+    interface ResultInterface {}
+
     // Declared so that AbstractOption's row helpers may name it; no docblock, for the same reason
     // as User.
     class Option extends \XF\Mvc\Entity\Entity
@@ -1744,6 +1747,59 @@ namespace XF\Option {
          * @return string
          */
         protected static function getNumberBoxRow(\XF\Entity\Option $option, array $htmlParams, $value = null) {}
+    }
+}
+
+namespace XF\Api\Controller {
+
+    abstract class AbstractController extends \XF\Mvc\Controller
+    {
+        /**
+         * @param mixed $errorMessage
+         * @param mixed $errorCode
+         * @param array<string, mixed>|null $params
+         * @param mixed $httpCode
+         *
+         * @return \XF\Mvc\Reply\Error
+         */
+        public function apiError($errorMessage, $errorCode, ?array $params = null, $httpCode = 400) {}
+
+        /**
+         * An array or an entity is wrapped and anything else that is not a result throws, so
+         * every path that returns does so with the reply.
+         *
+         * @param mixed $result
+         *
+         * @return \XF\Api\Mvc\Reply\ApiResult
+         */
+        public function apiResult($result) {}
+
+        /**
+         * @param array<string, mixed> $extra
+         *
+         * @return \XF\Api\Mvc\Reply\ApiResult
+         */
+        public function apiSuccess(array $extra = []) {}
+
+        /**
+         * @param array<string, mixed> $extra
+         *
+         * @return \XF\Api\Mvc\Reply\ApiResult
+         */
+        public function apiBoolResult(bool $success, array $extra = []) {}
+    }
+}
+
+namespace XF\Api\Mvc\Reply {
+
+    class ApiResult extends \XF\Mvc\Reply\AbstractReply
+    {
+        /**
+         * The result the constructor and setApiResult() both require.
+         *
+         * @return \XF\Entity\ResultInterface
+         */
+        public function getApiResult() {}
     }
 }
 

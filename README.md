@@ -469,7 +469,9 @@ the adapter's `fetchRow()`, `fetchAll()`, `fetchPairs()` and `fetchAllKeyed()`, 
 every core entity that leaves it undeclared, with `getMasterTitlePhrase()` and
 `getMasterDescriptionPhrase()` where an entity keeps the two apart,
 `TagRepository::normalizeTag()`, `SimpleCache::getSet()`, `AddOn::getAddOnDirectory()`,
-`View::getTemplateName()`, `App::getGlobalTemplateData()`, the templater's `$defaultParams`, and
+`View::getTemplateName()`, `App::getGlobalTemplateData()`, the templater's `$defaultParams`,
+the API controller's `apiResult()`, `apiSuccess()`, `apiBoolResult()` and `apiError()`,
+`ApiResult::getApiResult()`, and
 `UserRepository::getUsersByNames()`, documented as a bare collection.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
