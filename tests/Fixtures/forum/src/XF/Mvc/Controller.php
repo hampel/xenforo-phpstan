@@ -27,6 +27,12 @@ abstract class Controller
         return $this->request()->filter($key, $type, $default);
     }
 
+    // As XenForo declares it: the application's method documents the return, this does not.
+    public function formAction($inTransaction = true)
+    {
+        return new FormAction();
+    }
+
     public function view($viewClass = '', $templateName = '', array $params = [])
     {
         return new Reply\View();

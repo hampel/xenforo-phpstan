@@ -369,8 +369,21 @@ namespace XF\Mvc {
     use XF\Mvc\Reply\Redirect;
     use XF\Mvc\Reply\View;
 
+    /** Declared so that formAction() below may name it. */
+    class FormAction {}
+
     abstract class Controller
     {
+        /**
+         * The application's form action, which App::formAction() documents and this leaves
+         * undeclared.
+         *
+         * @param mixed $inTransaction
+         *
+         * @return FormAction
+         */
+        public function formAction($inTransaction = true) {}
+
         /**
          * @param mixed $viewClass
          * @param mixed $templateName
@@ -522,6 +535,24 @@ namespace XF\Mvc\Entity {
 
         /** @var array<string, array<string, mixed>> */
         public $relations = [];
+
+        /** @var array<string, mixed> */
+        public $getters = [];
+
+        /** @var array<mixed> */
+        public $defaultWith = [];
+
+        /** @var array<string, mixed> */
+        public $options = [];
+
+        /** @var array<string, array<string, mixed>> */
+        public $behaviors = [];
+
+        /** @var array<string, string> */
+        public $columnAliases = [];
+
+        /** @var array<string, mixed> */
+        public $withAliases = [];
     }
 
     class Manager
@@ -1537,6 +1568,15 @@ namespace XF\Http {
     class Request
     {
         /**
+         * The remote address, trimmed, or the IPv4 address embedded in it.
+         *
+         * @param mixed $allowProxied
+         *
+         * @return string
+         */
+        public function getIp($allowProxied = false) {}
+
+        /**
          * @param mixed $key
          * @param mixed $type
          * @param mixed $default
@@ -1665,6 +1705,28 @@ namespace Psr\Http\Message {
 
 namespace XF\Util {
 
+    class Ip
+    {
+        /**
+         * Corrected: XenForo documents `bool|string`, and no path returns true.
+         *
+         * @param string|int $ip
+         *
+         * @return string|false
+         */
+        public static function convertIpStringToBinary($ip) {}
+
+        /**
+         * Corrected: XenForo documents `bool|string`, and no path returns true.
+         *
+         * @param string $ip
+         * @param bool $shorten
+         *
+         * @return string|false
+         */
+        public static function convertIpBinaryToString($ip, $shorten = true) {}
+    }
+
     class File
     {
         /**
@@ -1750,6 +1812,39 @@ namespace XF\Option {
     }
 }
 
+namespace XF\Pub\Controller {
+
+    abstract class AbstractController extends \XF\Mvc\Controller {}
+
+    class AccountController extends AbstractController
+    {
+        /**
+         * The form action the method builds and returns, for an extension to add to.
+         *
+         * @return \XF\Mvc\FormAction
+         */
+        protected function accountDetailsSaveProcess(\XF\Entity\User $visitor) {}
+
+        /**
+         * @return \XF\Mvc\FormAction
+         */
+        protected function preferencesSaveProcess(\XF\Entity\User $visitor) {}
+    }
+}
+
+namespace XF\Spam\Checker {
+
+    abstract class AbstractProvider
+    {
+        /**
+         * Undeclared, where app() beside it documents its return.
+         *
+         * @var \XF\App
+         */
+        protected $app;
+    }
+}
+
 namespace XF\Api\Controller {
 
     abstract class AbstractController extends \XF\Mvc\Controller
@@ -1805,6 +1900,9 @@ namespace XF\Api\Mvc\Reply {
 
 namespace XF\Template {
 
+    /** Declared so that callMacro() below may name it. */
+    class MacroState {}
+
     class Templater
     {
         /**
@@ -1830,6 +1928,28 @@ namespace XF\Template {
          * @return string
          */
         public function fnAvatar($templater, &$escape, $user, $size, $canonical = false, $attributes = []) {}
+
+        /**
+         * A macro's rendered output: what the compiled macro returns, or an empty string at the
+         * depth limit and for a macro that does not exist.
+         *
+         * @param mixed $template
+         * @param mixed $name
+         * @param array<mixed> $arguments
+         * @param array<mixed> $globalVars
+         *
+         * @return string
+         */
+        public function callMacro($template, $name, array $arguments, array $globalVars, ?MacroState $macroState = null) {}
+
+        /**
+         * @param mixed $position
+         * @param array<mixed> $arguments
+         * @param array<mixed> $globalVars
+         *
+         * @return string
+         */
+        public function callAdsMacro($position, array $arguments, array $globalVars) {}
     }
 }
 

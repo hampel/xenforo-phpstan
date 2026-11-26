@@ -9,6 +9,12 @@ class Request
         return is_array($key) ? [] : $default;
     }
 
+    // As XenForo declares it: a trimmed address on every path, undeclared.
+    public function getIp($allowProxied = false)
+    {
+        return trim('127.0.0.1');
+    }
+
     public function getUserAgent()
     {
         return $this->getServer('HTTP_USER_AGENT');

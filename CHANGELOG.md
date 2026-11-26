@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.11.7 (2026-11-27)
+
+- `Structure`'s `$getters`, `$defaultWith`, `$options`, `$behaviors`, `$columnAliases` and
+  `$withAliases` are arrays, as `$columns` and `$relations` have been since 0.7.1, so an entity
+  extension adding a getter to the structure it was handed is no longer an offset on `mixed` at
+  level 10
+- `Controller::formAction()` returns a `FormAction`, and so do the account controller's
+  `accountDetailsSaveProcess()` and `preferencesSaveProcess()`, which an extension calls through
+  `parent::` to add to the form
+- `Request::getIp()`, `Templater::callMacro()` and `callAdsMacro()` return a string, and a spam
+  provider's `$app` is the application; XenForo declares none of them
+- corrected: `Util\Ip::convertIpStringToBinary()` and `convertIpBinaryToString()` return
+  `string|false`, where XenForo documents `bool|string` and no path returns true
+- README: a docblock between an attribute and its method is not read, Mockery's higher-order
+  expectations need the mocked class in the mock's type, and the chained `generate` is safe on a
+  shared forum
+
+Each was reported by an adopter at level max.
+
 ## 0.11.6 (2026-11-24)
 
 - the API controller's `apiResult()`, `apiSuccess()` and `apiBoolResult()` return an `ApiResult`

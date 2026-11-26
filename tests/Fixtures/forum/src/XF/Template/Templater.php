@@ -19,6 +19,17 @@ class Templater
         return '';
     }
 
+    // As XenForo declares the pair: a macro's output, undeclared.
+    public function callMacro($template, $name, array $arguments, array $globalVars, ?MacroState $macroState = null)
+    {
+        return '';
+    }
+
+    public function callAdsMacro($position, array $arguments, array $globalVars)
+    {
+        return $this->callMacro('public:_ads', $position, $arguments, $globalVars);
+    }
+
     // As XenForo declares it: the result escaped unless told otherwise, and undeclared either way.
     public function func($name, array $arguments = [], $escape = true)
     {

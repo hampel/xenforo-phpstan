@@ -48,6 +48,10 @@ file and starts over when one changes, is left alone:
 }
 ```
 
+That holds on a forum several add-ons share: a set that is current is left untouched, and it is
+rewritten only when the forum itself has changed, which is when every add-on there needs the new
+one.
+
 **The `^0.x` constraint Composer writes is deliberate, and a new minor is a deliberate move.**
 Below 1.0 a caret pins the minor, so `^0.4` means `>=0.4 <0.5`: a patch release arrives with
 `composer update`, and a minor does not. Each minor so far has changed what an add-on sees at its
@@ -471,7 +475,10 @@ every core entity that leaves it undeclared, with `getMasterTitlePhrase()` and
 `TagRepository::normalizeTag()`, `SimpleCache::getSet()`, `AddOn::getAddOnDirectory()`,
 `View::getTemplateName()`, `App::getGlobalTemplateData()`, the templater's `$defaultParams`,
 the API controller's `apiResult()`, `apiSuccess()`, `apiBoolResult()` and `apiError()`,
-`ApiResult::getApiResult()`, and
+`ApiResult::getApiResult()`, `Structure`'s `$getters`, `$defaultWith`, `$options`, `$behaviors`
+and its two alias maps, `Controller::formAction()`, the account controller's
+`accountDetailsSaveProcess()` and `preferencesSaveProcess()`, `Request::getIp()`, the templater's
+`callMacro()` and `callAdsMacro()`, a spam provider's `$app`, and
 `UserRepository::getUsersByNames()`, documented as a bare collection.
 Below level 7 that costs nothing; at level 7 and above each result is `mixed`, and everything it
 is passed to is reported. `stubs/core.stub` restates them with the type the method body returns,
@@ -510,7 +517,9 @@ file was reported from level 5 and every check of the error read as always false
 `Mailer::getTransportFromOption()`, documented as the transport interface where every branch
 returns an `AbstractTransport`, the only type the mailer accepts back; and `XF::$version`,
 documented `@var string` and `@var int` in one block meant for it and `$versionId` together,
-which reads as neither, so the stub gives each its own. Each is held
+which reads as neither, so the stub gives each its own; and `Util\Ip`'s deprecated
+`convertIpStringToBinary()` and `convertIpBinaryToString()`, documented `bool|string` where no
+path returns true. Each is held
 by a fixture class carrying XenForo's docblock, and every one is reported against the previous
 stub. The finder's fluent methods are declared as returning `static`, so a chain keeps the entity type the finder was created with, which XenForo's
 own `@return Finder` on `order()` lost; the schema `Column`'s setters are declared the same way.
@@ -659,6 +668,17 @@ A tag whose definition has `has_option` set to `yes` never arrives with a null o
   generation is reported as an unknown `XFCP_` parent, which is loud enough; one removed is simply
   still offered. `generate --check` asks the same question and no more, which is why the
   Installation section runs `generate` in front of every analysis instead.
+- **A docblock between an attribute and its method is not read.** Written under
+  `#[DataProvider('rows')]` and above the method, a `@param array<string, int>` is ignored and the
+  parameter is reported as an untyped array, with nothing to say why; put the docblock above the
+  attribute. That is PHPStan's reading of the file, measured with no extension loaded.
+- **Mockery's higher-order expectations need the mocked class in the mock's type.** With
+  `phpstan/phpstan-mockery` included, `$mock->expects()->save($user)` is typed on a mock PHPStan
+  knows as `Thing&MockInterface`, which is what `Mockery::mock(Thing::class)` returns. On a bare
+  `MockInterface`, such as a closure parameter declared with that type alone, it is
+  `method.notFound` from level 2 and everything chained after it is `mixed`. Declare the
+  intersection, or write `$mock->expects('save')->with($user)`, the same expectation, which is
+  typed either way.
 - **PHPStan resolves symbols from the project that installed it.** Run it from the add-on's own
   directory with the add-on's own `vendor/bin/phpstan`. A phar borrowed from another project
   consults that project's autoloader first, and the result quietly describes a different

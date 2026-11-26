@@ -625,6 +625,60 @@ class Typed extends AbstractController
         $this->takesResult($api->apiResult([])->getApiResult());
     }
 
+    public function structureAndForms(\XF\Mvc\Entity\Structure $structure): \XF\Pub\Controller\AccountController
+    {
+        // An entity extension adds a getter, a default relation, an option and a behaviour to
+        // the structure it was handed; XenForo leaves all of them undeclared.
+        $structure->getters['acme_demo_flag'] = true;
+        $structure->defaultWith[] = 'Profile';
+        $structure->options['acme_demo'] = 1;
+        $structure->behaviors['Acme\Demo:Flaggable'] = ['stateField' => 'flag_state'];
+        $structure->columnAliases['acme_old'] = 'acme_new';
+        $structure->withAliases['full'] = ['Profile'];
+
+        // The remote address, and the deprecated converters, documented bool|string where no
+        // path returns true.
+        $this->takesString($this->request()->getIp());
+        $this->takesStringOrFalse(\XF\Util\Ip::convertIpStringToBinary('127.0.0.1'));
+        $this->takesStringOrFalse(\XF\Util\Ip::convertIpBinaryToString('x'));
+
+        // A macro's output.
+        $templater = $this->app()->templater();
+        $this->takesString($templater->callMacro('public:macros', 'row', [], []));
+        $this->takesString($templater->callAdsMacro('container_header', [], []));
+
+        // The form action, from the controller and from the two account save processes an
+        // extension adds to; the declared return on each override is what proves it.
+        $this->takesFormAction($this->formAction());
+
+        return new class () extends \XF\Pub\Controller\AccountController {
+            protected function accountDetailsSaveProcess(User $visitor): \XF\Mvc\FormAction
+            {
+                return parent::accountDetailsSaveProcess($visitor);
+            }
+
+            protected function preferencesSaveProcess(User $visitor): \XF\Mvc\FormAction
+            {
+                return parent::preferencesSaveProcess($visitor);
+            }
+        };
+    }
+
+    public function spamProvider(): \XF\Spam\Checker\AbstractProvider
+    {
+        // A spam provider reads the application from the property as well as the accessor.
+        return new class () extends \XF\Spam\Checker\AbstractProvider {
+            public function application(): \XF\App
+            {
+                return $this->app;
+            }
+        };
+    }
+
+    private function takesFormAction(\XF\Mvc\FormAction $value): void
+    {
+    }
+
     private function takesApiResult(\XF\Api\Mvc\Reply\ApiResult $value): void
     {
     }
